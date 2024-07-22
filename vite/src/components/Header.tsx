@@ -3,10 +3,6 @@ import { useNavigate } from "react-router-dom";
 
 const navLinks = [
   {
-    name: "Home",
-    path: "/",
-  },
-  {
     name: "Market",
     path: "/Market",
   },
