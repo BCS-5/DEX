@@ -1,5 +1,8 @@
 artifacts
+.deps
 .env
+.v2-core
+.v2-periphery
 
 # Logs
 logs
