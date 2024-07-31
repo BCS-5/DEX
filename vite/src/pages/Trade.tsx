@@ -11,7 +11,7 @@ const Trade: FC = () => {
     <div className="flex flex-col w-full">
       <PairContainer />
       <div className="flex w-full">
-        <div className="flex-[4] flex flex-col h-[calc(100vh-195px)]">
+        <div className="flex-[4] flex flex-col h-[calc(100vh-134px)]">
           <div className="flex-[2]">
             <Chart />
           </div>
