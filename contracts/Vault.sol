@@ -2,23 +2,14 @@
 
 pragma solidity ^0.8.26;
 
-import { OwnerPausable } from "./base/OwnerPausable.sol";
+import "@uniswap/v2-core/contracts/interfaces/IUniswapV2Pair.sol";
+
 import { ClearingHouse } from "./ClearingHouse.sol";
 
-import { IVault } from "./interface/IVault.sol";
+import { IVault } from "./interfaces/IVault.sol";
+import { IERC20 } from "./v2-core-contracts/interfaces/IERC20.sol";
 
 contract Vault {
-/*
-    조건
-    1. 격리만 (크로스 없음)
-    2. 보증금은 USDT만 넣을 수 있음
-    3. 한 사람이 여러 개의 포지션을 잡을 수 있음
-
-    4. 1LP당 받을 수 있는 수수료는 ClearingHouse에서 받아오기
-
-    참고
-    settlement token = USDT
-*/
 
 /// state variables
     // --------- IMMUTABLE ---------
@@ -26,19 +17,12 @@ contract Vault {
     address internal _settlementToken;  // USDT
     // --------- ^^^^^^^^^ ---------
 
-    // 포지션
-    struct Position {
-        uint112 margin;         // 이 포지션에 사용된 보증금 (useCollateral)
-        uint112 leverage;       // 빌린 돈 (leverage)
-        bool isLong;            // 포지션 / true: long, false: short
-        uint224 fundingRate;    // 진입 시점의 펀딩비
-    }
+    address internal _clearingHouse;    // Clearing House Address
 
     // funding fee
     struct LiquidityProvider {
-        uint112 totalFee;   // 진입 시점까지 쌓여있는 수수료
-        uint112 totalLP;    // 진입 시점에서의 LP토큰 총 개수
-        uint112 userLP;     // 사용자 보유 LP
+        uint256 cumulativeTransactionFeeLast;   // 진입 시점까지 쌓여있는 수수료
+        uint256 userLP;     // 사용자 보유 LP 토큰 개수
     }
 
     // 보증금
@@ -49,16 +33,14 @@ contract Vault {
 
     // 사용자 보증금 (userAddress => CollateralStruct)
     mapping(address => Collateral) collateral;
-
-    // 사용자 포지션 (userAddress => poolAddress => PositionStructArray)
-    mapping(address => mapping(address => Position[])) public positions;
-
     // 사용자 펀딩비 (userAddress => poolAddress => LiquidityProviderStructArray)
     mapping(address => mapping(address => LiquidityProvider)) public liquidityProviders;
-
+    // 1LP당 거래수수료 보상 (poolAddress => Uint)
+    mapping(address => uint256) public cumulativeTransactionFee;
 
 
     /// @inheritdoc IVault
+    // 소수점 자리수 조회
     function decimals() external view override returns (uint8) {
         return _decimals;
     }
@@ -67,16 +49,21 @@ contract Vault {
     // 보증금으로 USDT를 넣는지 체크
     // ** _USDTaddr
     modifier onlyUSDTToken(address _addr) {
-        require(_addr == _settlementToken, "Invalid Token");
+        require(_addr == _settlementToken, "V_IT");    // Invalid Token
+        _;
+    }
+
+    // Clearing House에서만 실행 가능한 함수에 사용
+    modifier onlyClearingHouse() {
+        require(msg.sender == _clearingHouse, "V_CNAC");    // Caller is Not the Allowed Contract
         _;
     }
 
 /// functions
 // 초기 세팅
     function initialize() external initializer {
-        // update states
-        // _decimals = decimalsArg;
-        _settlementToken = settlementTokenArg;  // USDT
+        _decimals = 18;
+        _settlementToken = USDTaddress;
         // _insuranceFund = insuranceFundArg;
         // _clearingHouseConfig = clearingHouseConfigArg;
         // _accountBalance = accountBalanceArg;
@@ -84,11 +71,11 @@ contract Vault {
     }
 
     // ClearingHouse 주소 설정
-    function setClearingHouse(address clearingHouseArg) external onlyOwner {
-        require(clearingHouseArg.isContract(), "V_CHNC");   // ClearingHouse is not contract
+    function setClearingHouse(address clearingHouseAddr) external onlyOwner {
+        require(clearingHouseAddr.isContract(), "V_CHNC");   // ClearingHouse is not contract
 
-        _clearingHouse = clearingHouseArg;
-        emit ClearingHouseChanged(clearingHouseArg);
+        _clearingHouse = clearingHouseAddr;
+        emit ClearingHouseChanged(clearingHouseAddr);
     }
 
 // 보증금 관리
@@ -156,12 +143,8 @@ contract Vault {
     function _withdraw(
         address to,
         address token,
-        uint256 amount,
-        bool isClaim
+        uint256 amount
     ) internal {
-        if (isClaim) {
-            Claim();
-        }
         _settleAndDecreaseBalance(to, token, amount);
         SafeERC20Upgradeable.safeTransfer(IERC20Upgradeable(token), to, amount);
         emit Withdrawn(token, to, amount);
@@ -172,23 +155,18 @@ contract Vault {
         address token,
         uint256 amount
     ) internal {
-        // settle all funding payments owedRealizedPnl
-        // pending fee can be withdraw but won't be settled
-        IClearingHouse(_clearingHouse).settleAllFunding(to);
-
-        // incl. owedRealizedPnl
         uint256 freeCollateral = collateral[to][token].totalCollateral - collateral[to][token].useCollateral;
         require(freeCollateral >= amount, "V_NEFC");    // not enough freeCollateral
 
         int256 deltaBalance = amount.toInt256().neg256();   // 음수 표현
-        if (token == _settlementToken) {
-            // settle both the withdrawn amount and owedRealizedPnl to collateral
-            int256 owedRealizedPnlX10_18 = IAccountBalance(_accountBalance).settleOwedRealizedPnl(to);
-            deltaBalance = deltaBalance.add(owedRealizedPnlX10_18.formatSettlementToken(_decimals));
-        }
 
         _modifyBalance(to, token, deltaBalance);
     }
+
+    // Clearing House에서 Position Open, Close할 때 호출
+    function updateCollateral(address _user, int112 _amount) public onlyClearingHouse {
+        collateral[_user].totalCollateral += _amount;
+    } 
 
     /// @param amount can be 0; do not require this
     function _modifyBalance(
@@ -200,37 +178,76 @@ contract Vault {
             return;
         }
 
-        int112 oldBalance = collateral[trader][token].totalCollateral;
+        int112 oldBalance = collateral[trader].totalCollateral;
         int112 newBalance = oldBalance.add(amount);
-        collateral[trader][token].totalCollateral = newBalance;
+        collateral[trader].totalCollateral = newBalance;
 
         if (token == _settlementToken) {
             return;
         }
     }
 
-    // 잔고 조회
-    function getBalance(address token) external view returns(uint256) {
-        return collateral[_msgSender()][token].totalCollateral.toUint256();
+    // 총 보증금 조회
+    function getCollateral() external view returns(uint256) {
+        return collateral[_msgSender()].totalCollateral.toUint256();
+    }
+
+    // 사용중인 보증금 조회
+    function getUseCollateral() external view returns(uint256) {
+        return collateral[_msgSender()].useCollateral.toUint256();
     }
 
 
 // 수수료 관리
     // 보상 지급(Claim)
     function claimRewards(address poolAddr) external {
-        // Clearing House에서 1LP당 수수료 금액 받아오기
         address token = _settlementToken;
-        uint112 amount = 1LP당 수수료 금액 * liquidityProviders[_msgSender()][poolAddr].userLP;
-        collateral[trader][token].totalCollateral += amount;
+        uint112 amount = getCumulativeTransactionFee(poolAddr) * liquidityProviders[_msgSender()][poolAddr].userLP;
+        // 보증금 업데이트
+        collateral[trader].totalCollateral += amount;
         _deposit(from, from, token, amount);
     }
 
-    // 수수료 관리
-    function collectFees() external {
-        // Clearing House에서 계산된 수수료 받아서 더해주기
+    // 1LP당 거래수수료 계산 (input-poolAddress, lpTokenAddress)
+    function calculateCumulativeTransactionFee(address poolAddr, address lpToken) external {
+        (uint112 reserve0, uint112 reserve1) = getPoolReserves(poolAddr);
+        uint256 totalLPTokens = getTotalLPTokens(lpToken);
+
+        require(totalLPTokens > 0, "V_ZLPT");    // Zerp LP token
         
+        address token = _settlementToken;   // 보상을 계산할 토큰 주소, 거래 수수료로 쌓이는 토큰 = USDT
+        address token0 = IUniswapV2Pair(poolAddr).token0();
+        uint256 totalFees = token == token0 ? uint256(reserve0) : uint256(reserve1);
+        
+        rewardPerLP = totalFees / totalLPTokens;
+        cumulativeTransactionFee[poolAddr] = rewardPerLP;
     }
 
+    // 현재 풀에 쌓여있는 총 거래 수수료
+    function getPoolReserves(address poolAddr) external view returns (uint112 reserveA, uint112 reserveB) {
+        (uint reserveA, uint reserveB, ) = IUniswapV2Pair(poolAddr).getReserves();
+    }
 
+    // 현재 풀에 존재하는 총 LP 토큰 개수
+    function getTotalLPTokens(address lpToken) external view returns (uint256) {
+        IERC20 lpTokenContract = IERC20(lpToken);
+        return lpTokenContract.totalSupply();
+    }
+
+    // Liquidity Pool 정보
+    // function getLiquidityPoolInfo(address pair, address lpToken) external view returns (uint112 reserve0, uint112 reserve1, uint256 totalLPTokens) {
+    //     (reserve0, reserve1) = getPoolReserves(pair);
+    //     totalLPTokens = getTotalLPTokens(lpToken);
+    // }
+
+    // 1LP당 누적 거래 수수료 조회
+    function getCumulativeTransactionFee(address pair) public returns(uint256) {
+        return cumulativeTransactionFee[pair];
+    }
+
+    // pool에 거래 수수료 누적해주는 함수 - Clearing House만 호출할 수 있게 질문!!!!!
+    // function setCumulativeTransactionFee(address poolAddr, uint256 fee) {
+    //     cumulativeTransactionFee[pair] = 
+    // }
 
 }
