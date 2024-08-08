@@ -84,7 +84,13 @@ abstract contract ERC20 {
     }
 }
 
+
 contract VirtualToken is ERC20 {
+/*
+    - Uniswap Pool에 들어갈 가상 토큰 발행
+    - 가스비 절약을 위해 추가 발행 없이 클리어링 하우스에 최대한 민팅
+*/
+contract VirtualToken is ERC20 {    
     constructor(string memory _name, string memory _symbol, uint8 _decimals, address _clearingHouse) ERC20(_name, _symbol, _decimals) {
         _mint(_clearingHouse, type(uint256).max);
     }
