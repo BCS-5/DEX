@@ -31,7 +31,7 @@ const Order: FC = () => {
   };
 
   return (
-    <div className="flex flex-col justify-between w-full h-full bg-[#171822] text-[#72768f] p-4 pt-7">
+    <div className="flex flex-col justify-between w-full h-full bg-[#131722] text-[#72768f] p-4 pt-7 overflow-x-hidden">
       <div className="flex flex-col">
         <div className="flex w-full items-center  h-10 justify-between rounded-[4px] bg-[#242534]">
           <button

@@ -1,7 +1,7 @@
 import { FC } from "react";
 const PairContainer: FC = () => {
   return (
-    <div className="flex w-full h-[94px] px-5 bg-yellow-100 items-center">
+    <div className="flex w-full h-[94px] px-5 bg-[#131722] text-[#72768f] items-center border-r border-[#363A45]">
       <div className="flex w-full">
         <img
           src="https://api.synfutures.com/ipfs/icons/token/btc.png"
