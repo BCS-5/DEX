@@ -47,7 +47,6 @@ contract Vault {
 
 // modifiers
     // 보증금으로 USDT를 넣는지 체크
-    // ** _USDTaddr
     modifier onlyUSDTToken(address _addr) {
         require(_addr == _settlementToken, "V_IT");    // Invalid Token
         _;
@@ -99,7 +98,6 @@ contract Vault {
         _deposit(from, to, token, amount);
     }
 
-    // transfer Action
     function _deposit(
         address from,   // deposit token from this address
         address to,     // deposit token to this address
@@ -120,10 +118,10 @@ contract Vault {
         // check for deflationary tokens by assuring balances before and after transferring to be the same
         uint256 balanceBefore = IERC20Metadata(token).balanceOf(address(this)); // 이 컨트랙트에 존재하는 USDT 잔고
         SafeERC20Upgradeable.safeTransferFrom(IERC20Upgradeable(token), from, address(this), amount);
-        require((IERC20Metadata(token).balanceOf(address(this)).sub(balanceBefore)) == amount, "V_IBA");    // inconsistent balance amount
+        require(IERC20Metadata(token).balanceOf(address(this)) - balanceBefore == amount, "V_IBA");    // inconsistent balance amount
     }
 
-    // 인출
+    // 인출 - 일부 amount
     function withdraw(uint256 amount)
         external
         override
@@ -134,6 +132,7 @@ contract Vault {
         _withdraw(to, token, amount);
     }
 
+    // 인출 - free collateral 전체
     function withdrawAll() external override nonReentrant {
         address to = _msgSender();
         address token = _settlementToken;
@@ -156,18 +155,13 @@ contract Vault {
         address token,
         uint256 amount
     ) internal {
-        uint256 freeCollateral = collateral[to][token].totalCollateral - collateral[to][token].useCollateral;
+        uint256 freeCollateral = collateral[to].totalCollateral - collateral[to].useCollateral;
         require(freeCollateral >= amount, "V_NEFC");    // not enough freeCollateral
 
         int256 deltaBalance = amount.toInt256().neg256();   // 음수 표현
 
         _modifyBalance(to, token, deltaBalance);
     }
-
-    // Clearing House에서 Position Open, Close할 때 호출
-    function updateCollateral(address _user, int256 _amount) public onlyClearingHouse {
-        collateral[_user].totalCollateral += _amount;
-    } 
 
     /// @param amount can be 0; do not require this
     function _modifyBalance(
@@ -180,23 +174,28 @@ contract Vault {
         }
 
         int256 oldBalance = collateral[trader].totalCollateral;
-        int256 newBalance = oldBalance.add(amount);
+        int256 newBalance = oldBalance + amount;
         collateral[trader].totalCollateral = newBalance;
     }
 
+    // Clearing House에서 Position Open, Close할 때 호출
+    function updateCollateral(address user, int256 amount) external onlyClearingHouse {
+        collateral[user].totalCollateral += amount;
+    } 
+
     // 총 보증금 조회
-    function getCollateral() external view returns(uint256) {
-        return collateral[_msgSender()].totalCollateral;
+    function getTotalCollateral(address user) public view returns(uint256) {
+        return collateral[user].totalCollateral;
     }
 
     // 사용중인 보증금 조회
-    function getUseCollateral() external view returns(uint256) {
-        return collateral[_msgSender()].useCollateral;
+    function getUseCollateral(address user) public view returns(uint256) {
+        return collateral[user].useCollateral;
     }
 
     // 사용/출금 가능한 보증금 조회
-    function getFreeCollateral() external view returns(uint256) {
-        return collateral[_msgSender()].totalCollateral - collateral[_msgSender()].useCollateral;
+    function getFreeCollateral(address user) public view returns(uint256) {
+        return collateral[user].totalCollateral - collateral[user].useCollateral;
     }
 
 
@@ -210,7 +209,7 @@ contract Vault {
     // 보상 지급(Claim)
     function claimRewards(address user, address poolAddr) external {
         address token = _settlementToken;
-        uint256 amount = (getCumulativeTransactionFee[poolAddr] - liquidityProviders[user][poolAddr].cumulativeTransactionFeeLast) * liquidityProviders[_msgSender()][poolAddr].userLP;
+        uint256 amount = (getCumulativeTransactionFee[poolAddr] - liquidityProviders[user][poolAddr].cumulativeTransactionFeeLast) * liquidityProviders[user][poolAddr].userLP;
         // 보증금 업데이트
         collateral[user].totalCollateral += amount;
         _deposit(address(this), user, token, amount);
@@ -219,12 +218,12 @@ contract Vault {
     }
 
     // pool 거래 수수료 업데이트
-    function setCumulativeTransactionFee(address poolAddr, uint256 fee) onlyClearingHouse {
+    function setCumulativeTransactionFee(address poolAddr, uint256 fee) external onlyClearingHouse {
         cumulativeTransactionFee[poolAddr] = fee * 2**128 / IUniswapV2Pair(poolAddr).totalSupply(); 
     }
     
     // 1LP당 누적 거래 수수료 조회
-    function getCumulativeTransactionFee(address poolAddr) public returns(uint256) {
+    function getCumulativeTransactionFee(address poolAddr) public view returns(uint256) {
         return cumulativeTransactionFee[poolAddr];
     }
 
