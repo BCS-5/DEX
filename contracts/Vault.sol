@@ -6,8 +6,8 @@ import "@uniswap/v2-core/contracts/interfaces/IUniswapV2Pair.sol";
 
 import { ClearingHouse } from "./ClearingHouse.sol";
 import { SafeOwnable } from "./base/SafeOwnable.sol";
-// import { IVault } from "./interfaces/IVault.sol";
-// import { IERC20 } from "./v2-core-contracts/interfaces/IERC20.sol";
+import { IVault } from "./interfaces/IVault.sol";
+import { IERC20 } from "./v2-core-contracts/interfaces/IERC20.sol";
 
 contract Vault {
 
@@ -225,6 +225,10 @@ contract Vault {
     // 1LP당 누적 거래 수수료 조회
     function getCumulativeTransactionFee(address poolAddr) public view returns(uint256) {
         return cumulativeTransactionFee[poolAddr];
+    }
+
+    function getUserLP(address user, address poolAddr) external view returns(uint) {
+        return liquidityProviders[user][poolAddr].userLP;
     }
 
 }

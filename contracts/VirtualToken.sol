@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0
 pragma solidity ^0.8.26;
 
-import "./interface/IERC20.sol";
+import "./interfaces/IERC20.sol";
 
 abstract contract ERC20 {
     event Transfer(address indexed from, address indexed to, uint256 amount);

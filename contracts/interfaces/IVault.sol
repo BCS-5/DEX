@@ -1,8 +1,13 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
-pragma solidity 0.7.6;
+pragma solidity ^0.8.26;
 pragma abicoder v2;
 
 interface IVault {
+    struct LiquidityProvider {
+        uint256 cumulativeTransactionFeeLast;   // 진입 시점까지 쌓여있는 수수료
+        uint256 userLP;     // 사용자 보유 LP 토큰 개수
+    }
+
     /// @notice Emitted when trader deposit collateral into vault
     /// @param collateralToken The address of token deposited
     /// @param trader The address of trader
@@ -46,18 +51,18 @@ interface IVault {
     /// @notice Get the total collateral value of trader
     /// @param trader The address of the trader
     /// @return totalCollateral total collateral
-    function getTotalCollateral(address trader) public view returns (uint256 totalCollateral);
+    function getTotalCollateral(address trader) external  view returns (uint256 totalCollateral);
 
     /// @notice Get the used collateral value of trader
     /// @param trader The address of the trader
     /// @return useCollateral used collateral
-    function getUseCollateral(address trader) public view returns (uint256 useCollateral);
+    function getUseCollateral(address trader) external  view returns (uint256 useCollateral);
 
     /// @notice Get the free collateral value denominated in the settlement token of the specified trader
     /// @param trader The address of the trader
     /// @return freeCollateral the value (in settlement token's decimals) of free collateral available
     ///         for withdraw or opening new positions or orders)
-    function getFreeCollateral(address trader) public view returns (uint256 freeCollateral);
+    function getFreeCollateral(address trader) external  view returns (uint256 freeCollateral);
 
     /// @notice Update the balance of LP token of the trader
     /// @param trader The address of the trader
@@ -78,6 +83,11 @@ interface IVault {
     /// @notice Get the cumulative transaction fee per 1LP of liquidity pool
     /// @param pool The address of the liquidity pool contract
     /// @return cumulativeTransactionFee cumulative transaction fee per 1LP
-    function getCumulativeTransactionFee(address pool) public view returns (uint256 cumulativeTransactionFee);
+    function getCumulativeTransactionFee(address pool) external  view returns (uint256 cumulativeTransactionFee);
+
+    /// @notice Get the trader's LP token balance.
+    /// @param trader The address of the trader
+    /// @param pool The address of the liquidity pool contract
+    function getUserLP(address trader, address pool) external view returns(uint256);
 
 }

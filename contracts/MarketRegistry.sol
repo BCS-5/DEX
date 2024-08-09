@@ -4,7 +4,7 @@ pragma solidity >=0.8.2 < 0.9.0;
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 import "@uniswap/v2-core/contracts/interfaces/IUniswapV2Factory.sol";
 import "./VirtualToken.sol";
-import "./interface/IMarketRegistry.sol";
+import "./interfaces/IMarketRegistry.sol";
 
 /*
 - 유동성 풀 생성

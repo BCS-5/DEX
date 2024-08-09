@@ -8,10 +8,10 @@ import "@uniswap/v2-periphery/contracts/interfaces/IUniswapV2Router02.sol";
 
 import "./libraries/UniswapV2Library.sol";
 
-import {IMarketRegistry} from "./interface/IMarketRegistry.sol";
-import { IClearingHouse } from "./interface/IClearingHouse.sol";
-import { IAccountBalance } from "./interface/IAccountBalance.sol";
-import { Vault } from "./Vault.sol";
+import {IMarketRegistry} from "./interfaces/IMarketRegistry.sol";
+import { IClearingHouse } from "./interfaces/IClearingHouse.sol";
+import { IAccountBalance } from "./interfaces/IAccountBalance.sol";
+import { IVault } from "./interfaces/IVault.sol";
 
 contract ClearingHouse is IClearingHouse, Ownable{    
     event AddLiquidity(address indexed provider, address indexed baseToken, uint liquidity);
@@ -40,14 +40,11 @@ contract ClearingHouse is IClearingHouse, Ownable{
     }
 
     // 초기 유동성 풀 가격 비율 설정
-    function initializePool(address baseToken, uint amountBase, uint amountQuote) public onlyOwner {        
-        // LiquidityProvider storage _provider = liquidityProvider[msg.sender][baseToken];
-        /* unclaimed reward가 있다면 클레임 */
-        
+    function initializePool(address baseToken, uint amountBase, uint amountQuote) public onlyOwner {              
         (,,uint liquidity) = IUniswapV2Router02(router).addLiquidity(baseToken, quoteToken, amountBase, amountQuote, 0, 0, address(this), block.timestamp);
         
-        /* msg.sender => baseToken => lp토큰 개수 업데이트 */
-        // (_provider.liquidity, _provider.feePerLiquidityCumulativeLast) = (_provider.liquidity + liquidity, feePerLiquidityCumulative);
+        /* msg.sender => baseToken => lp토큰 개수 업데이트 */        
+        IVault(vault).updateUserLP(msg.sender, baseToken, int(liquidity));
         emit AddLiquidity(msg.sender, baseToken, liquidity);
     }
 
@@ -63,14 +60,12 @@ contract ClearingHouse is IClearingHouse, Ownable{
     }   
 
     //유동성 추가
-    function addLiquidity (address baseToken, uint quoteAmount, uint quoteMinimum, uint baseTokenMinimum, uint deadline) public hasPool(baseToken) {
-        // LiquidityProvider storage _provider = liquidityProvider[msg.sender][baseToken];        
-        
+    function addLiquidity (address baseToken, uint quoteAmount, uint quoteMinimum, uint baseTokenMinimum, uint deadline) public hasPool(baseToken) { 
         /* unclaimed reward가 있다면 클레임 */
-        // Vault(vault).claimRewards(msg.sender, baseToken);
+        IVault(vault).claimRewards(msg.sender, baseToken);
 
         /* Vault에서 msg.sender의 보증금 amountIn*2 만큼 차감 요청 */        
-        Vault(vault).updateCollateral(msg.sender, int112(uint112(quoteAmount*2)));
+        IVault(vault).updateCollateral(msg.sender, int112(uint112(quoteAmount*2)));
 
         address _quoteToken = quoteToken;
         uint baseAmount = getQuote(_quoteToken, baseToken, quoteAmount);
@@ -78,26 +73,30 @@ contract ClearingHouse is IClearingHouse, Ownable{
         (,,uint liquidity) = IUniswapV2Router02(router).addLiquidity(_quoteToken, baseToken, quoteAmount, baseAmount, quoteMinimum, baseTokenMinimum, address(this), deadline);
         
         /* msg.sender => baseToken => lp토큰 개수 업데이트 */
-        // (_provider.liquidity, _provider.feePerLiquidityCumulativeLast) = (_provider.liquidity + liquidity, feePerLiquidityCumulative);    
-        // emit AddLiquidity(msg.sender, baseToken, liquidity);     
+        // (_provider.liquidity, _provider.feePerLiquidityCumulativeLast) = (_provider.liquidity + liquidity, feePerLiquidityCumulative);            
+        IVault(vault).updateUserLP(msg.sender, baseToken, int(liquidity));
+        emit AddLiquidity(msg.sender, baseToken, liquidity);     
     }
 
     //유동성 제거
     function removeLiquidity (address baseToken, uint liquidity, uint quoteMinimum, uint baseTokenMinimum, uint deadline) public hasPool(baseToken) {
-        // LiquidityProvider storage _provider = liquidityProvider[msg.sender][baseToken];
         /* unclaimed reward가 있다면 클레임 */        
+        IVault(vault).claimRewards(msg.sender, baseToken);
 
         /* msg.sender의 LPToken 보유 개수가 liquidity 보다 큰 지 확인 */
-        // require(_provider.liquidity >= liquidity, "");
-        
-        
+        uint userLP = IVault(vault).getUserLP(msg.sender, baseToken);
+        require(userLP >= liquidity, "");
+                
         (uint amountA, ) = IUniswapV2Router02(router).removeLiquidity(quoteToken, baseToken, liquidity, quoteMinimum, baseTokenMinimum, address(this), deadline); 
         
         /* msg.sender => baseToken => lp토큰 개수 업데이트 */        
-        // (_provider.liquidity, _provider.feePerLiquidityCumulativeLast) = (_provider.liquidity - liquidity, feePerLiquidityCumulative);         
-        // emit RemoveLiquidity(msg.sender, baseToken, liquidity);
+        // (_provider.liquidity, _provider.feePerLiquidityCumulativeLast) = (_provider.liquidity - liquidity, feePerLiquidityCumulative); 
+        IVault(vault).updateUserLP(msg.sender, baseToken, -int(liquidity));
+
+        emit RemoveLiquidity(msg.sender, baseToken, liquidity);
+
         /* Vault에서 msg.sender의 보증금 amountA*2 만큼 증가 요청 */
-        // IVault(vault).updateCollateral(msg.sender, int112(uint112(amountA*2)))
+        IVault(vault).updateCollateral(msg.sender, int112(uint112(amountA*2)));
 
     }
 
@@ -124,14 +123,13 @@ contract ClearingHouse is IClearingHouse, Ownable{
             (uint[] memory amounts, uint fee) = isLong ? _buy(trader, path, isExactInput, amountIn, amountOut, deadline) : _sell(trader, path, isExactInput, amountIn, amountOut, deadline);
             
             (position.positionSize, position.openNotional) = isLong ? (amounts[1], amounts[0]) : (amounts[0], amounts[1]);
-        }            
+            
+            // feePerLiquidityCumulative += fee * 2**112 / IUniswapV2Pair(pool).totalSupply(); 
+            IVault(vault).setCumulativeTransactionFee(baseToken, fee);
+        }                    
 
-        
-        /* 수수료 누적 Vault에서 처리 예정*/
-        // feePerLiquidityCumulative += fee * 2**112 / IUniswapV2Pair(pool).totalSupply(); 
-        
         /* feePerLiquidityCumulative값 Valut에 요청   */
-        uint feePerLiquidityCumulative;  
+        uint feePerLiquidityCumulative = IVault(vault).getCumulativeTransactionFee(baseToken);  
 
         /* Long or Short 포지션 규모 누적 */
         IAccountBalance(accountBalance).setOpenInterest(baseToken, int256(position.positionSize), isLong);
@@ -172,8 +170,7 @@ contract ClearingHouse is IClearingHouse, Ownable{
             (uint positionSize, uint closeNotional) = position.isLong ? (amounts[0], amounts[1]) : (amounts[1], amounts[0]);
             uint closePercent = getClosePercent(position.positionSize, amountIn);
 
-            /* 수수료 누적 Vault에서 처리 예정*/
-            // feePerLiquidityCumulative += fee * 2**112 / IUniswapV2Pair(pool).totalSupply();
+            IVault(vault).setCumulativeTransactionFee(baseToken, fee);
 
             position.margin -= position.margin * closePercent / 100;
             position.positionSize -= positionSize;
@@ -183,15 +180,15 @@ contract ClearingHouse is IClearingHouse, Ownable{
             /* fundingPayment AccountBalance에 계산 요청 */
             int256 fundingPayment;
 
-            /* PNL AccountBalance에 계산 요청 */
-            int256 PNL;
 
-            /* vault에 trader의 보증금 PNL만큼 증감 요청 */
-            // IVault(vault).updateCollateral(trader, int112(PNL))
-            /* LongOI 감소 AccountBalance에서 처리 예정 */ /* ShortOI 감소 AccountBalance에서 처리 예정 */
-            // LongOpenInterest -= position.positionSize;
-            // ShortOpenInterest -= position.positionSize;
-        }
+        }        
+        /* PNL AccountBalance에 계산 요청 */
+        int256 PNL;
+        /* vault에 trader의 보증금 PNL만큼 증감 요청 */
+        IVault(vault).updateCollateral(trader, int112(PNL));
+
+        /* LongOI 감소 AccountBalance에서 처리 예정 */ /* ShortOI 감소 AccountBalance에서 처리 예정 */            
+        IAccountBalance(accountBalance).setOpenInterest(baseToken, -int256(position.positionSize), position.isLong);
 
         if(position.positionSize == 0) {
             delete positionMap[trader][baseToken][positionHash];
