@@ -5,9 +5,9 @@ pragma solidity ^0.8.26;
 import "@uniswap/v2-core/contracts/interfaces/IUniswapV2Pair.sol";
 
 import { ClearingHouse } from "./ClearingHouse.sol";
-
+import { SafeOwnable } from "./base/SafeOwnable.sol";
 import { IVault } from "./interfaces/IVault.sol";
-import { IERC20 } from "./v2-core-contracts/interfaces/IERC20.sol";
+// import { IERC20 } from "./v2-core-contracts/interfaces/IERC20.sol";
 
 contract Vault {
 
@@ -27,8 +27,8 @@ contract Vault {
 
     // 보증금
     struct Collateral {
-        uint112 totalCollateral;    // 얼마 가지고 있는지 = useAmount 포함
-        uint112 useCollateral;      // 얼마 사용하고 있는지 = 전체 포지션 증거금 합
+        uint256 totalCollateral;    // 얼마 가지고 있는지 = useAmount 포함
+        uint256 useCollateral;      // 얼마 사용하고 있는지 = 전체 포지션 증거금 합
     }
 
     // 사용자 보증금 (userAddress => CollateralStruct)
@@ -63,7 +63,8 @@ contract Vault {
 // 초기 세팅
     function initialize() external initializer {
         _decimals = 18;
-        _settlementToken = USDTaddress;
+        _settlementToken = USDT_ADDRESS;            // 주소 넣기
+        _clearingHouse = CLEARING_HOUSE_ADDRESS;    // 주소 넣기
         // _insuranceFund = insuranceFundArg;
         // _clearingHouseConfig = clearingHouseConfigArg;
         // _accountBalance = accountBalanceArg;
@@ -79,19 +80,18 @@ contract Vault {
     }
 
 // 보증금 관리
-    // 예치
-    /// @inheritdoc IVault
-    function deposit(uint256 amount) external override nonReentrant onlyUSDTToken {
+    // 예치 - from == to == msg.sender
+    function deposit(uint256 amount) external override nonReentrant {
         address from = _msgSender();
         address token = _settlementToken;
         _deposit(from, from, token, amount);
     }
 
-    /// @inheritdoc IVault
+    // 송금 - msg.sender => to
     function depositFor(
         address to,
         uint256 amount
-    ) external override nonReentrant onlyUSDTToken(token) {
+    ) external override nonReentrant {
         require(to != address(0), "V_DFZA");    // Deposit for zero address
 
         address from = _msgSender();
@@ -99,6 +99,7 @@ contract Vault {
         _deposit(from, to, token, amount);
     }
 
+    // transfer Action
     function _deposit(
         address from,   // deposit token from this address
         address to,     // deposit token to this address
@@ -123,20 +124,20 @@ contract Vault {
     }
 
     // 인출
-    /// @inheritdoc IVault
-    // the full process of withdrawal:
-    // 1. settle funding payment to owedRealizedPnl
-    // 2. collect fee to owedRealizedPnl
-    // 3. call Vault.withdraw(token, amount)
-    // 4. settle pnl to trader balance in Vault
-    // 5. transfer the amount to trader
-    function withdraw(address token, uint256 amount)
+    function withdraw(uint256 amount)
         external
         override
         nonReentrant
-        onlyUSDTToken(token)
     {
         address to = _msgSender();
+        address token = _settlementToken;
+        _withdraw(to, token, amount);
+    }
+
+    function withdrawAll() external override nonReentrant {
+        address to = _msgSender();
+        address token = _settlementToken;
+        uint256 amount = getFreeCollateral(to, token);
         _withdraw(to, token, amount);
     }
 
@@ -164,7 +165,7 @@ contract Vault {
     }
 
     // Clearing House에서 Position Open, Close할 때 호출
-    function updateCollateral(address _user, int112 _amount) public onlyClearingHouse {
+    function updateCollateral(address _user, int256 _amount) public onlyClearingHouse {
         collateral[_user].totalCollateral += _amount;
     } 
 
@@ -178,28 +179,24 @@ contract Vault {
             return;
         }
 
-        int112 oldBalance = collateral[trader].totalCollateral;
-        int112 newBalance = oldBalance.add(amount);
+        int256 oldBalance = collateral[trader].totalCollateral;
+        int256 newBalance = oldBalance.add(amount);
         collateral[trader].totalCollateral = newBalance;
-
-        if (token == _settlementToken) {
-            return;
-        }
     }
 
     // 총 보증금 조회
     function getCollateral() external view returns(uint256) {
-        return collateral[_msgSender()].totalCollateral.toUint256();
+        return collateral[_msgSender()].totalCollateral;
     }
 
     // 사용중인 보증금 조회
     function getUseCollateral() external view returns(uint256) {
-        return collateral[_msgSender()].useCollateral.toUint256();
+        return collateral[_msgSender()].useCollateral;
     }
 
-    // 사용 가능한 보증금 조회
+    // 사용/출금 가능한 보증금 조회
     function getFreeCollateral() external view returns(uint256) {
-
+        return collateral[_msgSender()].totalCollateral - collateral[_msgSender()].useCollateral;
     }
 
 
@@ -213,7 +210,7 @@ contract Vault {
     // 보상 지급(Claim)
     function claimRewards(address user, address poolAddr) external {
         address token = _settlementToken;
-        uint112 amount = (getCumulativeTransactionFee[poolAddr] - liquidityProviders[user][poolAddr].cumulativeTransactionFeeLast) * liquidityProviders[_msgSender()][poolAddr].userLP;
+        uint256 amount = (getCumulativeTransactionFee[poolAddr] - liquidityProviders[user][poolAddr].cumulativeTransactionFeeLast) * liquidityProviders[_msgSender()][poolAddr].userLP;
         // 보증금 업데이트
         collateral[user].totalCollateral += amount;
         _deposit(address(this), user, token, amount);
