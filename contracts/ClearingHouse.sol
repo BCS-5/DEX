@@ -8,22 +8,9 @@ import "@uniswap/v2-periphery/contracts/interfaces/IUniswapV2Router02.sol";
 
 import "./libraries/UniswapV2Library.sol";
 import "./MarketRegistry.sol";
+import "./interface/IClearingHouse.sol";
 
-contract ClearingHouse is Ownable{
-    struct Position {
-        uint256 margin;                     // 담보금
-        uint256 positionSize;               // 체결 계약 수
-        uint256 openNotional;               // 빌린돈
-        bool isLong;                        // true: long, false: short
-        uint256 priceCumulativeLast;        // 포지션 진입 시점 누적 TWAP값
-        uint32 openPositionTimestamp;       // 포지션 진입 시점 block timestamp
-        int256 fundingRateCumulativeLast;  // 포지션 진입 시점 누적 funding Rate값
-    }
-
-    struct LiquidityProvider {
-        uint256 liquidity;                           // 얼마나 예치했는지
-        uint256 feePerLiquidityCumulativeLast;       // 마지막으로 유동성 추가, claim 했을 때 누적 이자가 얼마였는지 기록
-    }
+contract ClearingHouse is IClearingHouse, Ownable{
 
     
     event AddLiquidity(address indexed provider, address indexed baseToken, uint liquidity);
@@ -34,11 +21,11 @@ contract ClearingHouse is Ownable{
     event Sell(address indexed trader, address indexed baseToken, uint amountIn, uint amountOut);
     
     mapping(address => mapping(address => mapping(bytes32 => Position))) positionMap;
-    mapping(address => mapping(address => LiquidityProvider)) liquidityProvider;
 
     address marketRegistry;
     address router;    
     address vault;
+    address accountBalance;
     address factory;    
     address quoteToken;
 
@@ -59,10 +46,8 @@ contract ClearingHouse is Ownable{
 
     // 초기 유동성 풀 가격 비율 설정
     function initializePool(address baseToken, uint amountBase, uint amountQuote) public onlyOwner {        
-        LiquidityProvider storage _provider = liquidityProvider[msg.sender][baseToken];
+        // LiquidityProvider storage _provider = liquidityProvider[msg.sender][baseToken];
         /* unclaimed reward가 있다면 클레임 */
-
-        /* Vault에서 msg.sender의 보증금 amountIn*2 만큼 차감 요청 */
         
         (,,uint liquidity) = IUniswapV2Router02(router).addLiquidity(baseToken, quoteToken, amountBase, amountQuote, 0, 0, address(this), block.timestamp);
         
@@ -84,10 +69,11 @@ contract ClearingHouse is Ownable{
 
     //유동성 추가
     function addLiquidity (address baseToken, uint quoteAmount, uint quoteMinimum, uint baseTokenMinimum, uint deadline) public hasPool(baseToken) {
-        LiquidityProvider storage _provider = liquidityProvider[msg.sender][baseToken];        
+        // LiquidityProvider storage _provider = liquidityProvider[msg.sender][baseToken];        
         /* unclaimed reward가 있다면 클레임 */
 
-        /* Vault에서 msg.sender의 보증금 amountIn*2 만큼 차감 요청 */
+        /* Vault에서 msg.sender의 보증금 amountIn*2 만큼 차감 요청 */        
+        // IVault(vault).updateCollateral(msg.sender, int112(uint112(quoteAmount*2)));
 
         address _quoteToken = quoteToken;
         uint baseAmount = getQuote(_quoteToken, baseToken, quoteAmount);
@@ -101,11 +87,11 @@ contract ClearingHouse is Ownable{
 
     //유동성 제거
     function removeLiquidity (address baseToken, uint liquidity, uint quoteMinimum, uint baseTokenMinimum, uint deadline) public hasPool(baseToken) {
-        LiquidityProvider storage _provider = liquidityProvider[msg.sender][baseToken];
+        // LiquidityProvider storage _provider = liquidityProvider[msg.sender][baseToken];
         /* unclaimed reward가 있다면 클레임 */        
 
         /* msg.sender의 LPToken 보유 개수가 liquidity 보다 큰 지 확인 */
-        require(_provider.liquidity >= liquidity, "");
+        // require(_provider.liquidity >= liquidity, "");
         
         
         (uint amountA, ) = IUniswapV2Router02(router).removeLiquidity(quoteToken, baseToken, liquidity, quoteMinimum, baseTokenMinimum, address(this), deadline); 
@@ -114,6 +100,7 @@ contract ClearingHouse is Ownable{
         // (_provider.liquidity, _provider.feePerLiquidityCumulativeLast) = (_provider.liquidity - liquidity, feePerLiquidityCumulative);         
         // emit RemoveLiquidity(msg.sender, baseToken, liquidity);
         /* Vault에서 msg.sender의 보증금 amountA*2 만큼 증가 요청 */
+        // IVault(vault).updateCollateral(msg.sender, int112(uint112(amountA*2)))
 
     }
 
@@ -133,52 +120,28 @@ contract ClearingHouse is Ownable{
         Position memory position;        
         (position.margin, position.isLong) = (margin, isLong);
 
-        
-        address[] memory path = new address[](2);
-        if(isLong) {
-            (path[0], path[1]) = (quoteToken, baseToken);
-            _openPositionLong(position, trader, path, isExactInput, amountIn, amountOut, deadline);
-        } else {
-            (path[0], path[1]) = (baseToken, quoteToken);                
-            _openPositionShort(position, trader, path, isExactInput, amountIn, amountOut, deadline);                
+        {            
+            address[] memory path = new address[](2);
+            
+            (path[0], path[1]) = isLong ? (quoteToken, baseToken) : (baseToken, quoteToken);
+            (uint[] memory amounts, uint fee) = isLong ? _buy(trader, path, isExactInput, amountIn, amountOut, deadline) : _sell(trader, path, isExactInput, amountIn, amountOut, deadline);
+            
+            (position.positionSize, position.openNotional) = isLong ? (amounts[1], amounts[0]) : (amounts[0], amounts[1]);
         }            
-    }
 
-    function _openPositionLong(Position memory position, address trader, address[] memory path, bool isExactInput, uint amountIn, uint amountOut, uint deadline) internal {
-        address baseToken = path[1];
-
-        (uint[] memory amounts, uint fee) = _buy(path, isExactInput, amountIn, amountOut, deadline);
-        (position.positionSize, position.openNotional) = (amounts[1], amounts[0]);
-        
-        /* LongOI 증가 AccountBalance에서 처리 예정 */
-        // longOpenInterest += position.positionSize;
         
         /* 수수료 누적 Vault에서 처리 예정*/
         // feePerLiquidityCumulative += fee * 2**112 / IUniswapV2Pair(pool).totalSupply(); 
-
-        /* feePerLiquidityCumulative값 Valut에 요청   */        
+        
+        /* feePerLiquidityCumulative값 Valut에 요청   */
         uint feePerLiquidityCumulative;  
+
+        /* LongOI 증가 AccountBalance에서 처리 예정 */ /* ShortOI 증가 AccountBalance에서 처리 예정 */
+        // longOpenInterest += position.positionSize;
+        // ShortOpenInterest += position.positionSize;      
+
         bytes32 positionHash = getpositionHash(trader, baseToken, feePerLiquidityCumulative);
         _updatePosition(position, trader, baseToken, positionHash );
-    }
-
-    function _openPositionShort(Position memory position, address trader, address[] memory path, bool isExactInput, uint amountIn, uint amountOut, uint deadline) internal {
-        address baseToken = path[0];
-        
-        (uint[] memory amounts, uint fee)= _buy(path, isExactInput, amountIn, amountOut, deadline);
-        (position.positionSize, position.openNotional) = (amounts[1], amounts[0]);
-        
-        /* ShortOI 증가 AccountBalance에서 처리 예정 */
-        // ShortOpenInterest += position.positionSize;      
-        
-        /* 수수료 누적 Vault에서 처리 예정*/
-        // feePerLiquidityCumulative += fee * 2**112 / IUniswapV2Pair(pool).totalSupply(); 
-
-        /* feePerLiquidityCumulative값 Valut에 요청   */        
-        uint feePerLiquidityCumulative;  
-        bytes32 positionHash = getpositionHash(trader, baseToken, feePerLiquidityCumulative);
-
-        _updatePosition(position, trader, baseToken, positionHash);
     }
 
     function _updatePosition(Position memory position, address trader, address baseToken, bytes32 positionHash) internal {
@@ -196,7 +159,6 @@ contract ClearingHouse is Ownable{
         emit UpdatePosition(trader, baseToken, positionHash, position.margin, position.positionSize, position.openNotional);
     }
 
-
     // 사용자에 의해 호출되는 포지션 종료
     function closePosition (address baseToken, bytes32 positionHash, uint amountIn, uint amountOut, uint deadline) public {
         _closePosition(msg.sender, baseToken, positionHash, amountIn, amountOut, deadline);
@@ -207,136 +169,49 @@ contract ClearingHouse is Ownable{
         address _pool = MarketRegistry(marketRegistry).getPool(baseToken);
         Position memory position = positionMap[trader][baseToken][positionHash];                
         
-        // {
-        //     address[] memory path = new address[](2);
+        {            
+            address[] memory path = new address[](2);
+            (path[0], path[1]) = position.isLong ? (quoteToken, baseToken) : (baseToken, quoteToken);
 
-        //     if(position.isLong) {
-        //         (path[0], path[1]) = (baseToken, quoteToken);
-        //         _closePositionLong(position, trader, positionHash, path, amountIn, amountOut, deadline);
-                
-        //     } else {
-        //         (path[0], path[1]) = (quoteToken, baseToken);
-        //         _closePositionShort(position, trader, positionHash, path, amountIn, amountOut, deadline);
-        //     }
-        // }
+            (uint[] memory amounts, uint fee) = position.isLong ? _sell(trader, path, true, amountIn, amountOut, deadline) : _buy(trader, path, false, amountIn, amountOut, deadline);
+            (uint positionSize, uint closeNotional) = position.isLong ? (amounts[0], amounts[1]) : (amounts[1], amounts[0]);
+            uint closePercent = getClosePercent(position.positionSize, amountIn);
 
+            /* 수수료 누적 Vault에서 처리 예정*/
+            // feePerLiquidityCumulative += fee * 2**112 / IUniswapV2Pair(pool).totalSupply();
 
-        // int256 PNL;
-        // {
-        //     address[] memory path = new address[](2);
-        //     uint[] memory amounts;
-        //     uint fee;
-        //     if(position.isLong) {
-        //         (path[0], path[1]) = (baseToken, quoteToken);
-        //         (amounts, fee) = _sell(path, true, amountIn, amountOut, deadline);
-                
-        //         PNL = int256(refundMargin + amounts[1]) - (int256(position.openNotional) - int256((position.openNotional * closePositionRatio)));
-                
-        //         // longOpenInterest -= closePositionSize;
-        //     } else {
-        //         (path[0], path[1]) = (quoteToken, baseToken);
-        //         (amounts, fee) = _buy(path, false, amountIn, amountOut, deadline);
-                
-        //         PNL = int256(refundMargin + position.openNotional) - int256((position.openNotional * (position.positionSize - closePositionSize) / position.positionSize)) - int256(amounts[0]);
-        //         // shortOpenInterest -= closePositionSize;
-        //     }
-            
-        //     /* 수수료 누적 Vault에서 처리 예정*/
-        //     // feePerLiquidityCumulative += fee * 2**112 / IUniswapV2Pair(_pool).totalSupply();     
-        // }
-        // require(PNL > 0, "");   
-        
-        // int256 fundingPayment = getFundingPayment(_pool, baseToken, position.positionSize, position.fundingRateCumulativeLast, position.openPositionTimestamp, position.priceCumulativeLast);
-        // PNL -= fundingPayment;
-             
-        // /* vault에 trader의 보증금 PNL만큼 증감 요청 */
-        
-        // if(position.margin > refundMargin) {
-        //     /* AccountBalanace에 fundingRateCumulative 요청 */
-        //     int256 fundingRateCumulative;
-        //     positionMap[trader][baseToken][positionHash] = Position(position.margin - refundMargin, position.positionSize - closePositionSize, position.openNotional, position.isLong, position.priceCumulativeLast, uint32(block.number % 2 ** 32), fundingRateCumulative);
-        // } else { 
-        //     delete positionMap[trader][baseToken][positionHash];
-        // }
-        // emit
+            position.margin -= position.margin * closePercent / 100;
+            position.positionSize -= positionSize;
+            position.openNotional -= position.openNotional * closePercent / 100;
+
+            uint refundMargin = position.margin * closePercent / 100;
+            /* fundingPayment AccountBalance에 계산 요청 */
+            int256 fundingPayment;
+
+            /* PNL AccountBalance에 계산 요청 */
+            int256 PNL;
+
+            /* vault에 trader의 보증금 PNL만큼 증감 요청 */
+            // IVault(vault).updateCollateral(trader, int112(PNL))
+            /* LongOI 감소 AccountBalance에서 처리 예정 */ /* ShortOI 감소 AccountBalance에서 처리 예정 */
+            // LongOpenInterest -= position.positionSize;
+            // ShortOpenInterest -= position.positionSize;
+        }
+
+        if(position.positionSize == 0) {
+            delete positionMap[trader][baseToken][positionHash];
+            //emit         
+        } else {
+            _updatePosition(position, trader, baseToken, positionHash);
+        }
     }
 
     function getClosePercent(uint openPositionSize, uint closePositionSize) public pure returns(uint) {
         return closePositionSize * 100 / openPositionSize;
     }
 
-    // function _closePositionLong(Position memory position, address trader, bytes32 positionHash, address[] memory path, uint amountIn, uint amountOut, uint deadline) internal {
-    //     address baseToken = path[0];
-        
-    //     uint closePercent = getClosePercent(position.positionSize, amountIn);
-
-    //     (uint[] memory amounts, uint fee) = _sell(path, true, amountIn, amountOut, deadline);
-    //     (uint positionSize, uint closeNotional) = (amounts[0], amounts[1]);
-
-    //     uint refundMargin = position.margin * closePercent / 100;
-    //     /* fundingPayment AccountBalance에 계산 요청 */
-    //     int256 fundingPayment;
-    //     int PNL = int256(refundMargin + closeNotional);
-    //     PNL -= int256(position.openNotional * closePercent / 100);
-    //     PNL += fundingPayment;
-        
-    //     /* vault에 trader의 보증금 PNL만큼 증감 요청 */
-
-    //     /* LongOI 감소 AccountBalance에서 처리 예정 */
-    //     // longOpenInterest -= position.positionSize;
-        
-    //     /* 수수료 누적 Vault에서 처리 예정*/
-    //     // feePerLiquidityCumulative += fee * 2**112 / IUniswapV2Pair(pool).totalSupply(); 
-
-    //     position.margin -= position.margin * closePercent / 100;
-    //     position.positionSize -= positionSize;
-    //     position.openNotional -= closeNotional;
-
-    //     if(position.positionSize == 0) {
-    //         delete positionMap[trader][baseToken][positionHash];
-    //         emit ClosePosition(trader, baseToken, positionHash, position.margin, position.positionSize, position.openNotional);
-    //         return;
-    //     }
-        
-    //     _updatePosition(position, trader, baseToken, positionHash);
-    // }
-
-    // function _closePositionShort(Position memory position, address trader, bytes32 positionHash, address[] memory path, uint amountIn, uint amountOut, uint deadline) internal {
-    //     address baseToken = path[1];
-        
-    //     uint closePercent = getClosePercent(position.positionSize, amountIn);
-
-    //     (uint[] memory amounts, uint fee) = _buy(path, false, amountIn, amountOut, deadline);
-    //     (uint positionSize, uint closeNotional) = (amounts[1], amounts[0]);
-
-    //     uint refundMargin = position.margin * closePercent / 100;
-    //     /* fundingPayment AccountBalance에 계산 요청 */
-    //     int256 fundingPayment;
-    //     int PNL = int256(refundMargin) + int256(position.openNotional * closePercent / 100) - int256(closeNotional) + fundingPayment;
-        
-    //     /* vault에 trader의 보증금 PNL만큼 증감 요청 */
-
-    //     /* ShortOI 감소 AccountBalance에서 처리 예정 */
-    //     // ShortOpenInterest -= position.positionSize;
-        
-    //     /* 수수료 누적 Vault에서 처리 예정*/
-    //     // feePerLiquidityCumulative += fee * 2**112 / IUniswapV2Pair(pool).totalSupply(); 
-
-    //     position.margin -= position.margin * closePercent / 100;
-    //     position.positionSize -= positionSize;
-    //     position.openNotional -= position.openNotional * closePercent / 100;
-
-    //     if(position.positionSize == 0) {
-    //         delete positionMap[trader][baseToken][positionHash];
-    //         //emit
-    //         return;
-    //     }
-        
-    //     _updatePosition(position, trader, baseToken, positionHash);
-    // }
-
     // quoteToken => baseToken(롱포지션 오픈 or 숏포지션 종료)
-    function _buy(address[] memory path, bool isExactInput, uint amountIn, uint amountOut, uint deadline) private returns(uint[] memory amounts, uint fee){           
+    function _buy(address trader, address[] memory path, bool isExactInput, uint amountIn, uint amountOut, uint deadline) private returns(uint[] memory amounts, uint fee){           
         (uint amountInMaximum, uint amountOutMinimum) = (amountIn, amountOut);
    
         if(isExactInput) {  
@@ -347,10 +222,11 @@ contract ClearingHouse is Ownable{
             fee = amounts[0] * 3 / 1e4;
         }        
         amounts[0] += fee;
+        emit Buy(trader, path[1], amountIn, amountOut);
     }
 
     // baseToken => quoteToken(롱포지션 종료 or 숏포지션 오픈)
-    function _sell(address[] memory path, bool isExactInput, uint amountIn, uint amountOut, uint deadline) private returns(uint[] memory amounts, uint fee) {           
+    function _sell(address trader, address[] memory path, bool isExactInput, uint amountIn, uint amountOut, uint deadline) private returns(uint[] memory amounts, uint fee) {           
         (uint amountInMaximum, uint amountOutMinimum) = (amountIn, amountOut);
 
         if(isExactInput) {
@@ -361,6 +237,7 @@ contract ClearingHouse is Ownable{
             amounts = IUniswapV2Router02(router).swapTokensForExactTokens(amountInMaximum, amountOut + fee, path, address(this), deadline);
         }        
         amounts[1] -= fee;
+        emit Sell(trader, path[0], amountIn, amountOut);
     }
 
     function getFundingPayment(address _pool, address baseToken, uint positionSize, int fundingRateCumulativeLast, uint32 openPositionTimestamp, uint priceCumulativeLast) private view returns(int256) {
@@ -400,6 +277,7 @@ contract ClearingHouse is Ownable{
         _closePosition(trader, baseToken, positionHash, amountIn, amountOut, block.timestamp);
 
         //vault에 msg.sender의 보증금 clearingFee만큼 증가 요청
+         // IVault(vault).updateCollateral(msg.sender, int112(uint112(clearingFee)))
     }
 
 
@@ -415,6 +293,10 @@ contract ClearingHouse is Ownable{
         vault = _vault;
     }
 
+    function setAccountBalance(address _accountBalance) public onlyOwner {
+        accountBalance = _accountBalance;
+    }
+
     function getMarketRegistry() public view returns(address) {
         return marketRegistry;
     }
@@ -427,6 +309,10 @@ contract ClearingHouse is Ownable{
         return vault;
     }
 
+    function getAccountBalance() public view returns(address) {
+        return accountBalance;
+    }
+
     function approve(address _token) public onlyOwner {
         require(router != address(0), "");
         (bool success, ) = _token.call(abi.encodeWithSignature("approve(address,uint256)", router, type(uint256).max));
@@ -437,4 +323,3 @@ contract ClearingHouse is Ownable{
         return keccak256(abi.encodePacked(trader, baseToken, salt));
     }
 }
-
