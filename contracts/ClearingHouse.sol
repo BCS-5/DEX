@@ -7,12 +7,13 @@ import "@uniswap/v2-core/contracts/interfaces/IUniswapV2Pair.sol";
 import "@uniswap/v2-periphery/contracts/interfaces/IUniswapV2Router02.sol";
 
 import "./libraries/UniswapV2Library.sol";
-import "./interface/IMarketRegistry.sol";
-import "./interface/IClearingHouse.sol";
 
-contract ClearingHouse is IClearingHouse, Ownable{
+import {IMarketRegistry} from "./interface/IMarketRegistry.sol";
+import { IClearingHouse } from "./interface/IClearingHouse.sol";
+import { IAccountBalance } from "./interface/IAccountBalance.sol";
+import { Vault } from "./Vault.sol";
 
-    
+contract ClearingHouse is IClearingHouse, Ownable{    
     event AddLiquidity(address indexed provider, address indexed baseToken, uint liquidity);
     event RemoveLiquidity(address indexed provider, address indexed baseToken, uint liquidity);
     event UpdatePosition(address indexed trader, address indexed baseToken, bytes32 PositionHash, uint margin, uint positionSize, uint openNotional);
@@ -28,12 +29,6 @@ contract ClearingHouse is IClearingHouse, Ownable{
     address accountBalance;
     address factory;    
     address quoteToken;
-
-    // uint feePerLiquidityCumulative;         
-    // uint fundingRateCumulative;
-
-    // uint longOpenInterest;
-    // uint shortOpenInterest;
 
     constructor() Ownable(msg.sender) {
     }
@@ -53,7 +48,7 @@ contract ClearingHouse is IClearingHouse, Ownable{
         
         /* msg.sender => baseToken => lp토큰 개수 업데이트 */
         // (_provider.liquidity, _provider.feePerLiquidityCumulativeLast) = (_provider.liquidity + liquidity, feePerLiquidityCumulative);
-        // emit AddLiquidity(msg.sender, baseToken, liquidity);
+        emit AddLiquidity(msg.sender, baseToken, liquidity);
     }
 
     // usdt와 같은 가치를 가진 baseToken 개수 반환
@@ -70,10 +65,12 @@ contract ClearingHouse is IClearingHouse, Ownable{
     //유동성 추가
     function addLiquidity (address baseToken, uint quoteAmount, uint quoteMinimum, uint baseTokenMinimum, uint deadline) public hasPool(baseToken) {
         // LiquidityProvider storage _provider = liquidityProvider[msg.sender][baseToken];        
+        
         /* unclaimed reward가 있다면 클레임 */
+        // Vault(vault).claimRewards(msg.sender, baseToken);
 
         /* Vault에서 msg.sender의 보증금 amountIn*2 만큼 차감 요청 */        
-        // IVault(vault).updateCollateral(msg.sender, int112(uint112(quoteAmount*2)));
+        Vault(vault).updateCollateral(msg.sender, int112(uint112(quoteAmount*2)));
 
         address _quoteToken = quoteToken;
         uint baseAmount = getQuote(_quoteToken, baseToken, quoteAmount);
@@ -136,9 +133,8 @@ contract ClearingHouse is IClearingHouse, Ownable{
         /* feePerLiquidityCumulative값 Valut에 요청   */
         uint feePerLiquidityCumulative;  
 
-        /* LongOI 증가 AccountBalance에서 처리 예정 */ /* ShortOI 증가 AccountBalance에서 처리 예정 */
-        // longOpenInterest += position.positionSize;
-        // ShortOpenInterest += position.positionSize;      
+        /* Long or Short 포지션 규모 누적 */
+        IAccountBalance(accountBalance).setOpenInterest(baseToken, int256(position.positionSize), isLong);
 
         bytes32 positionHash = getpositionHash(trader, baseToken, feePerLiquidityCumulative);
         _updatePosition(position, trader, baseToken, positionHash );
@@ -150,10 +146,9 @@ contract ClearingHouse is IClearingHouse, Ownable{
         position.priceCumulativeLast = getPricecumulativeLast(pool, baseToken,quoteToken);
         position.openPositionTimestamp = uint32(block.timestamp % 2**32);    
 
-              
-
         /* fundingRateCumulative값 AccountBalanace에 요청 */
-        // position.fundingRateCumulativeLast = ;        
+        position.fundingRateCumulativeLast = position.isLong ? 
+            IAccountBalance(accountBalance).cumulativeLongFundingRates(baseToken) : IAccountBalance(accountBalance).cumulativeShortFundingRates(baseToken);        
 
         positionMap[trader][baseToken][positionHash] = position;
         emit UpdatePosition(trader, baseToken, positionHash, position.margin, position.positionSize, position.openNotional);
@@ -277,7 +272,7 @@ contract ClearingHouse is IClearingHouse, Ownable{
         _closePosition(trader, baseToken, positionHash, amountIn, amountOut, block.timestamp);
 
         //vault에 msg.sender의 보증금 clearingFee만큼 증가 요청
-         // IVault(vault).updateCollateral(msg.sender, int112(uint112(clearingFee)))
+         IVault(vault).updateCollateral(msg.sender, int112(uint112(clearingFee)));
     }
 
 

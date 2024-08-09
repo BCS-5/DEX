@@ -6,7 +6,7 @@ import "@uniswap/v2-core/contracts/interfaces/IUniswapV2Pair.sol";
 
 import { ClearingHouse } from "./ClearingHouse.sol";
 import { SafeOwnable } from "./base/SafeOwnable.sol";
-import { IVault } from "./interfaces/IVault.sol";
+// import { IVault } from "./interfaces/IVault.sol";
 // import { IERC20 } from "./v2-core-contracts/interfaces/IERC20.sol";
 
 contract Vault {

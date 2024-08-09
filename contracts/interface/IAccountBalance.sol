@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0
 pragma solidity >=0.8.2 <0.9.0;
 
-import "./IClearinghouse.sol";
+import {IClearingHouse} from "./IClearinghouse.sol";
 
 interface IAccountBalance {
     //함수
@@ -13,7 +13,7 @@ interface IAccountBalance {
     function getLongOpenInterest(address baseToken) external view returns (uint256);
     function getShortOpenInterest(address baseToken) external view returns (uint256);
     function checkLiquidation(
-        IClearinghouse.Position memory position,
+        IClearingHouse.Position memory position,
         address baseToken
     ) external view returns (bool);
 
