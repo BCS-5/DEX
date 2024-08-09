@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: GPL-3.0
 pragma solidity ^0.8.26;
 
+import "./interface/IERC20.sol";
+
 abstract contract ERC20 {
     event Transfer(address indexed from, address indexed to, uint256 amount);
     event Approval(address indexed owner, address indexed spender, uint256 amount);
@@ -85,13 +87,12 @@ abstract contract ERC20 {
 }
 
 
-contract VirtualToken is ERC20 {
 /*
     - Uniswap Pool에 들어갈 가상 토큰 발행
     - 가스비 절약을 위해 추가 발행 없이 클리어링 하우스에 최대한 민팅
 */
-contract VirtualToken is ERC20 {    
-    constructor(string memory _name, string memory _symbol, uint8 _decimals, address _clearingHouse) ERC20(_name, _symbol, _decimals) {
-        _mint(_clearingHouse, type(uint256).max);
+contract VirtualToken is ERC20  {    
+    constructor(string memory _name, string memory _symbol, uint8 _decimals) ERC20(_name, _symbol, _decimals) {
+        _mint(msg.sender, type(uint256).max);
     }
 }

@@ -3,6 +3,8 @@ pragma solidity >=0.8.2 < 0.9.0;
 
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 import "@uniswap/v2-core/contracts/interfaces/IUniswapV2Factory.sol";
+import "./VirtualToken.sol";
+import "./interface/IMarketRegistry.sol";
 
 /*
 - 유동성 풀 생성
@@ -10,37 +12,88 @@ import "@uniswap/v2-core/contracts/interfaces/IUniswapV2Factory.sol";
 - vBTC 주소 입력하면 풀 주소 반환
 */
 
-contract MarketRegistry is Ownable{
+contract MarketRegistry is IMarketRegistry, Ownable{
+    address clearingHouse;
     address factory;
-    address QUOTE_TOKEN;
+    address quoteToken;
 
-    mapping(address => address) private _pool;
+    mapping(address => address) public getPool;
+    address[] public allPools;
+
+    mapping(address => uint24) feeRatio;
+    mapping(address => uint24) priceImpactLimit;
 
     constructor(address _factory) Ownable(msg.sender) {
         factory = _factory;
     }
 
-    function createPool(address _baseToken) public onlyOwner {        
-        _pool[_baseToken] = IUniswapV2Factory(factory).createPair(_baseToken, QUOTE_TOKEN);
+    function createPool(string memory _name, string memory _symbol, uint8 _decimals) public onlyOwner {    
+        VirtualToken vt = new VirtualToken(_name, _symbol, _decimals);
+        vt.transfer(clearingHouse, vt.balanceOf(address(this)));
+
+        address baseToken = address(vt);
+
+        address poolAddress = IUniswapV2Factory(factory).createPair(baseToken, quoteToken);
+
+        getPool[baseToken] = poolAddress;
+        allPools.push(poolAddress);
+
+        setFeeRatio(baseToken, 3e2);
+        setPriceImpactLimit(baseToken, 1e4);
+    }
+
+    function setClearing(address _clearingHouse) public onlyOwner {
+        clearingHouse = _clearingHouse;
     }
 
     function setFactory(address _factory) public onlyOwner {
         factory = _factory;
     }
 
-    function setQuoteToken(address _quote) public onlyOwner {
-        QUOTE_TOKEN = _quote;
+    function setQuoteToken(address _quoteToken) public onlyOwner {
+        quoteToken = _quoteToken;
     }
 
-    function getPool(address _baseToken) public view returns(address) {
-        return _pool[_baseToken];
+    // 1% = 1e4, 100% = 1e6
+    function setFeeRatio(address _baseToken, uint24 _feeRatio) public onlyOwner{
+        require(_feeRatio >= 1e2 && _feeRatio <= 1e3, "");  // 0.01% <= feeRatio <= 0.1%
+        feeRatio[_baseToken] = _feeRatio;
+    }
+
+    function setPriceImpactLimit(address _baseToken, uint24 _priceImpactLimit) public onlyOwner{
+        require(_priceImpactLimit >= 5e3 && _priceImpactLimit <= 5e4, "");  // 0.5% <= feeRatio <= 5.0%
+        priceImpactLimit[_baseToken] = _priceImpactLimit;
     }
 
     function hasPool(address _baseToken) public view returns(bool) {
-        return _pool[_baseToken] != address(0);
+        return getPool[_baseToken] != address(0);
+    }    
+
+    function getAllPools() public view returns(address[] memory) {
+        return allPools;
+    }
+
+    function getAllPoolsLength() public view returns(uint) {
+        return allPools.length;
+    }
+
+    function getClearingHouse() public view returns(address) {
+        return clearingHouse;
     }
 
     function getFactory() public view returns(address) {
         return factory;
+    }
+
+    function getQuoteToken() public view returns(address) {
+        return quoteToken;
+    }
+
+    function getFeeRatio(address baseToken) public view returns(uint24) {
+        return feeRatio[baseToken];
+    }
+
+    function getPriceImpactLimit(address baseToken) public view returns(uint24) {
+        return priceImpactLimit[baseToken];
     }
 }
