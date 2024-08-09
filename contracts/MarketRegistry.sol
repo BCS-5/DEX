@@ -17,7 +17,7 @@ contract MarketRegistry is IMarketRegistry, Ownable{
     address factory;
     address quoteToken;
 
-    mapping(address => address) public getPool;
+    mapping(address => address) public pool;
     address[] public allPools;
 
     mapping(address => uint24) feeRatio;
@@ -35,7 +35,7 @@ contract MarketRegistry is IMarketRegistry, Ownable{
 
         address poolAddress = IUniswapV2Factory(factory).createPair(baseToken, quoteToken);
 
-        getPool[baseToken] = poolAddress;
+        pool[baseToken] = poolAddress;
         allPools.push(poolAddress);
 
         setFeeRatio(baseToken, 3e2);
@@ -66,8 +66,12 @@ contract MarketRegistry is IMarketRegistry, Ownable{
     }
 
     function hasPool(address _baseToken) public view returns(bool) {
-        return getPool[_baseToken] != address(0);
-    }    
+        return getPool(_baseToken) != address(0);
+    }   
+
+    function getPool(address _baseToken) public view returns(address) {
+        return pool[_baseToken];
+    }     
 
     function getAllPools() public view returns(address[] memory) {
         return allPools;
@@ -89,11 +93,11 @@ contract MarketRegistry is IMarketRegistry, Ownable{
         return quoteToken;
     }
 
-    function getFeeRatio(address baseToken) public view returns(uint24) {
-        return feeRatio[baseToken];
+    function getFeeRatio(address _baseToken) public view returns(uint24) {
+        return feeRatio[_baseToken];
     }
 
-    function getPriceImpactLimit(address baseToken) public view returns(uint24) {
-        return priceImpactLimit[baseToken];
+    function getPriceImpactLimit(address _baseToken) public view returns(uint24) {
+        return priceImpactLimit[_baseToken];
     }
 }

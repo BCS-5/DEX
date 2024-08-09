@@ -7,7 +7,7 @@ import "@uniswap/v2-core/contracts/interfaces/IUniswapV2Pair.sol";
 import "@uniswap/v2-periphery/contracts/interfaces/IUniswapV2Router02.sol";
 
 import "./libraries/UniswapV2Library.sol";
-import "./MarketRegistry.sol";
+import "./interface/IMarketRegistry.sol";
 import "./interface/IClearingHouse.sol";
 
 contract ClearingHouse is IClearingHouse, Ownable{
@@ -40,7 +40,7 @@ contract ClearingHouse is IClearingHouse, Ownable{
 
     // 유동성 풀이 존재하는지 확인
     modifier hasPool(address baseToken) {        
-        require(MarketRegistry(marketRegistry).hasPool(baseToken), "");
+        require(IMarketRegistry(marketRegistry).hasPool(baseToken), "");
         _;
     }
 
@@ -58,7 +58,7 @@ contract ClearingHouse is IClearingHouse, Ownable{
 
     // usdt와 같은 가치를 가진 baseToken 개수 반환
     function getQuote(address quoteToken, address baseToken, uint quoteAmount) public view returns(uint baseAmount){
-        address _pool = MarketRegistry(marketRegistry).getPool(baseToken);
+        address _pool = IMarketRegistry(marketRegistry).getPool(baseToken);
         
         (address tokenA, ) = UniswapV2Library.sortTokens(quoteToken, baseToken);               
         (uint reserveA, uint reserveB, ) = IUniswapV2Pair(_pool).getReserves();
@@ -116,7 +116,7 @@ contract ClearingHouse is IClearingHouse, Ownable{
     }
 
     function _openPosition(address trader, address baseToken, bool isExactInput, bool isLong, uint margin, uint amountIn, uint amountOut, uint deadline) internal {
-        address pool = MarketRegistry(marketRegistry).getPool(baseToken);
+        address pool = IMarketRegistry(marketRegistry).getPool(baseToken);
         Position memory position;        
         (position.margin, position.isLong) = (margin, isLong);
 
@@ -146,7 +146,7 @@ contract ClearingHouse is IClearingHouse, Ownable{
 
     function _updatePosition(Position memory position, address trader, address baseToken, bytes32 positionHash) internal {
         /* closePosition 시 평균 가격을 측정하기 위한 priceCumulative, block.timestamp 저장*/
-        address pool = MarketRegistry(marketRegistry).getPool(baseToken);
+        address pool = IMarketRegistry(marketRegistry).getPool(baseToken);
         position.priceCumulativeLast = getPricecumulativeLast(pool, baseToken,quoteToken);
         position.openPositionTimestamp = uint32(block.timestamp % 2**32);    
 
@@ -166,7 +166,7 @@ contract ClearingHouse is IClearingHouse, Ownable{
 
     // 사용자 또는 청산자에 의해 호출되는 포지션 종료
     function _closePosition(address trader, address baseToken, bytes32 positionHash, uint amountIn, uint amountOut, uint deadline) internal {
-        address _pool = MarketRegistry(marketRegistry).getPool(baseToken);
+        address _pool = IMarketRegistry(marketRegistry).getPool(baseToken);
         Position memory position = positionMap[trader][baseToken][positionHash];                
         
         {            

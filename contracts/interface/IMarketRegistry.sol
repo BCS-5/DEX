@@ -21,5 +21,6 @@ interface IMarketRegistry {
     function getFeeRatio(address baseToken) external view returns(uint24);
     function getPriceImpactLimit(address baseToken) external view returns(uint24);
     
+    function getPool(address _baseToken) external view returns(address);
     function hasPool(address _baseToken) external view returns(bool);
 }
