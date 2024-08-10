@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0
 pragma solidity >=0.8.2 <0.9.0;
 
-import {IClearingHouse} from "./IClearinghouse.sol";
+import {IClearingHouse} from "./IClearingHouse.sol";
 
 interface IAccountBalance {
     //함수
@@ -21,6 +21,7 @@ interface IAccountBalance {
     function lastFundingTimes(address baseToken) external view returns (uint256);
     function cumulativeLongFundingRates(address baseToken) external view returns (int256);
     function cumulativeShortFundingRates(address baseToken) external view returns (int256);
+    function calculateFundingPayment(IClearingHouse.Position memory position, address trader, address baseToken, address poolAddress) external view returns (int256);
     function userLongFundingPayments(address baseToken, address user) external view returns (int256);
     function userShortFundingPayments(address baseToken, address user) external view returns (int256);
 }

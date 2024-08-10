@@ -23,7 +23,7 @@ interface IClearingHouse {
     function initializePool(address baseToken, uint amountBase, uint amountQuote) external ;
 
     function getQuote(address quoteToken, address baseToken, uint quoteAmount) external view returns(uint baseAmount);
-    function getPricecumulativeLast(address pool, address baseToken, address quoteToken) external view returns(uint priceCumulativeLast) ;
+    function getPricecumulativeLast(address baseToken, address quoteToken) external view returns(uint priceCumulativeLast) ;
 
     function addLiquidity (address baseToken, uint quoteAmount, uint quoteMinimum, uint baseTokenMinimum, uint deadline) external ;
     function removeLiquidity (address baseToken, uint liquidity, uint quoteMinimum, uint baseTokenMinimum, uint deadline) external  ;
@@ -31,8 +31,6 @@ interface IClearingHouse {
 
     function openPosition(address baseToken, bool isExactInput, bool isLong, uint margin, uint amountIn, uint amountOut, uint deadline) external ;
     function closePosition (address baseToken, bytes32 positionHash, uint amountIn, uint amountOut, uint deadline) external ;
-
-    function getClosePercent(uint openPositionSize, uint closePositionSize) external pure returns(uint) ;
 
     function liquidateBatch (address[] memory traders, address[] memory baseTokens, bytes32[] memory positionHashs) external ;
     function liquidate(address trader, address baseToken, bytes32 positionHash) external ;

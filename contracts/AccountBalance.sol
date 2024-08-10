@@ -5,11 +5,11 @@ import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "@uniswap/v2-core/contracts/interfaces/IUniswapV2Pair.sol";
 import "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol";
-import "./IClearinghouse.sol";
+import "./interfaces/IClearingHouse.sol";
 import "./MarketRegistry.sol";
 
 contract AccountBalance is Initializable, OwnableUpgradeable, ReentrancyGuardUpgradeable {
-    IClearinghouse public iClearinghouse;
+    IClearingHouse public iClearinghouse;
     address private marketRegistry;
     address private vault;
     address private keeper;
@@ -49,7 +49,7 @@ contract AccountBalance is Initializable, OwnableUpgradeable, ReentrancyGuardUpg
 
     // 생성자 함수
     constructor(address _clearingHouse, address _marketRegistry, address _vault) {
-        iClearinghouse = IClearinghouse(_clearingHouse);
+        iClearinghouse = IClearingHouse(_clearingHouse);
         marketRegistry = _marketRegistry;
         vault = _vault;
         keeper = msg.sender;
@@ -190,11 +190,11 @@ contract AccountBalance is Initializable, OwnableUpgradeable, ReentrancyGuardUpg
 
     // 펀딩 지불 정산 함수
     function calculateFundingPayment(
-        IClearinghouse.Position memory position,
+        IClearingHouse.Position memory position,
         address trader,
         address baseToken,
         address poolAddress
-    ) internal view returns (int256 longFundingPayment, int256 shortFundingPayment) {
+    ) internal view returns (int256 longFundingPayment) {
         if (position.positionSize == 0) return (0, 0);
 
         uint256 twap = calculateTWAP(
@@ -212,13 +212,13 @@ contract AccountBalance is Initializable, OwnableUpgradeable, ReentrancyGuardUpg
         ) / 1e36;  // 1e18 (for funding rate) * 1e18 (for price)
 
         // 숏 포지션 펀딩 지불액 계산
-        shortFundingPayment = (
+        int256 shortFundingPayment = (
             (cumulativeShortFundingRates[baseToken] - position.fundingRateCumulativeLast)
             * int256(position.positionSize)
             * int256(twap)
         ) / 1e36;  // 1e18 (for funding rate) * 1e18 (for price => 2**128로 나누는거?)
 
-        return (longFundingPayment, shortFundingPayment);
+        return (longFundingPayment);
     }
 
     // 청산 가능성 체크 함수
@@ -227,7 +227,7 @@ contract AccountBalance is Initializable, OwnableUpgradeable, ReentrancyGuardUpg
         address baseToken
     ) public view returns (bool) {
         // Clearinghouse에서 Position 정보 가져오기
-        IClearinghouse.Position memory position = iClearinghouse.getPosition(trader, baseToken);
+        IClearingHouse.Position memory position = IClearingHouse.getPosition(trader, baseToken);
 
         // PnL (손익) 계산
         int256 unrealizedPnl = calculateUnrealizedPnl(position, baseToken);
@@ -247,7 +247,7 @@ contract AccountBalance is Initializable, OwnableUpgradeable, ReentrancyGuardUpg
     }
 
     // PnL (손익) 계산 함수
-    function calculateUnrealizedPnl(IClearinghouse.Position memory position, address baseToken) internal view returns (int256) {
+    function calculateUnrealizedPnl(IClearingHouse.Position memory position, address baseToken) internal view returns (int256) {
         uint256 currentPrice = getIndexPrice(baseToken);
         uint256 openPrice = position.openNotional / position.positionSize;
 

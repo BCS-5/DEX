@@ -101,7 +101,8 @@ contract ClearingHouse is IClearingHouse, Ownable{
     }
 
     // pool에 저장된 baseToken의 시간 가중치 평균 값 반환.
-    function getPricecumulativeLast(address pool, address baseToken, address quoteToken) public view returns(uint priceCumulativeLast) {
+    function getPricecumulativeLast(address baseToken, address quoteToken) public view returns(uint priceCumulativeLast) {
+        address pool = IMarketRegistry(marketRegistry).getPool(baseToken);
         (address tokenA, ) = UniswapV2Library.sortTokens(baseToken, quoteToken);
         priceCumulativeLast = tokenA == baseToken ? IUniswapV2Pair(pool).price0CumulativeLast() : IUniswapV2Pair(pool).price1CumulativeLast();
     }
@@ -139,9 +140,8 @@ contract ClearingHouse is IClearingHouse, Ownable{
     }
 
     function _updatePosition(Position memory position, address trader, address baseToken, bytes32 positionHash) internal {
-        /* closePosition 시 평균 가격을 측정하기 위한 priceCumulative, block.timestamp 저장*/
-        address pool = IMarketRegistry(marketRegistry).getPool(baseToken);
-        position.priceCumulativeLast = getPricecumulativeLast(pool, baseToken,quoteToken);
+        /* closePosition 시 평균 가격을 측정하기 위한 priceCumulative, block.timestamp 저장*/        
+        position.priceCumulativeLast = getPricecumulativeLast(baseToken,quoteToken);
         position.openPositionTimestamp = uint32(block.timestamp % 2**32);    
 
         /* fundingRateCumulative값 AccountBalanace에 요청 */
@@ -162,30 +162,21 @@ contract ClearingHouse is IClearingHouse, Ownable{
         address _pool = IMarketRegistry(marketRegistry).getPool(baseToken);
         Position memory position = positionMap[trader][baseToken][positionHash];                
         
+        /* fundingPayment AccountBalance에 계산 요청 */
+        int256 fundingPayment = IAccountBalance(accountBalance).calculateFundingPayment(position, address(0), baseToken, _pool);
         {            
             address[] memory path = new address[](2);
             (path[0], path[1]) = position.isLong ? (quoteToken, baseToken) : (baseToken, quoteToken);
 
             (uint[] memory amounts, uint fee) = position.isLong ? _sell(trader, path, true, amountIn, amountOut, deadline) : _buy(trader, path, false, amountIn, amountOut, deadline);
-            (uint positionSize, uint closeNotional) = position.isLong ? (amounts[0], amounts[1]) : (amounts[1], amounts[0]);
-            uint closePercent = getClosePercent(position.positionSize, amountIn);
+            (uint positionSize, uint closeNotional) = position.isLong ? (amounts[0], amounts[1]) : (amounts[1], amounts[0]);            
 
+            /* 수수료 적립 */
             IVault(vault).setCumulativeTransactionFee(baseToken, fee);
 
-            position.margin -= position.margin * closePercent / 100;
-            position.positionSize -= positionSize;
-            position.openNotional -= position.openNotional * closePercent / 100;
-
-            uint refundMargin = position.margin * closePercent / 100;
-            /* fundingPayment AccountBalance에 계산 요청 */
-            int256 fundingPayment;
-
-
+            /* PNL 정리 */
+            settlePNL(position, trader, positionSize, closeNotional, fundingPayment);
         }        
-        /* PNL AccountBalance에 계산 요청 */
-        int256 PNL;
-        /* vault에 trader의 보증금 PNL만큼 증감 요청 */
-        IVault(vault).updateCollateral(trader, int112(PNL));
 
         /* LongOI 감소 AccountBalance에서 처리 예정 */ /* ShortOI 감소 AccountBalance에서 처리 예정 */            
         IAccountBalance(accountBalance).setOpenInterest(baseToken, -int256(position.positionSize), position.isLong);
@@ -198,8 +189,23 @@ contract ClearingHouse is IClearingHouse, Ownable{
         }
     }
 
-    function getClosePercent(uint openPositionSize, uint closePositionSize) public pure returns(uint) {
-        return closePositionSize * 100 / openPositionSize;
+    function settlePNL(Position memory position, address trader, uint closePositionSize, uint closeNotional, int256 fundingPayment) private {
+        uint closePercent = closePositionSize * 100 / position.positionSize;
+        uint refundMargin = position.margin * closePercent / 100;        
+        uint256 leverage = position.openNotional * closePercent / 100;
+
+        position.margin -= refundMargin;
+        position.positionSize -= closePositionSize;
+        position.openNotional -= leverage;
+
+        int PNL = int256(refundMargin) + fundingPayment;
+        if(position.isLong) {
+            PNL += int256(closeNotional) - int256(leverage);
+        }else {
+            PNL += int256(leverage) - int256(closeNotional);
+        }
+
+        IVault(vault).updateCollateral(trader, int112(PNL));
     }
 
     // quoteToken => baseToken(롱포지션 오픈 or 숏포지션 종료)
@@ -230,24 +236,6 @@ contract ClearingHouse is IClearingHouse, Ownable{
         }        
         amounts[1] -= fee;
         emit Sell(trader, path[0], amountIn, amountOut);
-    }
-
-    function getFundingPayment(address _pool, address baseToken, uint positionSize, int fundingRateCumulativeLast, uint32 openPositionTimestamp, uint priceCumulativeLast) private view returns(int256) {
-        // AccountBalanace에 요청 
-        int fundingRateCumulative;
-
-        // 누적 funding rate와의 차이값 계산
-        int fundingRate = fundingRateCumulative - fundingRateCumulativeLast;
-            
-        // twap 계산
-        (address tokenA, ) = UniswapV2Library.sortTokens(baseToken, quoteToken);   
-        uint priceCumulative = tokenA == baseToken ? IUniswapV2Pair(_pool).price0CumulativeLast() : IUniswapV2Pair(_pool).price1CumulativeLast();
-        (,,uint32 blockTimestampLast) = IUniswapV2Pair(_pool).getReserves();            
-        uint32 timeElapsed = blockTimestampLast - openPositionTimestamp;
-        uint twap = (priceCumulative - priceCumulativeLast);            
-
-        // 평균가격 * 체결 개수 * fundingRate
-        return int256(twap) * int256(positionSize) * fundingRate  / int(int32(timeElapsed));          
     }
 
     function liquidateBatch (address[] memory traders, address[] memory baseTokens, bytes32[] memory positionHashs) public {
