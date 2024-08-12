@@ -4,7 +4,8 @@ pragma solidity >=0.8.2 <0.9.0;
 import "./IClearinghouse.sol";
 
 interface IAccountBalance {
-    //함수
+    // 함수
+    function initialize(address _clearingHouse, address _marketRegistry, address _vault) external;
     function setKeeper(address newKeeper) external;
     function getMarkPrice(address baseToken) external view returns (uint256);
     function setIndexPrice(address baseToken, uint256 price) external;
@@ -14,7 +15,8 @@ interface IAccountBalance {
     function getShortOpenInterest(address baseToken) external view returns (uint256);
     function checkLiquidation(
         IClearinghouse.Position memory position,
-        address baseToken
+        address baseToken,
+        address poolAddress
     ) external view returns (bool);
 
     // Public 상태 변수들에 대한 getter 함수들
