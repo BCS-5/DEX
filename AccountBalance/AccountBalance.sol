@@ -1,14 +1,12 @@
 // SPDX-License-Identifier: GPL-3.0
 pragma solidity >=0.8.2 <0.9.0;
 
-import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
-import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 import "@uniswap/v2-core/contracts/interfaces/IUniswapV2Pair.sol";
-import "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol";
 import "./IClearinghouse.sol";
 import "./MarketRegistry.sol";
 
-contract AccountBalance is Initializable, OwnableUpgradeable, ReentrancyGuardUpgradeable {
+contract AccountBalance is Ownable {
     IClearinghouse public iClearinghouse;
     MarketRegistry public marketRegistry;
     address private vault;
@@ -44,10 +42,8 @@ contract AccountBalance is Initializable, OwnableUpgradeable, ReentrancyGuardUpg
     // 기본 토큰 주소에 대한 인덱스 가격
     mapping(address => uint256) private indexPrices;
 
-    // 초기화 함수: Ownable 및 ReentrancyGuard 컨트랙트 초기화
-    function initialize(address _clearingHouse, address _marketRegistry, address _vault) external initializer {
-        __Ownable_init();
-        __ReentrancyGuard_init();
+    // 생성자 함수
+    constructor(address _clearingHouse, address _marketRegistry, address _vault) {
         iClearinghouse = IClearinghouse(_clearingHouse);
         marketRegistry = MarketRegistry(_marketRegistry);
         vault = _vault;
@@ -242,7 +238,7 @@ contract AccountBalance is Initializable, OwnableUpgradeable, ReentrancyGuardUpg
         if (accountValue > 0) {
             marginRatio = (uint256(accountValue) * 100) / positionNotional;
         } else {
-            marginRatio = 0;//앞으로 받게될 펀딩비도 고려해서 마진비율을계산. calculateFundingPayment
+            marginRatio = 0;
         }
 
         // 마진 비율이 10% 미만일 경우 청산 대상
