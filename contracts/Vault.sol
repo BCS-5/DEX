@@ -2,14 +2,15 @@
 
 pragma solidity ^0.8.26;
 
-import "@uniswap/v2-core/contracts/interfaces/IUniswapV2Pair.sol";
+import { Initializable } from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
+import { ReentrancyGuardUpgradeable } from "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol";
 
-import { ClearingHouse } from "./ClearingHouse.sol";
-import { SafeOwnable } from "./base/SafeOwnable.sol";
 import { IVault } from "./interfaces/IVault.sol";
-// import { IERC20 } from "./v2-core-contracts/interfaces/IERC20.sol";
+import { IERC20Metadata } from "./interfaces/IERC20Metadata.sol";
+import { IERC20 } from "./v2-core-contracts/interfaces/IERC20.sol";
+import { SafeOwnable } from "./base/SafeOwnable.sol";
 
-contract Vault {
+contract Vault is IVault, Initializable, SafeOwnable, ReentrancyGuardUpgradeable {
 
 /// state variables
     // --------- IMMUTABLE ---------
@@ -45,6 +46,14 @@ contract Vault {
         return _decimals;
     }
 
+    function isContract(address account) internal view returns (bool) {
+        // This method relies on extcodesize/address.code.length, which returns 0
+        // for contracts in construction, since the code is only stored at the end
+        // of the constructor execution.
+
+        return account.code.length > 0;
+    }
+
 // modifiers
     // 보증금으로 USDT를 넣는지 체크
     modifier onlyUSDTToken(address _addr) {
@@ -62,8 +71,8 @@ contract Vault {
 // 초기 세팅
     function initialize() external initializer {
         _decimals = 18;
-        _settlementToken = USDT_ADDRESS;            // 주소 넣기
-        _clearingHouse = CLEARING_HOUSE_ADDRESS;    // 주소 넣기
+        _settlementToken = 0x2FFA65948795F91D2FcB6E10c3F8cc4440d416a6;  // 주소 넣기
+        _clearingHouse = 0x2FFA65948795F91D2FcB6E10c3F8cc4440d416a6;    // 주소 넣기
         // _insuranceFund = insuranceFundArg;
         // _clearingHouseConfig = clearingHouseConfigArg;
         // _accountBalance = accountBalanceArg;
@@ -72,7 +81,7 @@ contract Vault {
 
     // ClearingHouse 주소 설정
     function setClearingHouse(address clearingHouseAddr) external onlyOwner {
-        require(clearingHouseAddr.isContract(), "V_CHNC");   // ClearingHouse is not contract
+        require(isContract(clearingHouseAddr), "V_CHNC");   // ClearingHouse is not contract
 
         _clearingHouse = clearingHouseAddr;
         emit ClearingHouseChanged(clearingHouseAddr);
@@ -106,7 +115,7 @@ contract Vault {
     ) internal {
         require(amount > 0, "V_ZA");    // Zero Amount
         _transferTokenIn(token, from, amount);  // 전송하고, 정확한 amount의 token이 이 컨트랙트로 전송되었는지 확인
-        _modifyBalance(to, token, amount.toInt256());
+        _modifyBalance(to, amount, true);
         emit Deposited(token, to, amount);
     }
 
@@ -115,10 +124,16 @@ contract Vault {
         address from,   // the address of account who owns the collateral token
         uint256 amount  // the amount of collateral token needs to be transferred
     ) internal {
-        // check for deflationary tokens by assuring balances before and after transferring to be the same
-        uint256 balanceBefore = IERC20Metadata(token).balanceOf(address(this)); // 이 컨트랙트에 존재하는 USDT 잔고
-        SafeERC20Upgradeable.safeTransferFrom(IERC20Upgradeable(token), from, address(this), amount);
-        require(IERC20Metadata(token).balanceOf(address(this)) - balanceBefore == amount, "V_IBA");    // inconsistent balance amount
+        // 전송 전의 Vault의 토큰 잔고 확인
+        uint256 balanceBefore = IERC20(token).balanceOf(address(this)); 
+
+        // from 주소로부터 Vault로 토큰 전송
+        bool success = IERC20(token).transferFrom(from, address(this), amount);
+        require(success, "Transfer failed");
+
+        // 전송 후의 토큰 잔고와 전송 전의 잔고의 차이가 전송한 양과 일치하는지 확인
+        uint256 balanceAfter = IERC20(token).balanceOf(address(this));
+        require(balanceAfter - balanceBefore == amount, "V_IBA");  // inconsistent balance amount
     }
 
     // 인출 - 일부 amount
@@ -136,7 +151,7 @@ contract Vault {
     function withdrawAll() external override nonReentrant {
         address to = _msgSender();
         address token = _settlementToken;
-        uint256 amount = getFreeCollateral(to, token);
+        uint256 amount = getFreeCollateral(to);
         _withdraw(to, token, amount);
     }
 
@@ -145,42 +160,53 @@ contract Vault {
         address token,
         uint256 amount
     ) internal {
-        _settleAndDecreaseBalance(to, token, amount);
-        SafeERC20Upgradeable.safeTransfer(IERC20Upgradeable(token), to, amount);
+        _settleAndDecreaseBalance(to, amount);
+        // 토큰 전송
+        bool success = IERC20(token).transfer(to, amount);
+        require(success, "Transfer failed");
+
         emit Withdrawn(token, to, amount);
     }
 
+
     function _settleAndDecreaseBalance(
         address to,
-        address token,
         uint256 amount
     ) internal {
         uint256 freeCollateral = collateral[to].totalCollateral - collateral[to].useCollateral;
         require(freeCollateral >= amount, "V_NEFC");    // not enough freeCollateral
 
-        int256 deltaBalance = amount.toInt256().neg256();   // 음수 표현
-
-        _modifyBalance(to, token, deltaBalance);
+        _modifyBalance(to, amount, false);
     }
 
     /// @param amount can be 0; do not require this
     function _modifyBalance(
         address trader,
-        address token,
-        int256 amount
+        uint256 amount,
+        bool isPlus
     ) internal {
         if (amount == 0) {
             return;
         }
 
-        int256 oldBalance = collateral[trader].totalCollateral;
-        int256 newBalance = oldBalance + amount;
+        uint256 oldBalance = collateral[trader].totalCollateral;
+        uint256 newBalance;
+        if (isPlus) {
+            newBalance = oldBalance + amount;
+        } else {
+            newBalance = oldBalance - amount;
+        }
+
         collateral[trader].totalCollateral = newBalance;
     }
 
     // Clearing House에서 Position Open, Close할 때 호출
-    function updateCollateral(address user, int256 amount) external onlyClearingHouse {
-        collateral[user].totalCollateral += amount;
+    function updateCollateral(address user, uint256 amount, bool isPlus) external onlyClearingHouse {
+        if (isPlus) {
+            collateral[user].totalCollateral += amount;
+        } else {
+            collateral[user].totalCollateral -= amount;
+        }
     } 
 
     // 총 보증금 조회
@@ -202,14 +228,18 @@ contract Vault {
 // 수수료 관리
 
     // userLP 업데이트
-    function updateUserLP(address user, address poolAddr, int256 amount) external onlyClearingHouse {
-        liquidityProviders[user][poolAddr].userLP += amount;
+    function updateUserLP(address user, address poolAddr, uint256 amount, bool isPlus) external onlyClearingHouse {
+        if (isPlus) {
+            liquidityProviders[user][poolAddr].userLP += amount;
+        } else {
+            liquidityProviders[user][poolAddr].userLP -= amount;
+        }
     }
 
     // 보상 지급(Claim)
     function claimRewards(address user, address poolAddr) external {
         address token = _settlementToken;
-        uint256 amount = (getCumulativeTransactionFee[poolAddr] - liquidityProviders[user][poolAddr].cumulativeTransactionFeeLast) * liquidityProviders[user][poolAddr].userLP;
+        uint256 amount = (getCumulativeTransactionFee(poolAddr) - liquidityProviders[user][poolAddr].cumulativeTransactionFeeLast) * liquidityProviders[user][poolAddr].userLP;
         // 보증금 업데이트
         collateral[user].totalCollateral += amount;
         _deposit(address(this), user, token, amount);
@@ -219,7 +249,7 @@ contract Vault {
 
     // pool 거래 수수료 업데이트
     function setCumulativeTransactionFee(address poolAddr, uint256 fee) external onlyClearingHouse {
-        cumulativeTransactionFee[poolAddr] = fee * 2**128 / IUniswapV2Pair(poolAddr).totalSupply(); 
+        cumulativeTransactionFee[poolAddr] = fee * 2**128 / IERC20(poolAddr).totalSupply(); 
     }
     
     // 1LP당 누적 거래 수수료 조회

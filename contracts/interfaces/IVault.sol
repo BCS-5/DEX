@@ -1,6 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 pragma solidity 0.8.26;
-pragma abicoder v2;
 
 interface IVault {
     /// @notice Emitted when trader deposit collateral into vault
@@ -19,6 +18,10 @@ interface IVault {
     /// @param clearingHouse The address of clearingHouse
     event ClearingHouseChanged(address indexed clearingHouse);
 
+    /// @notice Get settlement token decimals
+    /// @return decimals The decimals of settlement token
+    function decimals() external view returns (uint8 decimals);
+
     /// @notice Deposit collateral into vault
     /// @param amount The amount of the token to deposit
     function deposit(uint256 amount) external;
@@ -36,34 +39,36 @@ interface IVault {
     function withdraw(uint256 amount) external;
 
     /// @notice Withdraw all free collateral from vault
-    function withdrawAll() external returns (uint256 amount);
+    function withdrawAll() external;
 
     /// @notice Update the balance of Vault of the specified collateral token and trader
     /// @param trader The address of the trader
     /// @param amount The amount of the token to update
-    function updateCollateral(address trader, int256 amount) external;
+    /// @param isPlus Is the amount positive(true) or negative(false)
+    function updateCollateral(address trader, uint256 amount, bool isPlus) external;
 
     /// @notice Get the total collateral value of trader
     /// @param trader The address of the trader
     /// @return totalCollateral total collateral
-    function getTotalCollateral(address trader) public view returns (uint256 totalCollateral);
+    function getTotalCollateral(address trader) external view returns (uint256 totalCollateral);
 
     /// @notice Get the used collateral value of trader
     /// @param trader The address of the trader
     /// @return useCollateral used collateral
-    function getUseCollateral(address trader) public view returns (uint256 useCollateral);
+    function getUseCollateral(address trader) external view returns (uint256 useCollateral);
 
     /// @notice Get the free collateral value denominated in the settlement token of the specified trader
     /// @param trader The address of the trader
     /// @return freeCollateral the value (in settlement token's decimals) of free collateral available
     ///         for withdraw or opening new positions or orders)
-    function getFreeCollateral(address trader) public view returns (uint256 freeCollateral);
+    function getFreeCollateral(address trader) external view returns (uint256 freeCollateral);
 
     /// @notice Update the balance of LP token of the trader
     /// @param trader The address of the trader
     /// @param pool The address of the liquidity pool contract
     /// @param amount The amount of the token to update
-    function updateUserLP(address trader, address pool, int256 amount) external;
+    /// @param isPlus Is the amount positive(true) or negative(false)
+    function updateUserLP(address trader, address pool, uint256 amount, bool isPlus) external;
 
     /// @notice Claim the reward of the trader
     /// @param trader The address of the trader
@@ -78,6 +83,6 @@ interface IVault {
     /// @notice Get the cumulative transaction fee per 1LP of liquidity pool
     /// @param pool The address of the liquidity pool contract
     /// @return cumulativeTransactionFee cumulative transaction fee per 1LP
-    function getCumulativeTransactionFee(address pool) public view returns (uint256 cumulativeTransactionFee);
+    function getCumulativeTransactionFee(address pool) external view returns (uint256 cumulativeTransactionFee);
 
 }
