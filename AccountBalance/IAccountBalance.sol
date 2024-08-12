@@ -5,7 +5,6 @@ import "./IClearinghouse.sol";
 
 interface IAccountBalance {
     // 함수
-    function initialize(address _clearingHouse, address _marketRegistry, address _vault) external;
     function setKeeper(address newKeeper) external;
     function getMarkPrice(address baseToken) external view returns (uint256);
     function setIndexPrice(address baseToken, uint256 price) external;
@@ -19,7 +18,7 @@ interface IAccountBalance {
         address poolAddress
     ) external view returns (bool);
 
-    // Public 상태 변수들에 대한 getter 함수들
+    // 상태 변수에 대한 getter 함수들
     function lastFundingTimes(address baseToken) external view returns (uint256);
     function cumulativeLongFundingRates(address baseToken) external view returns (int256);
     function cumulativeShortFundingRates(address baseToken) external view returns (int256);
