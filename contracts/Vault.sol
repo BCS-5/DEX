@@ -2,15 +2,12 @@
 
 pragma solidity ^0.8.26;
 
-import { Initializable } from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
-import { ReentrancyGuardUpgradeable } from "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol";
-
 import { IVault } from "./interfaces/IVault.sol";
 import { IERC20Metadata } from "./interfaces/IERC20Metadata.sol";
 import { IERC20 } from "./v2-core-contracts/interfaces/IERC20.sol";
 import { SafeOwnable } from "./base/SafeOwnable.sol";
 
-contract Vault is IVault, Initializable, SafeOwnable, ReentrancyGuardUpgradeable {
+contract Vault is IVault, SafeOwnable {
 
 /// state variables
     // --------- IMMUTABLE ---------
@@ -69,7 +66,7 @@ contract Vault is IVault, Initializable, SafeOwnable, ReentrancyGuardUpgradeable
 
 /// functions
 // 초기 세팅
-    function initialize() external initializer {
+    function initialize() external {
         _decimals = 18;
         _settlementToken = 0x2FFA65948795F91D2FcB6E10c3F8cc4440d416a6;  // 주소 넣기
         _clearingHouse = 0x2FFA65948795F91D2FcB6E10c3F8cc4440d416a6;    // 주소 넣기
@@ -89,7 +86,7 @@ contract Vault is IVault, Initializable, SafeOwnable, ReentrancyGuardUpgradeable
 
 // 보증금 관리
     // 예치 - from == to == msg.sender
-    function deposit(uint256 amount) external override nonReentrant {
+    function deposit(uint256 amount) external override {
         address from = _msgSender();
         address token = _settlementToken;
         _deposit(from, from, token, amount);
@@ -99,7 +96,7 @@ contract Vault is IVault, Initializable, SafeOwnable, ReentrancyGuardUpgradeable
     function depositFor(
         address to,
         uint256 amount
-    ) external override nonReentrant {
+    ) external override {
         require(to != address(0), "V_DFZA");    // Deposit for zero address
 
         address from = _msgSender();
@@ -140,7 +137,6 @@ contract Vault is IVault, Initializable, SafeOwnable, ReentrancyGuardUpgradeable
     function withdraw(uint256 amount)
         external
         override
-        nonReentrant
     {
         address to = _msgSender();
         address token = _settlementToken;
@@ -148,7 +144,7 @@ contract Vault is IVault, Initializable, SafeOwnable, ReentrancyGuardUpgradeable
     }
 
     // 인출 - free collateral 전체
-    function withdrawAll() external override nonReentrant {
+    function withdrawAll() external override {
         address to = _msgSender();
         address token = _settlementToken;
         uint256 amount = getFreeCollateral(to);
