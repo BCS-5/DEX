@@ -3,7 +3,6 @@
 pragma solidity ^0.8.26;
 
 import { IVault } from "./interfaces/IVault.sol";
-import { IERC20Metadata } from "./interfaces/IERC20Metadata.sol";
 import { IERC20 } from "./v2-core-contracts/interfaces/IERC20.sol";
 import { SafeOwnable } from "./base/SafeOwnable.sol";
 
