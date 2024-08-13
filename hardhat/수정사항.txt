@@ -1,0 +1,34 @@
+AccountBalance:
+IClearinghouse => IClearingHouse로 수정
+
+constructor에 Ownable 추가
+
+1e15 => int256으로 형 변환
+
+setFundingRate에서 longOpenInterestValue, shortOpenInterestValue이 0이 아닐 때만 업데이트 하도록 수정
+
+
+markPrice와 indexPrice의 decimals를 맞춰주는 matchDecimals 함수 추가
+
+calculateFundingPayment에서 2**128 => 2**112로 수정
+
+calculateUnrealizedPnl함수에 decimals 고려하도록 수정
+
+checkLiquidation에서 수식을 (초기 보증금 + PNL + fundingpayment / 초기 보증금)의 값이 10%미만으로 내려가면 청산되도록 수정
+기존 수식은 보증금이 얼마있는지를 고려하지 않음
+
+
+Vault:
+function setSettlementToken(address clearingHouseAddr) 함수 추가
+
+constructor 추가 및 owner 설정
+
+claimReward에서  _deposit(address(this), user, token, amount) 제거(보증금만 늘어나면 됨)
+
+setCumulativeTransactionFee에서 곱했던거 다시 나누기 2**128 추가 
+
+setCumulativeTransactionFee에서 = => +=으로 수정
+
+getUserLP => userLP개수 반환하는 함수 추가
+
++ 지금 사용중인 보증금과 총 보증금의 구분이 없어서 입금 및 수익,손해는 총 보증금 변경, addLiquidity, removeLiquidity, openPosition, closePosition은 사용중인 보증금 변화하도록 수정 하기

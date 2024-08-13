@@ -2,7 +2,9 @@
 pragma solidity ^0.8.26;
 
 interface IMarketRegistry {
-    function createPool(string memory _name, string memory _symbol, uint8 _decimals) external returns(address, address);
+    event CreatePool(address poolAddress, address baseToken, address quoteToken);
+    
+    function createPool(string memory _name, string memory _symbol, uint8 _decimals) external;
 
     function setClearingHouse(address _clearingHouse) external;
     function setFactory(address _factory) external;
