@@ -389,6 +389,17 @@ describe("Perp account balance testing 1", () => {
     console.log(
       `포지션 종료 후 보증금: ${await vault.getTotalCollateral(deployer)}`
     );
+    console.log(
+      `account1 포지션 청산 전 보증금: ${await vault.getTotalCollateral(
+        account1
+      )}`
+    );
+    await clearingHouse.liquidate(account1, BASE, positionHash2);
+    console.log(
+      `account1 포지션 청산 후 보증금: ${await vault.getTotalCollateral(
+        account1
+      )}`
+    );
   });
 });
 
