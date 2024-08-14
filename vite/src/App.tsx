@@ -15,8 +15,8 @@ const App: FC = () => {
   return (
     <BrowserRouter>
       <Routes>
+        <Route path="/" element={<Home />} />
         <Route element={<Layout />}>
-          <Route path="/" element={<Home />} />
           <Route path="/trade" element={<Trade />} />
           <Route path="/market" element={<Market />} />
           <Route path="/trade" element={<Trade />} />
