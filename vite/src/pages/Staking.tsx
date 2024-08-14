@@ -1,4 +1,7 @@
 import { FC } from "react";
+import PoolTable from "../components/staking/PoolTable";
+import stakingBanner from "../images/staking/staking_banner.svg";
+import { useNavigate } from "react-router-dom";
 
 const poolData = [
   {
@@ -74,98 +77,37 @@ const poolData = [
 ];
 
 const Staking: FC = () => {
+  const navigate = useNavigate();
+
   return (
-    <div className="m-8 h-lvh bg-red-100">
-      <div className="flex justify-between">
-        <div className="flex gap-4">
-          <div>Staking</div>
-          <div>Claim</div>
+    <div className="flex flex-col min-h-screen bg-[#0F172A]">
+      <div className="mb-10">
+        <div className="relative justify-center">
+          <img src={stakingBanner} className="w-full" />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-white text-center">
+            <div className="font-bold text-5xl pb-2">DeFi liquidity pools</div>
+            <div className="text-2xl mt-2">Built on 조선안전 protocol</div>
+          </div>
         </div>
-        <button>create a pool</button>
       </div>
-      <div className="bg-blue-100 h-full">
-        <table className="w-full whitespace-normal table-fixed">
-          <colgroup>
-            <col className="w-[125px]" />
-            <col className="w-[350px]" />
-            <col className="w-[150px]" />
-            <col className="w-[175px]" />
-            <col className="w-[150px]" />
-          </colgroup>
-          <thead className="z-10 text-white bg-gray-800">
-            <th className="p-6">
-              <div className="flex justify-start">
-                <h5>Pool</h5>
-              </div>
-            </th>
-            <th className="p-6">
-              <div className="flex justify-start">
-                <div>
-                  <h5>Composition</h5>
-                </div>
-              </div>
-            </th>
-            <th className="p-6">
-              <div className="flex justify-end">
-                <div>
-                  <h5>Pool value</h5>
-                </div>
-                <div className="inline-block bal-icon flex items-center ml-1">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="16"
-                    height="16"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    className="feather feather-arrow-down"
-                  >
-                    <line x1="12" y1="5" x2="12" y2="19"></line>
-                    <polyline points="19 12 12 19 5 12"></polyline>
-                  </svg>
-                </div>
-              </div>
-            </th>
-            <th className="p-6">
-              <div className="flex justify-end">
-                <div>
-                  <h5>Volume (24h)</h5>
-                </div>
-              </div>
-            </th>
-            <th className="p-6">
-              <div className="flex justify-end">
-                <div>
-                  <h5>APR</h5>
-                </div>
-              </div>
-            </th>
-          </thead>
-          <tr>
-            <td className="text-right horizontalSticky bg-white dark:bg-gray-850 p-0 m-0 h-0"></td>
-            <td className="text-right bg-white dark:bg-gray-850 p-0 m-0 h-0"></td>
-            <td className="text-left bg-white dark:bg-gray-850 p-0 m-0 h-0"></td>
-            <td className="text-left bg-white dark:bg-gray-850 p-0 m-0 h-0"></td>
-            <td className="text-left bg-white dark:bg-gray-850 p-0 m-0 h-0"></td>
-          </tr>
-          {poolData.map((v, i) => (
-            <tr className="cursor-pointer">
-              <td className="p-6">
-                <img src={v.img} />
-              </td>
-              <td className="flex gap-2 p-6">
-                <div>usdt</div>
-                <div>{v.name}</div>
-              </td>
-              <td className="text-right p-6">${v.value}</td>
-              <td className="text-right p-6">${v.volume}</td>
-              <td className="text-right p-6">{v.APR}%</td>
-            </tr>
-          ))}
-        </table>
+      <div className="flex justify-center">
+        <div className="flex flex-col max-w-[1504px] w-full">
+          <div className="flex gap-3 font-bold">
+            <button
+              className="bg-[#1D283A] hover:bg-[#1E3A8A] text-white rounded-lg px-5 py-2 active:bg-[#1E3A8A]"
+              onClick={() => navigate("/staking")}
+            >
+              Staking
+            </button>
+            <button
+              className="bg-[#1D283A] hover:bg-[#1E3A8A] text-white rounded-lg px-5 py-2 active:bg-[#1E3A8A]"
+              onClick={() => navigate("/claim")}
+            >
+              Claim
+            </button>
+          </div>
+          <PoolTable />
+        </div>
       </div>
     </div>
   );

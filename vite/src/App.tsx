@@ -8,6 +8,8 @@ import Market from "./pages/Market";
 import Trade from "./pages/Trade";
 import Portfolio from "./pages/Portfolio";
 import Mint from "./pages/Mint";
+import Pool from "./pages/Pool";
+import Claim from "./pages/Claim";
 
 const App: FC = () => {
   return (
@@ -21,6 +23,8 @@ const App: FC = () => {
           <Route path="/portfolio" element={<Portfolio />} />
           <Route path="/mint" element={<Mint />} />
           <Route path="/staking" element={<Staking />} />
+          <Route path="/claim" element={<Claim />} />
+          <Route path="/pool" element={<Pool />} />
         </Route>
       </Routes>
     </BrowserRouter>
