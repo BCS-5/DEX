@@ -374,7 +374,7 @@ describe("Perp account balance testing 1", () => {
         pair
       )
     );
-    console.log(position1);
+    console.log(position2);
     console.log(
       `포지션 종료 전 보증금: ${await vault.getTotalCollateral(deployer)}`
     );
@@ -388,11 +388,14 @@ describe("Perp account balance testing 1", () => {
         account1
       )}`
     );
-    await clearingHouse.liquidate(account1, BASE, positionHash2);
+    await clearingHouse.liquidateBatch([account1], [BASE], [positionHash2]);
     console.log(
       `account1 포지션 청산 후 보증금: ${await vault.getTotalCollateral(
         account1
       )}`
+    );
+    console.log(
+      `deployer의 청산 보상 확인: ${await vault.getTotalCollateral(deployer)}`
     );
   });
 });

@@ -67,7 +67,7 @@ contract AccountBalance is Ownable {
     }
 
     // 마크 가격 조회 함수
-    function getMarkPrice(address baseToken) public view returns (uint256) {
+    function getMarkPrice(address baseToken) public view returns (uint256) {        
         address pairAddress = marketRegistry.getPool(baseToken);
         require(pairAddress != address(0), "Pool address is not set"); 
         
@@ -93,7 +93,44 @@ contract AccountBalance is Ownable {
         return indexPrices[baseToken];
     }
 
-    // 펀딩 비율 업데이트 함수
+    // 펀딩 비율 업데이트 함수    
+    // function setFundingRate(address baseToken) private {
+    //     uint256 currentTime = block.timestamp;
+    //     uint256 timePassed = currentTime - lastFundingTimes[baseToken];
+    //     if (timePassed == 0) return;
+
+    //     uint256 currentPrice = getIndexPrice(baseToken) * 1e18;
+    //     uint256 markPrice = getMarkPrice(baseToken);
+
+    //     // 가격 차이에 기반한 펀딩 비율 계산
+    //     int256 priceDelta = int256(currentPrice) - int256(markPrice);
+    //     int256 fundingRate = (priceDelta * int256(timePassed)) / (int256(currentPrice) * int256(1 days) / 1e36);//1e36 => decimal 맞추는거 생각하기.
+
+    //     // 펀딩 비율 제한 (-0.1% ~ 0.1%)
+    //     fundingRate = fundingRate > 1e15 ? 1e15 : (fundingRate < -1e15 ? -1e15 : fundingRate);
+
+    //     // 롱 포지션과 숏 포지션의 오픈 인터레스트 가져오기
+    //     uint256 longOpenInterestValue = getLongOpenInterest(baseToken);
+    //     uint256 shortOpenInterestValue = getShortOpenInterest(baseToken);
+
+    //     // 펀딩 비율 조정
+    //     int256 adjustedLongFundingRate;
+    //     int256 adjustedShortFundingRate;
+        
+    //     if (longOpenInterestValue > shortOpenInterestValue) {
+    //         adjustedLongFundingRate = (fundingRate * int256(shortOpenInterestValue)) / int256(longOpenInterestValue);
+    //         adjustedShortFundingRate = fundingRate;
+    //     } else {
+    //         adjustedLongFundingRate = fundingRate;
+    //         adjustedShortFundingRate = (fundingRate * int256(longOpenInterestValue)) / int256(shortOpenInterestValue);
+    //     }
+
+    //     // 누적 펀딩 비율 업데이트
+    //     cumulativeLongFundingRates[baseToken] += adjustedLongFundingRate;
+    //     cumulativeShortFundingRates[baseToken] += adjustedShortFundingRate;
+
+    //     lastFundingTimes[baseToken] = currentTime;
+    // }
     function setFundingRate(address baseToken) private {
         uint256 currentTime = block.timestamp;
         uint256 timePassed = currentTime - lastFundingTimes[baseToken];
@@ -136,6 +173,27 @@ contract AccountBalance is Ownable {
     }
 
     // 오픈 인터레스트 업데이트 함수
+    // function setOpenInterest(address baseToken, int256 positionSize, bool isLong) public {
+    //     require(msg.sender == address(iClearinghouse), "Only ClearingHouse can update"); // ClearingHouse만 업데이트 가능
+
+    //     if (isLong) {
+    //         if (positionSize > 0) {
+    //             longOpenInterest[baseToken] += uint256(positionSize);
+    //         } else {
+    //             longOpenInterest[baseToken] = longOpenInterest[baseToken] > uint256(-positionSize) 
+    //                 ? longOpenInterest[baseToken] - uint256(-positionSize) 
+    //                 : 0;
+    //         }
+    //     } else {
+    //         if (positionSize > 0) {
+    //             shortOpenInterest[baseToken] += uint256(positionSize);
+    //         } else {
+    //             shortOpenInterest[baseToken] = shortOpenInterest[baseToken] > uint256(-positionSize) 
+    //                 ? shortOpenInterest[baseToken] - uint256(-positionSize) 
+    //                 : 0;
+    //         }
+    //     }
+    // }
     function setOpenInterest(address baseToken, int256 positionSize, bool isLong) public {
         require(msg.sender == address(iClearinghouse), "Only ClearingHouse can update"); // ClearingHouse만 업데이트 가능
 
@@ -165,6 +223,28 @@ contract AccountBalance is Ownable {
     }
 
     // TWAP (Time-Weighted Average Price) 계산 함수
+    // function calculateTWAP(
+    //     address poolAddress,
+    //     address baseToken,
+    //     uint32 openPositionTimestamp,
+    //     uint256 priceCumulativeLast
+    // ) private view returns (uint256) {
+    //     IUniswapV2Pair pair = IUniswapV2Pair(poolAddress);
+
+    //     bool isToken0 = pair.token0() == baseToken;
+
+    //     uint256 currentPriceCumulative = isToken0
+    //         ? pair.price0CumulativeLast()
+    //         : pair.price1CumulativeLast();
+
+    //     uint256 timeElapsed = block.timestamp - openPositionTimestamp;
+
+    //     if (timeElapsed == 0) return 0;
+
+    //     uint256 priceDelta = currentPriceCumulative - priceCumulativeLast;
+
+    //     return priceDelta / timeElapsed;
+    // }
     function calculateTWAP(
         address poolAddress,
         address baseToken,
@@ -214,6 +294,11 @@ contract AccountBalance is Ownable {
         int256 fundingPayment;
         if (position.isLong) {
             // 롱 포지션 펀딩 지불액 계산
+            // fundingPayment = (
+            //     (cumulativeLongFundingRates[baseToken] - position.fundingRateCumulativeLast)
+            //     * int256(position.positionSize)
+            //     * int256(twap)
+            // ) / int256(2**128);
             fundingPayment = (
                 (cumulativeLongFundingRates[baseToken] - position.fundingRateCumulativeLast)
                 * int256(position.positionSize)
@@ -221,6 +306,11 @@ contract AccountBalance is Ownable {
             ) / (int256(2**112) * int256(1e18));
         } else {
             // 숏 포지션 펀딩 지불액 계산
+            // fundingPayment = (
+            //     (cumulativeShortFundingRates[baseToken] - position.fundingRateCumulativeLast)
+            //     * int256(position.positionSize)
+            //     * int256(twap)
+            // ) / int256(2**128);
             fundingPayment = (
                 (cumulativeShortFundingRates[baseToken] - position.fundingRateCumulativeLast)
                 * int256(position.positionSize)
@@ -238,14 +328,17 @@ contract AccountBalance is Ownable {
     ) public view returns (bool) {
         // PnL (손익) 계산
         int256 unrealizedPnl = calculateUnrealizedPnl(position, baseToken);
+        // uint256 positionNotional = position.positionSize * getIndexPrice(baseToken);
         // 펀딩 비용 계산
         int256 fundingPayment = calculateFundingPayment(position, baseToken, poolAddress);
         // accountValue 계산 시 펀딩 비용을 고려
+        // int256 accountValue = int256(position.openNotional) + unrealizedPnl + fundingPayment;
         int256 accountValue = int256(position.margin) + unrealizedPnl + fundingPayment;
         
         // 마진 비율 계산 (accountValue가 음수일 경우 처리)
         uint256 marginRatio;
         if (accountValue > 0) {
+            // marginRatio = (uint256(accountValue) * 100) / positionNotional;
             marginRatio = (uint256(accountValue) * 100) / position.margin;
         } else {
             marginRatio = 0;
@@ -258,6 +351,7 @@ contract AccountBalance is Ownable {
     // PnL (손익) 계산 함수
     function calculateUnrealizedPnl(IClearingHouse.Position memory position, address baseToken) internal view returns (int256) {
         uint256 currentPrice = getIndexPrice(baseToken);
+        // uint256 openPrice = position.openNotional / position.positionSize;
         uint256 openPrice = position.openNotional * 1e18 / position.positionSize;//decimal 고려
         uint8 decimals = IERC20(baseToken).decimals();
         (currentPrice, openPrice) = matchDecimals(currentPrice, openPrice, 18, 24 - decimals);    
@@ -268,6 +362,7 @@ contract AccountBalance is Ownable {
         } else {
             priceDelta = int256(openPrice) - int256(currentPrice);
         }
+        // return int256(position.positionSize) * priceDelta;
         return int256(position.positionSize) * priceDelta / int256(10**(12+decimals)); // decimals 18 => decimals 6
     }
 

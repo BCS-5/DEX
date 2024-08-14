@@ -237,6 +237,7 @@ contract Vault is IVault, SafeOwnable {
     // 보상 지급(Claim)
     function claimRewards(address user, address poolAddr) external {
         address token = _settlementToken;
+        // uint256 amount = (getCumulativeTransactionFee(poolAddr) - liquidityProviders[user][poolAddr].cumulativeTransactionFeeLast) * liquidityProviders[user][poolAddr].userLP;
         uint256 amount = (getCumulativeTransactionFee(poolAddr) - liquidityProviders[user][poolAddr].cumulativeTransactionFeeLast) * liquidityProviders[user][poolAddr].userLP / 2**128;
         // 보증금 업데이트
         collateral[user].totalCollateral += amount;
@@ -247,6 +248,7 @@ contract Vault is IVault, SafeOwnable {
 
     // pool 거래 수수료 업데이트
     function setCumulativeTransactionFee(address poolAddr, uint256 fee) external onlyClearingHouse {
+        // cumulativeTransactionFee[poolAddr] = fee * 2**128 / IERC20(poolAddr).totalSupply(); 
         cumulativeTransactionFee[poolAddr] += fee * 2**128 / IERC20(poolAddr).totalSupply(); 
     }
     

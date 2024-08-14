@@ -19,13 +19,12 @@ checkLiquidation에서 수식을 (초기 보증금 + PNL + fundingpayment / 초�
 
 
 Vault:
-function setSettlementToken(address clearingHouseAddr) 함수 추가
+function setSettlementToken(address settlementToken) 함수 추가
 
 constructor 추가 및 owner 설정
 
 claimReward에서  _deposit(address(this), user, token, amount) 제거(보증금만 늘어나면 됨)
-
-setCumulativeTransactionFee에서 곱했던거 다시 나누기 2**128 추가 
+나누기 2**128 추가 
 
 setCumulativeTransactionFee에서 = => +=으로 수정
 
