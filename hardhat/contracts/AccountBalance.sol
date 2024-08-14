@@ -181,6 +181,7 @@ contract AccountBalance is Ownable {
         return priceDelta / timeElapsed;
     }
 
+    // TWAP 계산 시 timeElapsed가 0보다 클 시  pair의 최신 가격 정보를 반영하여 누적 가격 반환   
     function _getPriceCumulativeLast(address baseToken, address poolAddress) private view returns(uint) {
         IUniswapV2Pair pair = IUniswapV2Pair(poolAddress);
         (uint112 _reserve0, uint112 _reserve1, uint32 blockTimestampLast) = pair.getReserves();

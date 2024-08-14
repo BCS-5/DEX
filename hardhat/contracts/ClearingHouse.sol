@@ -176,30 +176,36 @@ contract ClearingHouse is IClearingHouse, Ownable{
     }
 
     // 사용자에 의해 호출되는 포지션 종료
-    function closePosition (address baseToken, bytes32 positionHash, uint amountIn, uint amountOut, uint deadline) public {
-        _closePosition(msg.sender, baseToken, positionHash, amountIn, amountOut, deadline);
+    function closePosition (address baseToken, bytes32 positionHash, uint closePercent, uint slippageAdjustedAmount, uint deadline) public {
+        _closePosition(msg.sender, baseToken, positionHash, closePercent, slippageAdjustedAmount, deadline);
     }
 
     // 사용자 또는 청산자에 의해 호출되는 포지션 종료
-    function _closePosition(address trader, address baseToken, bytes32 positionHash, uint amountIn, uint amountOut, uint deadline) internal {
+    function _closePosition(address trader, address baseToken, bytes32 positionHash, uint closePercent, uint slippageAdjustedAmount, uint deadline) internal {
         address pool = IMarketRegistry(marketRegistry).getPool(baseToken);
         Position memory position = positionMap[trader][baseToken][positionHash];                
         
-        // fundingPayment AccountBalance에 계산 요청 
+        // fundingPayment AccountBalance에 계산 요청         
         int256 fundingPayment = IAccountBalance(accountBalance).calculateFundingPayment(position, baseToken, pool);
         {            
             address[] memory path = new address[](2);
             // Long: baseToken => USDT, Short: USDT => baseToken
             (path[0], path[1]) = position.isLong ? (baseToken, quoteToken ) : (quoteToken, baseToken);
             
-            (uint[] memory amounts, uint fee) = position.isLong ? _sell(trader, path, true, amountIn, amountOut, deadline) : _buy(trader, path, false, amountIn, amountOut, deadline);
-            (uint positionSize, uint closeNotional) = position.isLong ? (amounts[0], amounts[1]) : (amounts[1], amounts[0]);            
+            uint closePositionSize = closePercent * position.positionSize / 100;
+
+            (uint[] memory amounts, uint fee) = position.isLong ? _sell(trader, path, true, closePositionSize, slippageAdjustedAmount, deadline) : _buy(trader, path, false, slippageAdjustedAmount, closePositionSize, deadline);
             
             // 수수료 적립
             IVault(vault).setCumulativeTransactionFee(pool, fee);
 
+            if(!position.isLong) {
+                (amounts[0], amounts[1]) = (amounts[1], amounts[0]); // amounts[0]: closePositionSize, amounts[1]: closeNotional                             
+            }            
+
             // 포지션의 크기에 비례하는 수익 또는 손해, 펀딩비 정산
-            _settlePNL(position, trader, positionSize, closeNotional, fundingPayment);
+            _settlePNL(position, trader, amounts[0], amounts[1], fundingPayment);  
+            
         }        
 
         // 종료된 포지션의 크기만큼 Long, Short OI 감소
@@ -293,8 +299,8 @@ contract ClearingHouse is IClearingHouse, Ownable{
         uint clearingFee = position.margin / 100;
         position.margin -= clearingFee;
 
-        (uint amountIn, uint amountOut) = position.isLong ? (position.positionSize, 0) : (type(uint256).max, position.positionSize);
-        _closePosition(trader, baseToken, positionHash, amountIn, amountOut, block.timestamp);
+        uint slippageAdjustedAmount = position.isLong ? 0 : type(uint256).max;
+        _closePosition(trader, baseToken, positionHash, 100, slippageAdjustedAmount, block.timestamp);
 
         //vault에 msg.sender의 보증금 clearingFee만큼 증가 요청
          IVault(vault).updateCollateral(msg.sender, clearingFee, true);

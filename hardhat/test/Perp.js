@@ -379,13 +379,7 @@ describe("Perp account balance testing 1", () => {
       `포지션 종료 전 보증금: ${await vault.getTotalCollateral(deployer)}`
     );
     // function closePosition (address baseToken, bytes32 positionHash, uint amountIn, uint amountOut, uint deadline)
-    await clearingHouse.closePosition(
-      BASE,
-      positionHash1,
-      position1[1],
-      0,
-      maxUint256
-    );
+    await clearingHouse.closePosition(BASE, positionHash1, 100, 0, maxUint256);
     console.log(
       `포지션 종료 후 보증금: ${await vault.getTotalCollateral(deployer)}`
     );
