@@ -58,8 +58,8 @@
 // export default App;
 
 import { FC } from "react";
-import ProviderSetup from "../components/ProviderSetup";
-import UseProvider from "../components/UseProvider";
+// import ProviderSetup from "../components/ProviderSetup";
+// import UseProvider from "../components/UseProvider";
 import bg_img from "../img/home.png";
 import page_1 from "../img/page_1.png";
 import page_2 from "../img/page_2.png";
@@ -76,8 +76,8 @@ const App: FC = () => {
   return (
     <>
       <div className="bg-red-100">
-        <ProviderSetup />
-        <UseProvider />
+        {/* <ProviderSetup />
+        <UseProvider /> */}
       </div>
       <section
         className="relative flex items-center justify-left bg-cover bg-center h-screen"

@@ -35,9 +35,11 @@ interface IClearingHouse {
     function addLiquidity (address baseToken, uint quoteAmount, uint quoteMinimum, uint baseTokenMinimum, uint deadline) external ;
     function removeLiquidity (address baseToken, uint liquidity, uint quoteMinimum, uint baseTokenMinimum, uint deadline) external  ;
 
+    function openPosition(address baseToken, bool isExactInput, bool isLong, uint margin, uint amountIn, uint amountOut, uint deadline) external;
+    function openPositionForOrderBook(address trader, address baseToken, bool isExactInput, bool isLong, uint margin, uint amountIn, uint amountOut, uint deadline) external;
 
-    function openPosition(address baseToken, bool isExactInput, bool isLong, uint margin, uint amountIn, uint amountOut, uint deadline) external ;
-    function closePosition (address baseToken, bytes32 positionHash, uint amountIn, uint amountOut, uint deadline) external ;
+    function closePosition (address baseToken, bytes32 positionHash, uint amountIn, uint amountOut, uint deadline) external;
+    function closePositionForOrderBook (address trader, address baseToken, bytes32 positionHash, uint closePercent, uint slippageAdjustedAmount, uint deadline) external;
 
     function liquidateBatch (address[] memory traders, address[] memory baseTokens, bytes32[] memory positionHashs) external ;
     function liquidate(address trader, address baseToken, bytes32 positionHash) external ;
@@ -48,11 +50,12 @@ interface IClearingHouse {
     function setRouter(address _router) external;
     function setVault(address _vault) external;
     function setQuoteToken(address _quete) external;
-    
+    function setOrderBook(address _orderBook) external;    
 
     function getMarketRegistry() external view returns(address) ;
     function getRouter() external view returns(address); 
     function getVault() external view returns(address);
+    function getOrderBook() external view returns(address);
     function getPosition(address trader, address baseToken, bytes32 positionHash) external view returns(Position memory);
 
     function getpositionHash(address trader, address baseToken, uint salt) external pure returns(bytes32);

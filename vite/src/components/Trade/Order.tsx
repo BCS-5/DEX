@@ -8,13 +8,18 @@ const Order: FC = () => {
   const [isLong, setIsLong] = useState<boolean>(true);
   const [isMarket, setIsMarket] = useState<boolean>(true);
 
-  const [quoteValue, _setQuoteValue] = useState<string>("0");
-  const [baseValue, _setBaseValue] = useState<string>("0");
+  const [limitPrice, _setLimitPrice] = useState<string>("");
+  const [quoteValue, _setQuoteValue] = useState<string>("");
+  const [baseValue, _setBaseValue] = useState<string>("");
 
   const [isExactInput, setIsExactInput] = useState<boolean>(false);
 
   const [leverageValue, _setLeverageValue] = useState<number>(50);
   const [focusLeverage, setFocusLeverage] = useState<boolean>(false);
+
+  const setLimitPrice = (value: string) => {
+    _setLimitPrice(value);
+  };
 
   const setQuoteValue = (value: string) => {
     setIsExactInput(true);
@@ -31,7 +36,7 @@ const Order: FC = () => {
   };
 
   return (
-    <div className="flex flex-col justify-between w-full h-full bg-[#131722] text-[#72768f] p-4 pt-7 overflow-x-hidden">
+    <div className="flex flex-col justify-between w-full h-full bg-[#131722] text-[#72768f] p-4 pt-7 overflow-x-hidden border-l-[0.6px] border-[#363A45]">
       <div className="flex flex-col">
         <div className="flex w-full items-center  h-10 justify-between rounded-[4px] bg-[#242534]">
           <button
@@ -73,12 +78,26 @@ const Order: FC = () => {
           </button>
         </div>
         <div className="flex flex-col w-full gap-2">
+          {!isMarket && (
+            <OrderInput
+              value={limitPrice}
+              setValue={setLimitPrice}
+              symbol="USD"
+              placeholder="Limit Price"
+            />
+          )}
           <OrderInput
             value={quoteValue}
             setValue={setQuoteValue}
             symbol="USDT"
+            placeholder="Collateral"
           />
-          <OrderInput value={baseValue} setValue={setBaseValue} symbol="BTC" />
+          <OrderInput
+            value={baseValue}
+            setValue={setBaseValue}
+            symbol="BTC"
+            placeholder="Position Size"
+          />
         </div>
         <div className="flex flex-col w-full mt-4">
           <div>Leverage </div>
@@ -131,7 +150,7 @@ const Order: FC = () => {
           className="flex justify-center items-center rounded-[4px]  w-full  h-12 text-white mt-4"
           style={{ background: "linear-gradient(90deg, #e05fbb, #4250f4)" }}
         >
-          Wallet Connect
+          Connect Wallet
         </button>
       </div>
     </div>

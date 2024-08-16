@@ -4,7 +4,7 @@ const OrderHistory: FC = () => {
   const [selectedMenu, setSelectedMenu] = useState<number>(0);
   const [height, setHeight] = useState<number>(300);
   return (
-    <div className="flex flex-col w-full bg-[#131722] text-[#72768f] font-semibold border-t-[0.6px] border-r-[0.6px]  border-[#363A45] overflow-hidden">
+    <div className="flex flex-col w-full bg-[#131722] text-[#72768f] font-semibold border-t-[0.6px] border-[#363A45] overflow-hidden">
       <div className="flex justify-between w-full h-12 items-center px-4 border-b-[0.6px] border-[#363A45] ">
         <div className="flex gap-4 ">
           <button
@@ -28,7 +28,7 @@ const OrderHistory: FC = () => {
         </div>
         <div className="flex">
           <button className="text-[#729aff]">Close All</button>
-          <div className="border-r-[0.6px] border-r-[#363A45] h-6 mx-4"></div>
+          <div className="h-6 mx-4"></div>
           <button>All My Position &gt;</button>
         </div>
       </div>

@@ -2,8 +2,8 @@
   "_format": "hh-sol-cache-2",
   "files": {
     "C:\\Users\\안성민\\Desktop\\DEX\\hardhat\\contracts\\AccountBalance.sol": {
-      "lastModificationDate": 1723613005533,
-      "contentHash": "6a6cc89266ab1d7616a8e745511552fe",
+      "lastModificationDate": 1723619347802,
+      "contentHash": "3f2aff8560a076ddf75d4737e2991a75",
       "sourceName": "contracts/AccountBalance.sol",
       "solcConfig": {
         "version": "0.8.26",
@@ -45,119 +45,6 @@
         "AccountBalance"
       ]
     },
-    "C:\\Users\\안성민\\Desktop\\DEX\\hardhat\\node_modules\\@openzeppelin\\contracts-upgradeable\\proxy\\utils\\Initializable.sol": {
-      "lastModificationDate": 1723357126468,
-      "contentHash": "f0cedd674b4863ee90d1521a92ab82df",
-      "sourceName": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol",
-      "solcConfig": {
-        "version": "0.8.20",
-        "settings": {
-          "optimizer": {
-            "enabled": true,
-            "runs": 999999
-          },
-          "evmVersion": "paris",
-          "outputSelection": {
-            "*": {
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata"
-              ],
-              "": [
-                "ast"
-              ]
-            }
-          }
-        }
-      },
-      "imports": [],
-      "versionPragmas": [
-        "^0.8.20"
-      ],
-      "artifacts": [
-        "Initializable"
-      ]
-    },
-    "C:\\Users\\안성민\\Desktop\\DEX\\hardhat\\node_modules\\@openzeppelin\\contracts-upgradeable\\utils\\ContextUpgradeable.sol": {
-      "lastModificationDate": 1723357126338,
-      "contentHash": "c28aaa25d083a9a55bd9ec9e0b785122",
-      "sourceName": "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol",
-      "solcConfig": {
-        "version": "0.8.20",
-        "settings": {
-          "optimizer": {
-            "enabled": true,
-            "runs": 999999
-          },
-          "evmVersion": "paris",
-          "outputSelection": {
-            "*": {
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata"
-              ],
-              "": [
-                "ast"
-              ]
-            }
-          }
-        }
-      },
-      "imports": [
-        "../proxy/utils/Initializable.sol"
-      ],
-      "versionPragmas": [
-        "^0.8.20"
-      ],
-      "artifacts": [
-        "ContextUpgradeable"
-      ]
-    },
-    "C:\\Users\\안성민\\Desktop\\DEX\\hardhat\\node_modules\\@openzeppelin\\contracts-upgradeable\\access\\OwnableUpgradeable.sol": {
-      "lastModificationDate": 1723357126470,
-      "contentHash": "77d30f3cd93f46b80b6f8f1ebc574ee4",
-      "sourceName": "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol",
-      "solcConfig": {
-        "version": "0.8.20",
-        "settings": {
-          "optimizer": {
-            "enabled": true,
-            "runs": 999999
-          },
-          "evmVersion": "paris",
-          "outputSelection": {
-            "*": {
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata"
-              ],
-              "": [
-                "ast"
-              ]
-            }
-          }
-        }
-      },
-      "imports": [
-        "../utils/ContextUpgradeable.sol",
-        "../proxy/utils/Initializable.sol"
-      ],
-      "versionPragmas": [
-        "^0.8.20"
-      ],
-      "artifacts": [
-        "OwnableUpgradeable"
-      ]
-    },
     "C:\\Users\\안성민\\Desktop\\DEX\\hardhat\\node_modules\\@uniswap\\v2-core\\contracts\\interfaces\\IUniswapV2Pair.sol": {
       "lastModificationDate": 1723275081597,
       "contentHash": "3fa31c3860f2b9585c3a98c64850829e",
@@ -193,125 +80,10 @@
         "IUniswapV2Pair"
       ]
     },
-    "C:\\Users\\안성민\\Desktop\\DEX\\hardhat\\node_modules\\@uniswap\\v2-core\\contracts\\interfaces\\IUniswapV2Factory.sol": {
-      "lastModificationDate": 1723275081596,
-      "contentHash": "ec39b5372f4f4d52101b4da561e2aee6",
-      "sourceName": "@uniswap/v2-core/contracts/interfaces/IUniswapV2Factory.sol",
-      "solcConfig": {
-        "version": "0.6.6",
-        "settings": {
-          "optimizer": {
-            "enabled": true,
-            "runs": 1000000
-          },
-          "outputSelection": {
-            "*": {
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata"
-              ],
-              "": [
-                "ast"
-              ]
-            }
-          }
-        }
-      },
-      "imports": [],
-      "versionPragmas": [
-        ">=0.5.0"
-      ],
-      "artifacts": [
-        "IUniswapV2Factory"
-      ]
-    },
-    "C:\\Users\\안성민\\Desktop\\DEX\\hardhat\\contracts\\v2-periphery-contracts\\UniswapV2Router02.sol": {
-      "lastModificationDate": 1723297456765,
-      "contentHash": "171f68c8844b671c68ee12bd4d2183c8",
-      "sourceName": "contracts/v2-periphery-contracts/UniswapV2Router02.sol",
-      "solcConfig": {
-        "version": "0.6.6",
-        "settings": {
-          "optimizer": {
-            "enabled": true,
-            "runs": 1000000
-          },
-          "outputSelection": {
-            "*": {
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata"
-              ],
-              "": [
-                "ast"
-              ]
-            }
-          }
-        }
-      },
-      "imports": [
-        "@uniswap/v2-core/contracts/interfaces/IUniswapV2Factory.sol",
-        "@uniswap/lib/contracts/libraries/TransferHelper.sol",
-        "./interfaces/IUniswapV2Router02.sol",
-        "./libraries/UniswapV2Library.sol",
-        "./libraries/SafeMath.sol",
-        "./interfaces/IERC20.sol",
-        "./interfaces/IWETH.sol"
-      ],
-      "versionPragmas": [
-        "=0.6.6"
-      ],
-      "artifacts": [
-        "UniswapV2Router02"
-      ]
-    },
-    "C:\\Users\\안성민\\Desktop\\DEX\\hardhat\\contracts\\v2-periphery-contracts\\interfaces\\IUniswapV2Router02.sol": {
-      "lastModificationDate": 1723075344509,
-      "contentHash": "80fe41a75f324f97077b644aada14867",
-      "sourceName": "contracts/v2-periphery-contracts/interfaces/IUniswapV2Router02.sol",
-      "solcConfig": {
-        "version": "0.6.6",
-        "settings": {
-          "optimizer": {
-            "enabled": true,
-            "runs": 1000000
-          },
-          "outputSelection": {
-            "*": {
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata"
-              ],
-              "": [
-                "ast"
-              ]
-            }
-          }
-        }
-      },
-      "imports": [
-        "./IUniswapV2Router01.sol"
-      ],
-      "versionPragmas": [
-        ">=0.6.2"
-      ],
-      "artifacts": [
-        "IUniswapV2Router02"
-      ]
-    },
-    "C:\\Users\\안성민\\Desktop\\DEX\\hardhat\\contracts\\v2-periphery-contracts\\libraries\\UniswapV2Library.sol": {
-      "lastModificationDate": 1723296037824,
-      "contentHash": "e212cf3b4a08b9820066157cd798dfb1",
-      "sourceName": "contracts/v2-periphery-contracts/libraries/UniswapV2Library.sol",
+    "C:\\Users\\안성민\\Desktop\\DEX\\hardhat\\contracts\\v2-periphery-contracts\\libraries\\UniswapV2OracleLibrary.sol": {
+      "lastModificationDate": 1723619347813,
+      "contentHash": "43970c1e6c5eecb8024d77979748c609",
+      "sourceName": "contracts/v2-periphery-contracts/libraries/UniswapV2OracleLibrary.sol",
       "solcConfig": {
         "version": "0.6.6",
         "settings": {
@@ -337,194 +109,19 @@
       },
       "imports": [
         "@uniswap/v2-core/contracts/interfaces/IUniswapV2Pair.sol",
-        "./SafeMath.sol"
+        "@uniswap/lib/contracts/libraries/FixedPoint.sol"
       ],
       "versionPragmas": [
         ">=0.5.0"
       ],
       "artifacts": [
-        "UniswapV2Library"
+        "UniswapV2OracleLibrary"
       ]
     },
-    "C:\\Users\\안성민\\Desktop\\DEX\\hardhat\\contracts\\v2-periphery-contracts\\libraries\\SafeMath.sol": {
-      "lastModificationDate": 1723288450214,
-      "contentHash": "5c1a77bf4696b29e1c42de054bd4bd4a",
-      "sourceName": "contracts/v2-periphery-contracts/libraries/SafeMath.sol",
-      "solcConfig": {
-        "version": "0.6.6",
-        "settings": {
-          "optimizer": {
-            "enabled": true,
-            "runs": 1000000
-          },
-          "outputSelection": {
-            "*": {
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata"
-              ],
-              "": [
-                "ast"
-              ]
-            }
-          }
-        }
-      },
-      "imports": [],
-      "versionPragmas": [
-        "=0.6.6"
-      ],
-      "artifacts": [
-        "SafeMath"
-      ]
-    },
-    "C:\\Users\\안성민\\Desktop\\DEX\\hardhat\\contracts\\v2-periphery-contracts\\interfaces\\IERC20.sol": {
-      "lastModificationDate": 1723075344508,
-      "contentHash": "2290ca2ec74690ed9024d986955ef431",
-      "sourceName": "contracts/v2-periphery-contracts/interfaces/IERC20.sol",
-      "solcConfig": {
-        "version": "0.6.6",
-        "settings": {
-          "optimizer": {
-            "enabled": true,
-            "runs": 1000000
-          },
-          "outputSelection": {
-            "*": {
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata"
-              ],
-              "": [
-                "ast"
-              ]
-            }
-          }
-        }
-      },
-      "imports": [],
-      "versionPragmas": [
-        ">=0.5.0"
-      ],
-      "artifacts": [
-        "IERC20"
-      ]
-    },
-    "C:\\Users\\안성민\\Desktop\\DEX\\hardhat\\contracts\\v2-periphery-contracts\\interfaces\\IWETH.sol": {
-      "lastModificationDate": 1723075344509,
-      "contentHash": "066282b2add4d34a23450b209485d030",
-      "sourceName": "contracts/v2-periphery-contracts/interfaces/IWETH.sol",
-      "solcConfig": {
-        "version": "0.6.6",
-        "settings": {
-          "optimizer": {
-            "enabled": true,
-            "runs": 1000000
-          },
-          "outputSelection": {
-            "*": {
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata"
-              ],
-              "": [
-                "ast"
-              ]
-            }
-          }
-        }
-      },
-      "imports": [],
-      "versionPragmas": [
-        ">=0.5.0"
-      ],
-      "artifacts": [
-        "IWETH"
-      ]
-    },
-    "C:\\Users\\안성민\\Desktop\\DEX\\hardhat\\node_modules\\@uniswap\\lib\\contracts\\libraries\\TransferHelper.sol": {
-      "lastModificationDate": 1723275423528,
-      "contentHash": "7fad4038612c5f040ebd746a3e58e0db",
-      "sourceName": "@uniswap/lib/contracts/libraries/TransferHelper.sol",
-      "solcConfig": {
-        "version": "0.6.6",
-        "settings": {
-          "optimizer": {
-            "enabled": true,
-            "runs": 1000000
-          },
-          "outputSelection": {
-            "*": {
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata"
-              ],
-              "": [
-                "ast"
-              ]
-            }
-          }
-        }
-      },
-      "imports": [],
-      "versionPragmas": [
-        ">=0.6.0"
-      ],
-      "artifacts": [
-        "TransferHelper"
-      ]
-    },
-    "C:\\Users\\안성민\\Desktop\\DEX\\hardhat\\contracts\\v2-periphery-contracts\\interfaces\\IUniswapV2Router01.sol": {
-      "lastModificationDate": 1723075344509,
-      "contentHash": "9afab4f62c4c89da823ae70d778ac67c",
-      "sourceName": "contracts/v2-periphery-contracts/interfaces/IUniswapV2Router01.sol",
-      "solcConfig": {
-        "version": "0.6.6",
-        "settings": {
-          "optimizer": {
-            "enabled": true,
-            "runs": 1000000
-          },
-          "outputSelection": {
-            "*": {
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata"
-              ],
-              "": [
-                "ast"
-              ]
-            }
-          }
-        }
-      },
-      "imports": [],
-      "versionPragmas": [
-        ">=0.6.2"
-      ],
-      "artifacts": [
-        "IUniswapV2Router01"
-      ]
-    },
-    "C:\\Users\\안성민\\Desktop\\DEX\\hardhat\\contracts\\v2-periphery-contracts\\UniswapV2Router01.sol": {
-      "lastModificationDate": 1723075344505,
-      "contentHash": "b389b32d725f17badcff6912309e57ea",
-      "sourceName": "contracts/v2-periphery-contracts/UniswapV2Router01.sol",
+    "C:\\Users\\안성민\\Desktop\\DEX\\hardhat\\node_modules\\@uniswap\\lib\\contracts\\libraries\\FixedPoint.sol": {
+      "lastModificationDate": 1723275423527,
+      "contentHash": "9c78b75695500ec38a85fea7d923fbf0",
+      "sourceName": "@uniswap/lib/contracts/libraries/FixedPoint.sol",
       "solcConfig": {
         "version": "0.6.6",
         "settings": {
@@ -549,244 +146,15 @@
         }
       },
       "imports": [
-        "@uniswap/v2-core/contracts/interfaces/IUniswapV2Factory.sol",
-        "@uniswap/lib/contracts/libraries/TransferHelper.sol",
-        "./libraries/UniswapV2Library.sol",
-        "./interfaces/IUniswapV2Router01.sol",
-        "./interfaces/IERC20.sol",
-        "./interfaces/IWETH.sol"
+        "./FullMath.sol",
+        "./Babylonian.sol",
+        "./BitMath.sol"
       ],
       "versionPragmas": [
-        "=0.6.6"
+        ">=0.4.0"
       ],
       "artifacts": [
-        "UniswapV2Router01"
-      ]
-    },
-    "C:\\Users\\안성민\\Desktop\\DEX\\hardhat\\contracts\\v2-periphery-contracts\\UniswapV2Migrator.sol": {
-      "lastModificationDate": 1723075344504,
-      "contentHash": "e35e6aa56d0c96f0c4610798f6427e74",
-      "sourceName": "contracts/v2-periphery-contracts/UniswapV2Migrator.sol",
-      "solcConfig": {
-        "version": "0.6.6",
-        "settings": {
-          "optimizer": {
-            "enabled": true,
-            "runs": 1000000
-          },
-          "outputSelection": {
-            "*": {
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata"
-              ],
-              "": [
-                "ast"
-              ]
-            }
-          }
-        }
-      },
-      "imports": [
-        "@uniswap/lib/contracts/libraries/TransferHelper.sol",
-        "./interfaces/IUniswapV2Migrator.sol",
-        "./interfaces/V1/IUniswapV1Factory.sol",
-        "./interfaces/V1/IUniswapV1Exchange.sol",
-        "./interfaces/IUniswapV2Router01.sol",
-        "./interfaces/IERC20.sol"
-      ],
-      "versionPragmas": [
-        "=0.6.6"
-      ],
-      "artifacts": [
-        "UniswapV2Migrator"
-      ]
-    },
-    "C:\\Users\\안성민\\Desktop\\DEX\\hardhat\\contracts\\v2-periphery-contracts\\interfaces\\IUniswapV2Migrator.sol": {
-      "lastModificationDate": 1723075344508,
-      "contentHash": "f6d9bd899835f28456739e6fe02059f5",
-      "sourceName": "contracts/v2-periphery-contracts/interfaces/IUniswapV2Migrator.sol",
-      "solcConfig": {
-        "version": "0.6.6",
-        "settings": {
-          "optimizer": {
-            "enabled": true,
-            "runs": 1000000
-          },
-          "outputSelection": {
-            "*": {
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata"
-              ],
-              "": [
-                "ast"
-              ]
-            }
-          }
-        }
-      },
-      "imports": [],
-      "versionPragmas": [
-        ">=0.5.0"
-      ],
-      "artifacts": [
-        "IUniswapV2Migrator"
-      ]
-    },
-    "C:\\Users\\안성민\\Desktop\\DEX\\hardhat\\contracts\\v2-periphery-contracts\\interfaces\\V1\\IUniswapV1Factory.sol": {
-      "lastModificationDate": 1723075344510,
-      "contentHash": "28233b48ea6bfc76bfdd986ad1aca6cc",
-      "sourceName": "contracts/v2-periphery-contracts/interfaces/V1/IUniswapV1Factory.sol",
-      "solcConfig": {
-        "version": "0.6.6",
-        "settings": {
-          "optimizer": {
-            "enabled": true,
-            "runs": 1000000
-          },
-          "outputSelection": {
-            "*": {
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata"
-              ],
-              "": [
-                "ast"
-              ]
-            }
-          }
-        }
-      },
-      "imports": [],
-      "versionPragmas": [
-        ">=0.5.0"
-      ],
-      "artifacts": [
-        "IUniswapV1Factory"
-      ]
-    },
-    "C:\\Users\\안성민\\Desktop\\DEX\\hardhat\\contracts\\v2-periphery-contracts\\interfaces\\V1\\IUniswapV1Exchange.sol": {
-      "lastModificationDate": 1723075344509,
-      "contentHash": "5d488e4502cbe3de5a448ef986bcd754",
-      "sourceName": "contracts/v2-periphery-contracts/interfaces/V1/IUniswapV1Exchange.sol",
-      "solcConfig": {
-        "version": "0.6.6",
-        "settings": {
-          "optimizer": {
-            "enabled": true,
-            "runs": 1000000
-          },
-          "outputSelection": {
-            "*": {
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata"
-              ],
-              "": [
-                "ast"
-              ]
-            }
-          }
-        }
-      },
-      "imports": [],
-      "versionPragmas": [
-        ">=0.5.0"
-      ],
-      "artifacts": [
-        "IUniswapV1Exchange"
-      ]
-    },
-    "C:\\Users\\안성민\\Desktop\\DEX\\hardhat\\contracts\\v2-periphery-contracts\\test\\RouterEventEmitter.sol": {
-      "lastModificationDate": 1723075344512,
-      "contentHash": "65c2324f29e7fafc0db09c65988ece5f",
-      "sourceName": "contracts/v2-periphery-contracts/test/RouterEventEmitter.sol",
-      "solcConfig": {
-        "version": "0.6.6",
-        "settings": {
-          "optimizer": {
-            "enabled": true,
-            "runs": 1000000
-          },
-          "outputSelection": {
-            "*": {
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata"
-              ],
-              "": [
-                "ast"
-              ]
-            }
-          }
-        }
-      },
-      "imports": [
-        "../interfaces/IUniswapV2Router01.sol"
-      ],
-      "versionPragmas": [
-        "=0.6.6"
-      ],
-      "artifacts": [
-        "RouterEventEmitter"
-      ]
-    },
-    "C:\\Users\\안성민\\Desktop\\DEX\\hardhat\\contracts\\v2-periphery-contracts\\libraries\\UniswapV2LiquidityMathLibrary.sol": {
-      "lastModificationDate": 1723288448861,
-      "contentHash": "27b4446ff5031e125970be79f99cf816",
-      "sourceName": "contracts/v2-periphery-contracts/libraries/UniswapV2LiquidityMathLibrary.sol",
-      "solcConfig": {
-        "version": "0.6.6",
-        "settings": {
-          "optimizer": {
-            "enabled": true,
-            "runs": 1000000
-          },
-          "outputSelection": {
-            "*": {
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata"
-              ],
-              "": [
-                "ast"
-              ]
-            }
-          }
-        }
-      },
-      "imports": [
-        "@uniswap/v2-core/contracts/interfaces/IUniswapV2Pair.sol",
-        "@uniswap/v2-core/contracts/interfaces/IUniswapV2Factory.sol",
-        "@uniswap/lib/contracts/libraries/Babylonian.sol",
-        "@uniswap/lib/contracts/libraries/FullMath.sol",
-        "./SafeMath.sol",
-        "./UniswapV2Library.sol"
-      ],
-      "versionPragmas": [
-        ">=0.5.0"
-      ],
-      "artifacts": [
-        "UniswapV2LiquidityMathLibrary"
+        "FixedPoint"
       ]
     },
     "C:\\Users\\안성민\\Desktop\\DEX\\hardhat\\node_modules\\@uniswap\\lib\\contracts\\libraries\\FullMath.sol": {
@@ -859,45 +227,6 @@
         "Babylonian"
       ]
     },
-    "C:\\Users\\안성민\\Desktop\\DEX\\hardhat\\node_modules\\@uniswap\\lib\\contracts\\libraries\\FixedPoint.sol": {
-      "lastModificationDate": 1723275423527,
-      "contentHash": "9c78b75695500ec38a85fea7d923fbf0",
-      "sourceName": "@uniswap/lib/contracts/libraries/FixedPoint.sol",
-      "solcConfig": {
-        "version": "0.6.6",
-        "settings": {
-          "optimizer": {
-            "enabled": true,
-            "runs": 1000000
-          },
-          "outputSelection": {
-            "*": {
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata"
-              ],
-              "": [
-                "ast"
-              ]
-            }
-          }
-        }
-      },
-      "imports": [
-        "./FullMath.sol",
-        "./Babylonian.sol",
-        "./BitMath.sol"
-      ],
-      "versionPragmas": [
-        ">=0.4.0"
-      ],
-      "artifacts": [
-        "FixedPoint"
-      ]
-    },
     "C:\\Users\\안성민\\Desktop\\DEX\\hardhat\\node_modules\\@uniswap\\lib\\contracts\\libraries\\BitMath.sol": {
       "lastModificationDate": 1723275423526,
       "contentHash": "9268c1120c875c017e31caad9aa38921",
@@ -933,10 +262,10 @@
         "BitMath"
       ]
     },
-    "C:\\Users\\안성민\\Desktop\\DEX\\hardhat\\contracts\\v2-periphery-contracts\\libraries\\UniswapV2OracleLibrary.sol": {
-      "lastModificationDate": 1723075344510,
-      "contentHash": "43970c1e6c5eecb8024d77979748c609",
-      "sourceName": "contracts/v2-periphery-contracts/libraries/UniswapV2OracleLibrary.sol",
+    "C:\\Users\\안성민\\Desktop\\DEX\\hardhat\\contracts\\v2-periphery-contracts\\libraries\\UniswapV2LiquidityMathLibrary.sol": {
+      "lastModificationDate": 1723619347813,
+      "contentHash": "27b4446ff5031e125970be79f99cf816",
+      "sourceName": "contracts/v2-periphery-contracts/libraries/UniswapV2LiquidityMathLibrary.sol",
       "solcConfig": {
         "version": "0.6.6",
         "settings": {
@@ -962,17 +291,391 @@
       },
       "imports": [
         "@uniswap/v2-core/contracts/interfaces/IUniswapV2Pair.sol",
-        "@uniswap/lib/contracts/libraries/FixedPoint.sol"
+        "@uniswap/v2-core/contracts/interfaces/IUniswapV2Factory.sol",
+        "@uniswap/lib/contracts/libraries/Babylonian.sol",
+        "@uniswap/lib/contracts/libraries/FullMath.sol",
+        "./SafeMath.sol",
+        "./UniswapV2Library.sol"
       ],
       "versionPragmas": [
         ">=0.5.0"
       ],
       "artifacts": [
-        "UniswapV2OracleLibrary"
+        "UniswapV2LiquidityMathLibrary"
+      ]
+    },
+    "C:\\Users\\안성민\\Desktop\\DEX\\hardhat\\contracts\\v2-periphery-contracts\\libraries\\UniswapV2Library.sol": {
+      "lastModificationDate": 1723619347813,
+      "contentHash": "e212cf3b4a08b9820066157cd798dfb1",
+      "sourceName": "contracts/v2-periphery-contracts/libraries/UniswapV2Library.sol",
+      "solcConfig": {
+        "version": "0.6.6",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 1000000
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "@uniswap/v2-core/contracts/interfaces/IUniswapV2Pair.sol",
+        "./SafeMath.sol"
+      ],
+      "versionPragmas": [
+        ">=0.5.0"
+      ],
+      "artifacts": [
+        "UniswapV2Library"
+      ]
+    },
+    "C:\\Users\\안성민\\Desktop\\DEX\\hardhat\\contracts\\v2-periphery-contracts\\libraries\\SafeMath.sol": {
+      "lastModificationDate": 1723619347812,
+      "contentHash": "5c1a77bf4696b29e1c42de054bd4bd4a",
+      "sourceName": "contracts/v2-periphery-contracts/libraries/SafeMath.sol",
+      "solcConfig": {
+        "version": "0.6.6",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 1000000
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "=0.6.6"
+      ],
+      "artifacts": [
+        "SafeMath"
+      ]
+    },
+    "C:\\Users\\안성민\\Desktop\\DEX\\hardhat\\node_modules\\@uniswap\\v2-core\\contracts\\interfaces\\IUniswapV2Factory.sol": {
+      "lastModificationDate": 1723275081596,
+      "contentHash": "ec39b5372f4f4d52101b4da561e2aee6",
+      "sourceName": "@uniswap/v2-core/contracts/interfaces/IUniswapV2Factory.sol",
+      "solcConfig": {
+        "version": "0.6.6",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 1000000
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        ">=0.5.0"
+      ],
+      "artifacts": [
+        "IUniswapV2Factory"
+      ]
+    },
+    "C:\\Users\\안성민\\Desktop\\DEX\\hardhat\\contracts\\v2-periphery-contracts\\UniswapV2Router02.sol": {
+      "lastModificationDate": 1723619347810,
+      "contentHash": "171f68c8844b671c68ee12bd4d2183c8",
+      "sourceName": "contracts/v2-periphery-contracts/UniswapV2Router02.sol",
+      "solcConfig": {
+        "version": "0.6.6",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 1000000
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "@uniswap/v2-core/contracts/interfaces/IUniswapV2Factory.sol",
+        "@uniswap/lib/contracts/libraries/TransferHelper.sol",
+        "./interfaces/IUniswapV2Router02.sol",
+        "./libraries/UniswapV2Library.sol",
+        "./libraries/SafeMath.sol",
+        "./interfaces/IERC20.sol",
+        "./interfaces/IWETH.sol"
+      ],
+      "versionPragmas": [
+        "=0.6.6"
+      ],
+      "artifacts": [
+        "UniswapV2Router02"
+      ]
+    },
+    "C:\\Users\\안성민\\Desktop\\DEX\\hardhat\\contracts\\v2-periphery-contracts\\interfaces\\IUniswapV2Router02.sol": {
+      "lastModificationDate": 1723619347811,
+      "contentHash": "80fe41a75f324f97077b644aada14867",
+      "sourceName": "contracts/v2-periphery-contracts/interfaces/IUniswapV2Router02.sol",
+      "solcConfig": {
+        "version": "0.6.6",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 1000000
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "./IUniswapV2Router01.sol"
+      ],
+      "versionPragmas": [
+        ">=0.6.2"
+      ],
+      "artifacts": [
+        "IUniswapV2Router02"
+      ]
+    },
+    "C:\\Users\\안성민\\Desktop\\DEX\\hardhat\\contracts\\v2-periphery-contracts\\interfaces\\IERC20.sol": {
+      "lastModificationDate": 1723619347811,
+      "contentHash": "2290ca2ec74690ed9024d986955ef431",
+      "sourceName": "contracts/v2-periphery-contracts/interfaces/IERC20.sol",
+      "solcConfig": {
+        "version": "0.6.6",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 1000000
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        ">=0.5.0"
+      ],
+      "artifacts": [
+        "IERC20"
+      ]
+    },
+    "C:\\Users\\안성민\\Desktop\\DEX\\hardhat\\contracts\\v2-periphery-contracts\\interfaces\\IWETH.sol": {
+      "lastModificationDate": 1723619347811,
+      "contentHash": "066282b2add4d34a23450b209485d030",
+      "sourceName": "contracts/v2-periphery-contracts/interfaces/IWETH.sol",
+      "solcConfig": {
+        "version": "0.6.6",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 1000000
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        ">=0.5.0"
+      ],
+      "artifacts": [
+        "IWETH"
+      ]
+    },
+    "C:\\Users\\안성민\\Desktop\\DEX\\hardhat\\node_modules\\@uniswap\\lib\\contracts\\libraries\\TransferHelper.sol": {
+      "lastModificationDate": 1723275423528,
+      "contentHash": "7fad4038612c5f040ebd746a3e58e0db",
+      "sourceName": "@uniswap/lib/contracts/libraries/TransferHelper.sol",
+      "solcConfig": {
+        "version": "0.6.6",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 1000000
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        ">=0.6.0"
+      ],
+      "artifacts": [
+        "TransferHelper"
+      ]
+    },
+    "C:\\Users\\안성민\\Desktop\\DEX\\hardhat\\contracts\\v2-periphery-contracts\\interfaces\\IUniswapV2Router01.sol": {
+      "lastModificationDate": 1723619347811,
+      "contentHash": "9afab4f62c4c89da823ae70d778ac67c",
+      "sourceName": "contracts/v2-periphery-contracts/interfaces/IUniswapV2Router01.sol",
+      "solcConfig": {
+        "version": "0.6.6",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 1000000
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        ">=0.6.2"
+      ],
+      "artifacts": [
+        "IUniswapV2Router01"
+      ]
+    },
+    "C:\\Users\\안성민\\Desktop\\DEX\\hardhat\\contracts\\v2-periphery-contracts\\UniswapV2Router01.sol": {
+      "lastModificationDate": 1723619347810,
+      "contentHash": "b389b32d725f17badcff6912309e57ea",
+      "sourceName": "contracts/v2-periphery-contracts/UniswapV2Router01.sol",
+      "solcConfig": {
+        "version": "0.6.6",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 1000000
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "@uniswap/v2-core/contracts/interfaces/IUniswapV2Factory.sol",
+        "@uniswap/lib/contracts/libraries/TransferHelper.sol",
+        "./libraries/UniswapV2Library.sol",
+        "./interfaces/IUniswapV2Router01.sol",
+        "./interfaces/IERC20.sol",
+        "./interfaces/IWETH.sol"
+      ],
+      "versionPragmas": [
+        "=0.6.6"
+      ],
+      "artifacts": [
+        "UniswapV2Router01"
       ]
     },
     "C:\\Users\\안성민\\Desktop\\DEX\\hardhat\\contracts\\v2-periphery-contracts\\test\\ERC20.sol": {
-      "lastModificationDate": 1723075344512,
+      "lastModificationDate": 1723619347813,
       "contentHash": "bea33121b8f6de6b55cb10476376518a",
       "sourceName": "contracts/v2-periphery-contracts/test/ERC20.sol",
       "solcConfig": {
@@ -1009,7 +712,7 @@
       ]
     },
     "C:\\Users\\안성민\\Desktop\\DEX\\hardhat\\contracts\\v2-periphery-contracts\\test\\DeflatingERC20.sol": {
-      "lastModificationDate": 1723075344512,
+      "lastModificationDate": 1723619347813,
       "contentHash": "95281ba667bb23f503859730ec60a790",
       "sourceName": "contracts/v2-periphery-contracts/test/DeflatingERC20.sol",
       "solcConfig": {
@@ -1043,6 +746,190 @@
       ],
       "artifacts": [
         "DeflatingERC20"
+      ]
+    },
+    "C:\\Users\\안성민\\Desktop\\DEX\\hardhat\\contracts\\v2-periphery-contracts\\UniswapV2Migrator.sol": {
+      "lastModificationDate": 1723619347810,
+      "contentHash": "e35e6aa56d0c96f0c4610798f6427e74",
+      "sourceName": "contracts/v2-periphery-contracts/UniswapV2Migrator.sol",
+      "solcConfig": {
+        "version": "0.6.6",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 1000000
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "@uniswap/lib/contracts/libraries/TransferHelper.sol",
+        "./interfaces/IUniswapV2Migrator.sol",
+        "./interfaces/V1/IUniswapV1Factory.sol",
+        "./interfaces/V1/IUniswapV1Exchange.sol",
+        "./interfaces/IUniswapV2Router01.sol",
+        "./interfaces/IERC20.sol"
+      ],
+      "versionPragmas": [
+        "=0.6.6"
+      ],
+      "artifacts": [
+        "UniswapV2Migrator"
+      ]
+    },
+    "C:\\Users\\안성민\\Desktop\\DEX\\hardhat\\contracts\\v2-periphery-contracts\\interfaces\\IUniswapV2Migrator.sol": {
+      "lastModificationDate": 1723619347811,
+      "contentHash": "f6d9bd899835f28456739e6fe02059f5",
+      "sourceName": "contracts/v2-periphery-contracts/interfaces/IUniswapV2Migrator.sol",
+      "solcConfig": {
+        "version": "0.6.6",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 1000000
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        ">=0.5.0"
+      ],
+      "artifacts": [
+        "IUniswapV2Migrator"
+      ]
+    },
+    "C:\\Users\\안성민\\Desktop\\DEX\\hardhat\\contracts\\v2-periphery-contracts\\interfaces\\V1\\IUniswapV1Exchange.sol": {
+      "lastModificationDate": 1723619347812,
+      "contentHash": "5d488e4502cbe3de5a448ef986bcd754",
+      "sourceName": "contracts/v2-periphery-contracts/interfaces/V1/IUniswapV1Exchange.sol",
+      "solcConfig": {
+        "version": "0.6.6",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 1000000
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        ">=0.5.0"
+      ],
+      "artifacts": [
+        "IUniswapV1Exchange"
+      ]
+    },
+    "C:\\Users\\안성민\\Desktop\\DEX\\hardhat\\contracts\\v2-periphery-contracts\\interfaces\\V1\\IUniswapV1Factory.sol": {
+      "lastModificationDate": 1723619347812,
+      "contentHash": "28233b48ea6bfc76bfdd986ad1aca6cc",
+      "sourceName": "contracts/v2-periphery-contracts/interfaces/V1/IUniswapV1Factory.sol",
+      "solcConfig": {
+        "version": "0.6.6",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 1000000
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        ">=0.5.0"
+      ],
+      "artifacts": [
+        "IUniswapV1Factory"
+      ]
+    },
+    "C:\\Users\\안성민\\Desktop\\DEX\\hardhat\\contracts\\v2-periphery-contracts\\test\\RouterEventEmitter.sol": {
+      "lastModificationDate": 1723619347814,
+      "contentHash": "65c2324f29e7fafc0db09c65988ece5f",
+      "sourceName": "contracts/v2-periphery-contracts/test/RouterEventEmitter.sol",
+      "solcConfig": {
+        "version": "0.6.6",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 1000000
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "../interfaces/IUniswapV2Router01.sol"
+      ],
+      "versionPragmas": [
+        "=0.6.6"
+      ],
+      "artifacts": [
+        "RouterEventEmitter"
       ]
     },
     "C:\\Users\\안성민\\Desktop\\DEX\\hardhat\\node_modules\\@uniswap\\v2-periphery\\contracts\\interfaces\\IUniswapV2Router02.sol": {
@@ -1118,8 +1005,8 @@
       ]
     },
     "C:\\Users\\안성민\\Desktop\\DEX\\hardhat\\contracts\\console.sol": {
-      "lastModificationDate": 1723265556740,
-      "contentHash": "896f68942c3a20e9ae3c3c5bfd3add54",
+      "lastModificationDate": 1723619347805,
+      "contentHash": "38838fba37f71a2697652c782ee639b3",
       "sourceName": "contracts/console.sol",
       "solcConfig": {
         "version": "0.6.6",
@@ -1152,43 +1039,8 @@
         "console"
       ]
     },
-    "C:\\Users\\안성민\\Desktop\\DEX\\hardhat\\contracts\\interfaces\\IERC20.sol": {
-      "lastModificationDate": 1723357882039,
-      "contentHash": "04ec1620003e83d9f0583705a5ad1733",
-      "sourceName": "contracts/interfaces/IERC20.sol",
-      "solcConfig": {
-        "version": "0.6.6",
-        "settings": {
-          "optimizer": {
-            "enabled": true,
-            "runs": 1000000
-          },
-          "outputSelection": {
-            "*": {
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata"
-              ],
-              "": [
-                "ast"
-              ]
-            }
-          }
-        }
-      },
-      "imports": [],
-      "versionPragmas": [
-        ">=0.5.0"
-      ],
-      "artifacts": [
-        "IERC20"
-      ]
-    },
     "C:\\Users\\안성민\\Desktop\\DEX\\hardhat\\contracts\\v2-core-contracts\\interfaces\\IERC20.sol": {
-      "lastModificationDate": 1723177626453,
+      "lastModificationDate": 1723619347808,
       "contentHash": "2290ca2ec74690ed9024d986955ef431",
       "sourceName": "contracts/v2-core-contracts/interfaces/IERC20.sol",
       "solcConfig": {
@@ -1223,7 +1075,7 @@
       ]
     },
     "C:\\Users\\안성민\\Desktop\\DEX\\hardhat\\contracts\\v2-core-contracts\\interfaces\\IUniswapV2Callee.sol": {
-      "lastModificationDate": 1723177627768,
+      "lastModificationDate": 1723619347808,
       "contentHash": "dee30d5845c0662c462da74fbe109539",
       "sourceName": "contracts/v2-core-contracts/interfaces/IUniswapV2Callee.sol",
       "solcConfig": {
@@ -1258,7 +1110,7 @@
       ]
     },
     "C:\\Users\\안성민\\Desktop\\DEX\\hardhat\\contracts\\v2-core-contracts\\interfaces\\IUniswapV2Factory.sol": {
-      "lastModificationDate": 1723075344502,
+      "lastModificationDate": 1723619347808,
       "contentHash": "51d78f670a7cb6d7aa4d8096f82a99c6",
       "sourceName": "contracts/v2-core-contracts/interfaces/IUniswapV2Factory.sol",
       "solcConfig": {
@@ -1293,7 +1145,7 @@
       ]
     },
     "C:\\Users\\안성민\\Desktop\\DEX\\hardhat\\contracts\\v2-core-contracts\\interfaces\\IUniswapV2ERC20.sol": {
-      "lastModificationDate": 1723075344502,
+      "lastModificationDate": 1723619347808,
       "contentHash": "605345701334b98242fd4108573ae444",
       "sourceName": "contracts/v2-core-contracts/interfaces/IUniswapV2ERC20.sol",
       "solcConfig": {
@@ -1328,7 +1180,7 @@
       ]
     },
     "C:\\Users\\안성민\\Desktop\\DEX\\hardhat\\contracts\\v2-core-contracts\\interfaces\\IUniswapV2Pair.sol": {
-      "lastModificationDate": 1723075344503,
+      "lastModificationDate": 1723619347809,
       "contentHash": "d021d78f40daea7a0f06e1d2eed0e968",
       "sourceName": "contracts/v2-core-contracts/interfaces/IUniswapV2Pair.sol",
       "solcConfig": {
@@ -1362,8 +1214,43 @@
         "IUniswapV2Pair"
       ]
     },
+    "C:\\Users\\안성민\\Desktop\\DEX\\hardhat\\contracts\\interfaces\\IERC20.sol": {
+      "lastModificationDate": 1723619347806,
+      "contentHash": "04ec1620003e83d9f0583705a5ad1733",
+      "sourceName": "contracts/interfaces/IERC20.sol",
+      "solcConfig": {
+        "version": "0.6.6",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 1000000
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        ">=0.5.0"
+      ],
+      "artifacts": [
+        "IERC20"
+      ]
+    },
     "C:\\Users\\안성민\\Desktop\\DEX\\hardhat\\contracts\\v2-periphery-contracts\\test\\WETH9.sol": {
-      "lastModificationDate": 1723075344513,
+      "lastModificationDate": 1723619347814,
       "contentHash": "6499b8c76657ae2329633573dac36b43",
       "sourceName": "contracts/v2-periphery-contracts/test/WETH9.sol",
       "solcConfig": {
@@ -1397,10 +1284,10 @@
         "WETH9"
       ]
     },
-    "C:\\Users\\안성민\\Desktop\\DEX\\hardhat\\contracts\\Vault.sol": {
-      "lastModificationDate": 1723516357726,
-      "contentHash": "ba1585ab4a9454d1b1721280e4312ff6",
-      "sourceName": "contracts/Vault.sol",
+    "C:\\Users\\안성민\\Desktop\\DEX\\hardhat\\contracts\\MarketRegistry.sol": {
+      "lastModificationDate": 1723619347803,
+      "contentHash": "965516dd3dc29e7439e1328f837a37f7",
+      "sourceName": "contracts/MarketRegistry.sol",
       "solcConfig": {
         "version": "0.8.26",
         "settings": {
@@ -1426,16 +1313,16 @@
         }
       },
       "imports": [
-        "./interfaces/IVault.sol",
-        "./v2-core-contracts/interfaces/IERC20.sol",
-        "./base/SafeOwnable.sol",
-        "./console.sol"
+        "@openzeppelin/contracts/access/Ownable.sol",
+        "@uniswap/v2-core/contracts/interfaces/IUniswapV2Factory.sol",
+        "./VirtualToken.sol",
+        "./interfaces/IMarketRegistry.sol"
       ],
       "versionPragmas": [
-        "^0.8.26"
+        ">=0.8.2 < 0.9.0"
       ],
       "artifacts": [
-        "Vault"
+        "MarketRegistry"
       ]
     },
     "C:\\Users\\안성민\\Desktop\\DEX\\hardhat\\node_modules\\@openzeppelin\\contracts\\access\\Ownable.sol": {
@@ -1512,50 +1399,9 @@
         "Context"
       ]
     },
-    "C:\\Users\\안성민\\Desktop\\DEX\\hardhat\\contracts\\MarketRegistry.sol": {
-      "lastModificationDate": 1723367478866,
-      "contentHash": "965516dd3dc29e7439e1328f837a37f7",
-      "sourceName": "contracts/MarketRegistry.sol",
-      "solcConfig": {
-        "version": "0.8.26",
-        "settings": {
-          "optimizer": {
-            "enabled": true,
-            "runs": 999999
-          },
-          "evmVersion": "paris",
-          "outputSelection": {
-            "*": {
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata"
-              ],
-              "": [
-                "ast"
-              ]
-            }
-          }
-        }
-      },
-      "imports": [
-        "@openzeppelin/contracts/access/Ownable.sol",
-        "@uniswap/v2-core/contracts/interfaces/IUniswapV2Factory.sol",
-        "./VirtualToken.sol",
-        "./interfaces/IMarketRegistry.sol"
-      ],
-      "versionPragmas": [
-        ">=0.8.2 < 0.9.0"
-      ],
-      "artifacts": [
-        "MarketRegistry"
-      ]
-    },
     "C:\\Users\\안성민\\Desktop\\DEX\\hardhat\\contracts\\interfaces\\IClearingHouse.sol": {
-      "lastModificationDate": 1723530827392,
-      "contentHash": "d166f6e3fce803684f9e2a5795c6eeeb",
+      "lastModificationDate": 1723798193220,
+      "contentHash": "a55f076403b6e6722642c38060de5b90",
       "sourceName": "contracts/interfaces/IClearingHouse.sol",
       "solcConfig": {
         "version": "0.8.26",
@@ -1597,8 +1443,8 @@
       ]
     },
     "C:\\Users\\안성민\\Desktop\\DEX\\hardhat\\contracts\\ClearingHouse.sol": {
-      "lastModificationDate": 1723614473429,
-      "contentHash": "5f23c0e0b164c5e5035d66b040ca85bf",
+      "lastModificationDate": 1723798150052,
+      "contentHash": "acc42d3f464f7d2d86d9b60dfb67c82a",
       "sourceName": "contracts/ClearingHouse.sol",
       "solcConfig": {
         "version": "0.8.26",
@@ -1644,7 +1490,7 @@
       ]
     },
     "C:\\Users\\안성민\\Desktop\\DEX\\hardhat\\contracts\\interfaces\\IVault.sol": {
-      "lastModificationDate": 1723428751430,
+      "lastModificationDate": 1723619347806,
       "contentHash": "5b50ecda430f237705d9d745f1569dcc",
       "sourceName": "contracts/interfaces/IVault.sol",
       "solcConfig": {
@@ -1679,10 +1525,10 @@
         "IVault"
       ]
     },
-    "C:\\Users\\안성민\\Desktop\\DEX\\hardhat\\contracts\\interfaces\\IAccountBalance.sol": {
-      "lastModificationDate": 1723440963425,
-      "contentHash": "844f2cad51ea0c8a98b634831a2b8b1c",
-      "sourceName": "contracts/interfaces/IAccountBalance.sol",
+    "C:\\Users\\안성민\\Desktop\\DEX\\hardhat\\contracts\\Vault.sol": {
+      "lastModificationDate": 1723619347803,
+      "contentHash": "086cf6f8536efffa1730ee4948bbb5fa",
+      "sourceName": "contracts/Vault.sol",
       "solcConfig": {
         "version": "0.8.26",
         "settings": {
@@ -1708,91 +1554,22 @@
         }
       },
       "imports": [
-        "./IClearingHouse.sol"
+        "./interfaces/IVault.sol",
+        "./v2-core-contracts/interfaces/IERC20.sol",
+        "./base/SafeOwnable.sol",
+        "./console.sol"
       ],
       "versionPragmas": [
         "^0.8.26"
       ],
       "artifacts": [
-        "IAccountBalance"
+        "Vault"
       ]
     },
-    "C:\\Users\\안성민\\Desktop\\DEX\\hardhat\\contracts\\interfaces\\IMarketRegistry.sol": {
-      "lastModificationDate": 1723366692810,
-      "contentHash": "f209f2d3b5004752320e84abd7f19e24",
-      "sourceName": "contracts/interfaces/IMarketRegistry.sol",
-      "solcConfig": {
-        "version": "0.8.26",
-        "settings": {
-          "optimizer": {
-            "enabled": true,
-            "runs": 999999
-          },
-          "evmVersion": "paris",
-          "outputSelection": {
-            "*": {
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata"
-              ],
-              "": [
-                "ast"
-              ]
-            }
-          }
-        }
-      },
-      "imports": [],
-      "versionPragmas": [
-        "^0.8.26"
-      ],
-      "artifacts": [
-        "IMarketRegistry"
-      ]
-    },
-    "C:\\Users\\안성민\\Desktop\\DEX\\hardhat\\contracts\\libraries\\UniswapV2Library.sol": {
-      "lastModificationDate": 1723368290323,
-      "contentHash": "eb0b4213062864804f0419f20e160761",
-      "sourceName": "contracts/libraries/UniswapV2Library.sol",
-      "solcConfig": {
-        "version": "0.8.26",
-        "settings": {
-          "optimizer": {
-            "enabled": true,
-            "runs": 999999
-          },
-          "evmVersion": "paris",
-          "outputSelection": {
-            "*": {
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata"
-              ],
-              "": [
-                "ast"
-              ]
-            }
-          }
-        }
-      },
-      "imports": [],
-      "versionPragmas": [
-        "^0.8.26"
-      ],
-      "artifacts": [
-        "UniswapV2Library"
-      ]
-    },
-    "C:\\Users\\안성민\\Desktop\\DEX\\hardhat\\contracts\\VirtualToken.sol": {
-      "lastModificationDate": 1723357783195,
-      "contentHash": "86fb7b4603052c9113050cbc58f685e1",
-      "sourceName": "contracts/VirtualToken.sol",
+    "C:\\Users\\안성민\\Desktop\\DEX\\hardhat\\contracts\\base\\SafeOwnable.sol": {
+      "lastModificationDate": 1723619347805,
+      "contentHash": "fd02b084b0e5fe7764346fbe262c2e4d",
+      "sourceName": "contracts/base/SafeOwnable.sol",
       "solcConfig": {
         "version": "0.8.26",
         "settings": {
@@ -1818,18 +1595,91 @@
         }
       },
       "imports": [
-        "./interfaces/IERC20.sol"
+        "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol"
       ],
       "versionPragmas": [
-        "^0.8.26"
+        "0.8.26"
       ],
       "artifacts": [
-        "ERC20",
-        "VirtualToken"
+        "SafeOwnable"
+      ]
+    },
+    "C:\\Users\\안성민\\Desktop\\DEX\\hardhat\\node_modules\\@openzeppelin\\contracts-upgradeable\\utils\\ContextUpgradeable.sol": {
+      "lastModificationDate": 1723357126338,
+      "contentHash": "c28aaa25d083a9a55bd9ec9e0b785122",
+      "sourceName": "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol",
+      "solcConfig": {
+        "version": "0.8.20",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 999999
+          },
+          "evmVersion": "paris",
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "../proxy/utils/Initializable.sol"
+      ],
+      "versionPragmas": [
+        "^0.8.20"
+      ],
+      "artifacts": [
+        "ContextUpgradeable"
+      ]
+    },
+    "C:\\Users\\안성민\\Desktop\\DEX\\hardhat\\node_modules\\@openzeppelin\\contracts-upgradeable\\proxy\\utils\\Initializable.sol": {
+      "lastModificationDate": 1723357126468,
+      "contentHash": "f0cedd674b4863ee90d1521a92ab82df",
+      "sourceName": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol",
+      "solcConfig": {
+        "version": "0.8.20",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 999999
+          },
+          "evmVersion": "paris",
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "^0.8.20"
+      ],
+      "artifacts": [
+        "Initializable"
       ]
     },
     "C:\\Users\\안성민\\Desktop\\DEX\\hardhat\\contracts\\v2-core-contracts\\UniswapV2Pair.sol": {
-      "lastModificationDate": 1723075344502,
+      "lastModificationDate": 1723619347807,
       "contentHash": "b36d1733cf5e4be37d6aa2ebdeaa657a",
       "sourceName": "contracts/v2-core-contracts/UniswapV2Pair.sol",
       "solcConfig": {
@@ -1872,7 +1722,7 @@
       ]
     },
     "C:\\Users\\안성민\\Desktop\\DEX\\hardhat\\contracts\\v2-core-contracts\\UniswapV2Factory.sol": {
-      "lastModificationDate": 1723075344501,
+      "lastModificationDate": 1723619347807,
       "contentHash": "d11e6f227d62998403ec093773bfa291",
       "sourceName": "contracts/v2-core-contracts/UniswapV2Factory.sol",
       "solcConfig": {
@@ -1910,7 +1760,7 @@
       ]
     },
     "C:\\Users\\안성민\\Desktop\\DEX\\hardhat\\contracts\\v2-core-contracts\\libraries\\UQ112x112.sol": {
-      "lastModificationDate": 1723075344504,
+      "lastModificationDate": 1723619347809,
       "contentHash": "b4c8a4d6e325bff8a4002ae0681eb036",
       "sourceName": "contracts/v2-core-contracts/libraries/UQ112x112.sol",
       "solcConfig": {
@@ -1945,7 +1795,7 @@
       ]
     },
     "C:\\Users\\안성민\\Desktop\\DEX\\hardhat\\contracts\\v2-core-contracts\\libraries\\Math.sol": {
-      "lastModificationDate": 1723075344503,
+      "lastModificationDate": 1723619347809,
       "contentHash": "807b5a3ee256f814ef1aeb0996fd9a85",
       "sourceName": "contracts/v2-core-contracts/libraries/Math.sol",
       "solcConfig": {
@@ -1980,7 +1830,7 @@
       ]
     },
     "C:\\Users\\안성민\\Desktop\\DEX\\hardhat\\contracts\\v2-core-contracts\\UniswapV2ERC20.sol": {
-      "lastModificationDate": 1723075344501,
+      "lastModificationDate": 1723619347807,
       "contentHash": "91a2001b4697613fd016ad98df162eff",
       "sourceName": "contracts/v2-core-contracts/UniswapV2ERC20.sol",
       "solcConfig": {
@@ -2018,7 +1868,7 @@
       ]
     },
     "C:\\Users\\안성민\\Desktop\\DEX\\hardhat\\contracts\\v2-core-contracts\\libraries\\SafeMath.sol": {
-      "lastModificationDate": 1723075344503,
+      "lastModificationDate": 1723619347809,
       "contentHash": "acf692d86aa69bcd2fe982bd93189262",
       "sourceName": "contracts/v2-core-contracts/libraries/SafeMath.sol",
       "solcConfig": {
@@ -2053,7 +1903,7 @@
       ]
     },
     "C:\\Users\\안성민\\Desktop\\DEX\\hardhat\\contracts\\v2-core-contracts\\test\\ERC20.sol": {
-      "lastModificationDate": 1723075344504,
+      "lastModificationDate": 1723619347809,
       "contentHash": "5da3646d8bb418f39a51cc5b61c8b988",
       "sourceName": "contracts/v2-core-contracts/test/ERC20.sol",
       "solcConfig": {
@@ -2089,10 +1939,48 @@
         "ERC20"
       ]
     },
-    "C:\\Users\\안성민\\Desktop\\DEX\\hardhat\\contracts\\VirtualToken2.sol": {
-      "lastModificationDate": 1723357776822,
-      "contentHash": "56674db8b7518dcb418c1f6a515606fc",
-      "sourceName": "contracts/VirtualToken2.sol",
+    "C:\\Users\\안성민\\Desktop\\DEX\\hardhat\\contracts\\interfaces\\IAccountBalance.sol": {
+      "lastModificationDate": 1723619347806,
+      "contentHash": "844f2cad51ea0c8a98b634831a2b8b1c",
+      "sourceName": "contracts/interfaces/IAccountBalance.sol",
+      "solcConfig": {
+        "version": "0.8.26",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 999999
+          },
+          "evmVersion": "paris",
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "./IClearingHouse.sol"
+      ],
+      "versionPragmas": [
+        "^0.8.26"
+      ],
+      "artifacts": [
+        "IAccountBalance"
+      ]
+    },
+    "C:\\Users\\안성민\\Desktop\\DEX\\hardhat\\contracts\\interfaces\\IMarketRegistry.sol": {
+      "lastModificationDate": 1723619347806,
+      "contentHash": "f209f2d3b5004752320e84abd7f19e24",
+      "sourceName": "contracts/interfaces/IMarketRegistry.sol",
       "solcConfig": {
         "version": "0.8.26",
         "settings": {
@@ -2122,14 +2010,49 @@
         "^0.8.26"
       ],
       "artifacts": [
-        "ERC20",
-        "VirtualToken2"
+        "IMarketRegistry"
       ]
     },
-    "C:\\Users\\안성민\\Desktop\\DEX\\hardhat\\contracts\\base\\SafeOwnable.sol": {
-      "lastModificationDate": 1723377033296,
-      "contentHash": "fd02b084b0e5fe7764346fbe262c2e4d",
-      "sourceName": "contracts/base/SafeOwnable.sol",
+    "C:\\Users\\안성민\\Desktop\\DEX\\hardhat\\contracts\\libraries\\UniswapV2Library.sol": {
+      "lastModificationDate": 1723619347807,
+      "contentHash": "eb0b4213062864804f0419f20e160761",
+      "sourceName": "contracts/libraries/UniswapV2Library.sol",
+      "solcConfig": {
+        "version": "0.8.26",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 999999
+          },
+          "evmVersion": "paris",
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "^0.8.26"
+      ],
+      "artifacts": [
+        "UniswapV2Library"
+      ]
+    },
+    "C:\\Users\\안성민\\Desktop\\DEX\\hardhat\\contracts\\VirtualToken.sol": {
+      "lastModificationDate": 1723619347803,
+      "contentHash": "86fb7b4603052c9113050cbc58f685e1",
+      "sourceName": "contracts/VirtualToken.sol",
       "solcConfig": {
         "version": "0.8.26",
         "settings": {
@@ -2155,17 +2078,54 @@
         }
       },
       "imports": [
-        "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol"
+        "./interfaces/IERC20.sol"
       ],
       "versionPragmas": [
-        "0.8.26"
+        "^0.8.26"
       ],
       "artifacts": [
-        "SafeOwnable"
+        "ERC20",
+        "VirtualToken"
+      ]
+    },
+    "C:\\Users\\안성민\\Desktop\\DEX\\hardhat\\contracts\\libraries\\UQ112x112.sol": {
+      "lastModificationDate": 1723619347806,
+      "contentHash": "be17a59a09c3ee12aa7bfde2401dc565",
+      "sourceName": "contracts/libraries/UQ112x112.sol",
+      "solcConfig": {
+        "version": "0.8.26",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 999999
+          },
+          "evmVersion": "paris",
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "=0.8.26"
+      ],
+      "artifacts": [
+        "UQ112x112"
       ]
     },
     "C:\\Users\\안성민\\Desktop\\DEX\\hardhat\\contracts\\USDT.sol": {
-      "lastModificationDate": 1723516383393,
+      "lastModificationDate": 1723619347803,
       "contentHash": "c3aa9a9bf2375e6b062b837ef39948e8",
       "sourceName": "contracts/USDT.sol",
       "solcConfig": {
@@ -2208,10 +2168,10 @@
         "UpgradedStandardToken"
       ]
     },
-    "C:\\Users\\안성민\\Desktop\\DEX\\hardhat\\contracts\\libraries\\UQ112x112.sol": {
-      "lastModificationDate": 1723527511294,
-      "contentHash": "be17a59a09c3ee12aa7bfde2401dc565",
-      "sourceName": "contracts/libraries/UQ112x112.sol",
+    "C:\\Users\\안성민\\Desktop\\DEX\\hardhat\\contracts\\VirtualToken2.sol": {
+      "lastModificationDate": 1723619347804,
+      "contentHash": "56674db8b7518dcb418c1f6a515606fc",
+      "sourceName": "contracts/VirtualToken2.sol",
       "solcConfig": {
         "version": "0.8.26",
         "settings": {
@@ -2238,10 +2198,11 @@
       },
       "imports": [],
       "versionPragmas": [
-        "=0.8.26"
+        "^0.8.26"
       ],
       "artifacts": [
-        "UQ112x112"
+        "ERC20",
+        "VirtualToken2"
       ]
     }
   }
