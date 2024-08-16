@@ -18,3 +18,14 @@
   background: #72768f;
   border-radius: 5px;
 }
+
+/* input type="number"에서 화살표 지우기 */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type="number"] {
+  -moz-appearance: textfield; /* Firefox */
+}
