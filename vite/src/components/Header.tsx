@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from "react";
+import { FC, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { RootState } from "../app/store";
@@ -7,12 +7,17 @@ import {
   setSigner,
   setChainId,
 } from "../features/providers/providersSlice";
-import { MdArrowDropDown } from "react-icons/md";
-import { setContract } from "../features/contracts/contractsSlice";
+import {
+  setContract,
+  setPairs,
+  setVirtualTokens,
+} from "../features/contracts/contractsSlice";
 import DropDownButton from "./Header/DropDownButton";
 import WalletMenu from "./Header/WalletMenu";
 import NetworkMenu from "./Header/NetworkMenu";
-import { Network } from "ethers";
+import { contracts } from "../contracts/addresses";
+import { Contract } from "ethers";
+import { BrowserProvider } from "ethers";
 
 const navLinks = [
   {
@@ -38,6 +43,8 @@ const Header: FC = () => {
   const { provider, signer, chainId } = useSelector(
     (state: RootState) => state.providers
   );
+  const { marketRegistryContracat, pairContracts, virtualTokenContracts } =
+    useSelector((state: RootState) => state.contracts);
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -52,6 +59,9 @@ const Header: FC = () => {
 
   useEffect(() => {
     if (provider) {
+      if (!signer) {
+        dispatch(setContract(provider));
+      }
       provider
         .getNetwork()
         .then((network) => dispatch(setChainId(Number(network.chainId))));
@@ -65,8 +75,38 @@ const Header: FC = () => {
   }, [signer]);
 
   useEffect(() => {
-    console.log(chainId);
-  }, [chainId]);
+    if (provider) {
+      marketRegistryContracat?.getAllBaseTokens().then((data) => {
+        data.forEach((address: string) => {
+          const tokenContract = new Contract(
+            address,
+            contracts.virtualToken.abi,
+            provider
+          );
+          tokenContract.symbol().then((name: string) => {
+            dispatch(setVirtualTokens({ name, address, provider }));
+            marketRegistryContracat
+              .getPool(address)
+              .then((address: string) =>
+                dispatch(setPairs({ name, address, provider }))
+              );
+          });
+        });
+      });
+      marketRegistryContracat?.getQuoteToken().then((address) => {
+        const tokenContract = new Contract(
+          address,
+          contracts.virtualToken.abi,
+          provider
+        );
+        tokenContract
+          .symbol()
+          .then((name) =>
+            dispatch(setVirtualTokens({ name, address, provider }))
+          );
+      });
+    }
+  }, [marketRegistryContracat]);
 
   const onClickConnectWallet = () => {
     provider?.getSigner().then((signer) => dispatch(setSigner(signer)));

@@ -19,6 +19,7 @@ contract MarketRegistry is IMarketRegistry, Ownable{
 
     mapping(address => address) public pool;
     address[] public allPools;
+    address[] public allBaseTokens;
 
     mapping(address => uint24) feeRatio;
     mapping(address => uint24) priceImpactLimit;
@@ -29,7 +30,7 @@ contract MarketRegistry is IMarketRegistry, Ownable{
 
     function createPool(string memory _name, string memory _symbol, uint8 _decimals) public onlyOwner{    
         if(quoteToken == address(0)) {
-            VirtualToken vt = new VirtualToken("vUSDT", "vUSDT", 6);
+            VirtualToken vt = new VirtualToken("vUSDT", "USDT", 6);
             quoteToken = address(vt);
             vt.transfer(clearingHouse, vt.balanceOf(address(this)));
         }
@@ -42,6 +43,7 @@ contract MarketRegistry is IMarketRegistry, Ownable{
 
         pool[baseToken] = poolAddress;
         allPools.push(poolAddress);
+        allBaseTokens.push(baseToken);
 
         setFeeRatio(baseToken, 3e2);
         setPriceImpactLimit(baseToken, 1e4);
@@ -82,6 +84,10 @@ contract MarketRegistry is IMarketRegistry, Ownable{
 
     function getAllPools() public view returns(address[] memory) {
         return allPools;
+    }
+
+    function getAllBaseTokens() public view returns(address[] memory) {
+        return allBaseTokens;
     }
 
     function getAllPoolsLength() public view returns(uint) {

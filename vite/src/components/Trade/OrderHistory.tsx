@@ -1,5 +1,12 @@
 import { FC, useState } from "react";
 import OrderHistoryCard from "./OrderHistoryCard";
+
+const cards = [
+  [1, 2, 3, 4, 5, 6, 7, 8],
+  [1, 2],
+  [1, 2, 3, 4],
+];
+
 const OrderHistory: FC = () => {
   const [selectedMenu, setSelectedMenu] = useState<number>(0);
   const [height, setHeight] = useState<number>(300);
@@ -17,7 +24,7 @@ const OrderHistory: FC = () => {
             className={`${selectedMenu == 1 && "text-[#729aff]"}`}
             onClick={() => setSelectedMenu(1)}
           >
-            Order (0)
+            Order (2)
           </button>
           <button
             className={`${selectedMenu == 2 && "text-[#729aff]"}`}
@@ -33,14 +40,9 @@ const OrderHistory: FC = () => {
         </div>
       </div>
       <div className="overflow-y-auto" style={{ height: height }}>
-        <OrderHistoryCard />
-        <OrderHistoryCard />
-        <OrderHistoryCard />
-        <OrderHistoryCard />
-        <OrderHistoryCard />
-        <OrderHistoryCard />
-        <OrderHistoryCard />
-        <OrderHistoryCard />
+        {cards[selectedMenu].map((_, i) => (
+          <OrderHistoryCard key={i} type={selectedMenu} />
+        ))}
       </div>
     </div>
   );

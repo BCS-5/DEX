@@ -3,38 +3,36 @@ import { Contract } from "ethers";
 import { BrowserProvider, JsonRpcSigner } from "ethers";
 import { contracts } from "../../contracts/addresses";
 
-interface Pair {
-  name: string;
-  address: string;
-}
-
 interface Contracts {
   [key: string]: Contract;
 }
 
-interface SetPairParams {
-  pairs: Pair[];
-  provider: BrowserProvider | JsonRpcSigner | null;
+interface SetPairsParams {
+  name: string;
+  address: string;
+  provider: BrowserProvider | JsonRpcSigner;
 }
 
 export interface ContractState {
-  pairs: Pair[];
+  pairContracts: Contracts;
   virtualTokenContracts: Contracts;
   usdtContract: Contract | null;
   vaultContract: Contract | null;
   marketRegistryContracat: Contract | null;
   clearingHouseContract: Contract | null;
+  routerContract: Contract | null;
 }
 
 export const contractsSlice = createSlice({
   name: "contracts",
   initialState: {
-    pairs: [] as Pair[],
     virtualTokenContracts: {} as Contracts,
+    pairContracts: {} as Contracts,
     usdtContract: null,
     vaultContract: null,
     marketRegistryContracat: null,
     clearingHouseContract: null,
+    routerContract: null,
   } as ContractState,
   reducers: {
     setContract: (
@@ -44,12 +42,13 @@ export const contractsSlice = createSlice({
       const provider = action.payload;
       if (!provider) {
         return {
-          pairs: [] as Pair[],
           virtualTokenContracts: {} as Contracts,
+          pairContracts: {} as Contracts,
           usdtContract: null,
           vaultContract: null,
           marketRegistryContracat: null,
           clearingHouseContract: null,
+          routerContract: null,
         };
       }
 
@@ -77,35 +76,42 @@ export const contractsSlice = createSlice({
         provider
       );
 
-      const virtualTokenContracts = {} as Contracts;
+      const routerContract = new Contract(
+        contracts.uniswapV2Router.address,
+        contracts.uniswapV2Router.abi,
+        provider
+      ) as Contract;
 
-      state.pairs.forEach((v: Pair) => {
-        virtualTokenContracts[v.name] = new Contract(
-          v.address,
-          contracts.virtualToken.abi,
-          provider
-        );
-      });
-
-      if (provider) {
-        return {
-          pairs: state.pairs,
-          virtualTokenContracts,
-          usdtContract,
-          vaultContract,
-          marketRegistryContracat,
-          clearingHouseContract,
-        };
-      }
+      return {
+        virtualTokenContracts: state.virtualTokenContracts as any,
+        pairContracts: state.pairContracts as any,
+        usdtContract,
+        vaultContract,
+        marketRegistryContracat,
+        clearingHouseContract,
+        routerContract,
+      };
     },
 
-    setPairList: (state, action: PayloadAction<SetPairParams>) => {
-      state.pairs = action.payload.pairs;
-      setContract(action.payload.provider);
+    setPairs: (state, action: PayloadAction<SetPairsParams>) => {
+      state.pairContracts[action.payload.name] = new Contract(
+        action.payload.address,
+        contracts.uniswapV2Pair.abi,
+        action.payload.provider
+      ) as any;
+    },
+
+    setVirtualTokens: (state, action: PayloadAction<SetPairsParams>) => {
+      state.virtualTokenContracts[action.payload.name] = new Contract(
+        action.payload.address,
+        contracts.virtualToken.abi,
+        action.payload.provider
+      ) as any;
     },
   },
 });
 
-export const { setContract } = contractsSlice.actions;
+export const { setContract, setPairs, setVirtualTokens } =
+  contractsSlice.actions;
 
 export default contractsSlice.reducer;
