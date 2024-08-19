@@ -66,7 +66,7 @@ const Top = () => {
             <img
               src={tetherImg}
               alt="usdt"
-              className="w-10 absolute left-[-19px] top-1/2 transform -translate-y-1/2"
+              className="w-10 absolute left-[-19px] top-1/2 transform -translate-y-1/2 "
             />
             <p className="text-white ml-5">Tether</p>
             <p className="text-[#5F6377]">USDT</p>
@@ -82,7 +82,7 @@ const Top = () => {
             <img
               src={ethImg}
               alt="eth"
-              className="w-10 absolute left-[-18px] top-1/2 transform -translate-y-1/2 border-2 bg-white rounded-full"
+              className="w-10 absolute left-[-18px] top-1/2 transform -translate-y-1/2 bg-white rounded-full"
             />
             <p className="text-white ml-5">Ethereum</p>
             <p className="text-[#5F6377]">ETH</p>

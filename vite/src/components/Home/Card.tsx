@@ -8,7 +8,7 @@ const Card = ({
   image: any;
 }) => {
   return (
-    <li className="pb-12">
+    <li className="pb-12 ">
       <img
         className="rounded-2xl"
         src={`/img/cardImg/${image}.jpg`}

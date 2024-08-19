@@ -11,7 +11,7 @@ const FAQItem: React.FC<FAQItemProps> = ({ question, answer }) => {
   const toggle = () => setIsOpen(!isOpen);
 
   return (
-    <div className="border-b-2">
+    <div className="border-b-2 ">
       <button
         onClick={toggle}
         className="w-full flex justify-between items-center py-4 px-6 text-left"
