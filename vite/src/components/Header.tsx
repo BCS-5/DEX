@@ -18,6 +18,7 @@ import NetworkMenu from "./Header/NetworkMenu";
 import { contracts } from "../contracts/addresses";
 import { Contract } from "ethers";
 import { BrowserProvider } from "ethers";
+import { newBlockHeads } from "../features/events/eventsSlice";
 
 const navLinks = [
   {
@@ -46,6 +47,20 @@ const Header: FC = () => {
   const { marketRegistryContracat, pairContracts, virtualTokenContracts } =
     useSelector((state: RootState) => state.contracts);
   const dispatch = useDispatch();
+
+  const subscribeNewblockHeads = (blockNumber: number) => {
+    dispatch(newBlockHeads(blockNumber));
+  };
+
+  useEffect(() => {
+    // console.log(provider?._network?.chainId, !provider);
+    if (!provider || chainId !== 11155111) return;
+    console.log("hi");
+    provider.on("block", subscribeNewblockHeads);
+    return () => {
+      provider.removeListener("block", subscribeNewblockHeads);
+    };
+  }, [provider, chainId]);
 
   useEffect(() => {
     if (!provider) {

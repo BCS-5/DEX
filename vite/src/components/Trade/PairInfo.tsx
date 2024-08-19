@@ -2,7 +2,7 @@ import { FC } from "react";
 import { MdArrowDropDown } from "react-icons/md";
 const PairContainer: FC = () => {
   return (
-    <div className="flex w-full h-[80px] px-5 bg-[#131722] text-[#f0f0f0] items-center border-[#363A45]">
+    <div className="flex w-full h-[80px] px-5 bg-[#131722] text-[#f0f0f0] items-center border-b-[0.6px] border-[#363A45]">
       <div className="flex w-full pl-2 gap-4 ">
         <div className="flex items-center">
           <img

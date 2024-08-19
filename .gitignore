@@ -8,6 +8,8 @@ artifacts
 .deps
 .env
 
+#frontend
+charting_library
 
 # Logs
 logs
