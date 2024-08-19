@@ -10,12 +10,12 @@ import { useMetamask } from "../lib";
 import { useOutletContext } from "react-router-dom";
 import { OutletContext } from "../components/Layout";
 import AddLiquidityModal from "../components/staking/AddLiquidityModal";
+import Chart from "../components/staking/Chart";
 
 const Pool: FC = () => {
-  const [tab, setTab] = useState<string>("Volume");
-  const [isOpen, setIsOpen] = useState(false);
-  const { signer, setSigner } = useOutletContext<OutletContext>();
+  const [isStakingIncentivesOpen, setIsStakingIncentivesOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const { signer, setSigner } = useOutletContext<OutletContext>();
 
   const openModal = () => {
     setIsModalOpen(true);
@@ -26,14 +26,14 @@ const Pool: FC = () => {
   };
 
   const toggleAccordion = () => {
-    setIsOpen(!isOpen);
+    setIsStakingIncentivesOpen(!isStakingIncentivesOpen);
   };
 
   return (
     <div className="min-h-screen bg-[#0F172A] text-[#F8FAFC] px-4 pt-8">
       <div className="grid grid-cols-3 gap-4">
         <div className="col-span-2">
-          <div className="text-2xl font-bold">Weighted Pool</div>
+          <div className="text-2xl font-bold">Oracle Weighted Pool</div>
           <div className="flex gap-2 pt-2">
             <div className="flex gap-2 px-3 h-10 bg-[#162031] text-lg rounded-lg">
               <div className="h-full content-center">
@@ -61,48 +61,14 @@ const Pool: FC = () => {
             </div>
           </div>
           <div className="text-[#94A3B8] pt-2">
-            Delegated swap fees; currently fixed: 0.5%
+            Delegated swap fees; currently fixed: 0.09%
           </div>
         </div>
         <div className="hidden"></div>
         <div className="col-span-2">
           <div className="grid grid-cols-1 gap-y-8">
-            <div className="flex bg-[#162031] rounded-xl">
-              <div className="m-5">
-                <div className="flex items-center gap-5 h-[50px] font-semibold text-[#94A3B8] border-b border-b-[#94A3B8]">
-                  <div
-                    className={`h-full content-center ${
-                      tab === "Volume"
-                        ? "text-[#60A5FA] border-b-2 border-b-[#60A5FA]"
-                        : "hover:text-yellow-500"
-                    }`}
-                    onClick={() => setTab("Volume")}
-                  >
-                    Volume
-                  </div>
-                  <div
-                    className={`h-full content-center ${
-                      tab === "TVL"
-                        ? "text-[#60A5FA] border-b-2 border-b-[#60A5FA]"
-                        : "hover:text-yellow-500"
-                    }`}
-                    onClick={() => setTab("TVL")}
-                  >
-                    TVL
-                  </div>
-                  <div
-                    className={`h-full content-center ${
-                      tab === "Fees"
-                        ? "text-[#60A5FA] border-b-2 border-b-[#60A5FA]"
-                        : "hover:text-yellow-500"
-                    }`}
-                    onClick={() => setTab("Fees")}
-                  >
-                    Fees
-                  </div>
-                </div>
-              </div>
-            </div>
+            <Chart />
+
             <div className="grid grid-cols-2 gap-4">
               <div className="bg-[#162031] rounded-xl p-4">
                 <div className="text-[14px] text-[#94A3B8] font-semibold pb-2">
@@ -182,7 +148,7 @@ const Pool: FC = () => {
                   >
                     <div
                       className={`w-full bg-[#162031] ${
-                        isOpen ? "rounded-t-xl" : "rounded-xl"
+                        isStakingIncentivesOpen ? "rounded-t-xl" : "rounded-xl"
                       } border-b-2 border-b-[#0F172A]`}
                     >
                       <button className="flex justify-between w-full rounded-xl p-4 bg-[#162031] hover:bg-gray-800">
@@ -217,7 +183,9 @@ const Pool: FC = () => {
                             stroke-linecap="round"
                             stroke-linejoin="round"
                             className={`feather feather-chevron-down text-blue-500 w-5 ${
-                              isOpen ? "rotate-180" : "rotate-0"
+                              isStakingIncentivesOpen
+                                ? "rotate-180"
+                                : "rotate-0"
                             }`}
                           >
                             <polyline points="6 9 12 15 18 9"></polyline>
@@ -225,7 +193,7 @@ const Pool: FC = () => {
                         </div>
                       </button>
                     </div>
-                    {isOpen && (
+                    {isStakingIncentivesOpen && (
                       <div className="w-full bg-[#162031] rounded-b-xl">
                         <div className="w-full p-4">
                           <div className="flex justify-between mb-2">
