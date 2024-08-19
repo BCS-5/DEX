@@ -2,7 +2,12 @@ import { FC } from "react";
 import logo_USDT from "../../images/staking/logo_USDT.png";
 import logo_WBTC from "../../images/staking/logo_WBTC.png";
 
-const AddLiquidityModal: FC = ({ isOpen, onClose }) => {
+interface ModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+}
+
+const AddLiquidityModal: FC<ModalProps> = ({ isOpen, onClose }) => {
   if (!isOpen) return null;
 
   return (
