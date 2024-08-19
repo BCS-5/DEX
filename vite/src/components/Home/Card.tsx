@@ -17,7 +17,7 @@ const Card = ({
       <h3 className="pt-5 text-[#333333] text-xl font-bold text-center">
         {name}
       </h3>
-      <h5 className="pt-3 text-[#333333] text-md">{description}</h5>
+      <h5 className="pt-1 text-[#333333] text-md">{description}</h5>
     </li>
   );
 };

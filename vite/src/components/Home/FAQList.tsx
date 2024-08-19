@@ -18,7 +18,7 @@ const FAQList: React.FC = () => {
         "Virtual Token은 실제 자산 없이도 암호화폐의 가격 변동에 투자할 수 있는 디지털 자산을 의미합니다.",
     },
     {
-      question: "AMM(자동화된 마켓 메이커)",
+      question: "AMM(Automated Market Maker : 자동화된 마켓 메이커)",
       answer:
         "AMM은 유동성 풀을 통해 자동으로 거래를 매칭하여 사용자 간의 거래를 중개하는 기술로, 탈중앙화 거래소에서 주로 사용됩니다.",
     },
@@ -30,7 +30,7 @@ const FAQList: React.FC = () => {
     {
       question: "거래하는 방법",
       answer:
-        "상단에 Lauch App 버튼을 클릭하며 거래페이지로 이동합니다. Wallet Connect를 클릭하여 사용자의 지갑 연결을 한 다음, ~~~~~~~~~~~",
+        "상단에 Launch App 버튼을 클릭하며 거래페이지로 이동합니다. Wallet Connect를 클릭하여 사용자의 지갑 연결을 한 다음, ~~~~~~~~~~~",
     },
   ];
 
