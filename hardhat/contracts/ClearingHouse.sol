@@ -21,6 +21,7 @@ contract ClearingHouse is IClearingHouse, Ownable{
     address router;    
     address vault;
     address accountBalance;
+    address orderBook;
     address factory;    
     address quoteToken;
 
@@ -30,6 +31,11 @@ contract ClearingHouse is IClearingHouse, Ownable{
     // 유동성 풀이 존재하는지 확인
     modifier hasPool(address baseToken) {        
         require(IMarketRegistry(marketRegistry).hasPool(baseToken), "");
+        _;
+    }
+
+    modifier onlyOrderBook() {        
+        require(msg.sender == orderBook , "No permission");
         _;
     }
 
@@ -130,6 +136,11 @@ contract ClearingHouse is IClearingHouse, Ownable{
         _openPosition(msg.sender, baseToken, isExactInput, isLong, margin, amountIn, amountOut, deadline);
     }
 
+    // 예약 주문에 의한 포지션 오픈
+    function openPositionForOrderBook(address trader, address baseToken, bool isExactInput, bool isLong, uint margin, uint amountIn, uint amountOut, uint deadline) public hasPool(baseToken) onlyOrderBook {
+        _openPosition(trader, baseToken, isExactInput, isLong, margin, amountIn, amountOut, deadline);
+    }
+
     function _openPosition(address trader, address baseToken, bool isExactInput, bool isLong, uint margin, uint amountIn, uint amountOut, uint deadline) internal {
         address pool = getPool(baseToken);
         Position memory position;        
@@ -178,6 +189,11 @@ contract ClearingHouse is IClearingHouse, Ownable{
     // 사용자에 의해 호출되는 포지션 종료
     function closePosition (address baseToken, bytes32 positionHash, uint closePercent, uint slippageAdjustedAmount, uint deadline) public {
         _closePosition(msg.sender, baseToken, positionHash, closePercent, slippageAdjustedAmount, deadline);
+    }
+
+    // 예약 주문에 의해 호출되는 포지션 종료
+    function closePositionForOrderBook (address trader, address baseToken, bytes32 positionHash, uint closePercent, uint slippageAdjustedAmount, uint deadline) public onlyOrderBook{
+        _closePosition(trader, baseToken, positionHash, closePercent, slippageAdjustedAmount, deadline);
     }
 
     // 사용자 또는 청산자에 의해 호출되는 포지션 종료
@@ -328,6 +344,11 @@ contract ClearingHouse is IClearingHouse, Ownable{
     function setAccountBalance(address _accountBalance) public onlyOwner {
         accountBalance = _accountBalance;
     }
+
+    function setOrderBook(address _orderBook) public onlyOwner {
+        orderBook = _orderBook;
+    }
+
     function setQuoteToken(address _quete) public onlyOwner {
         quoteToken = _quete;
     }
@@ -346,6 +367,10 @@ contract ClearingHouse is IClearingHouse, Ownable{
 
     function getAccountBalance() public view returns(address) {
         return accountBalance;
+    }
+
+    function getOrderBook() public view returns(address) {
+        return orderBook;
     }
 
     function getPool(address baseToken) internal view returns(address) {

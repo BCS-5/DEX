@@ -1,29 +1,158 @@
 import { FC, useEffect, useState } from "react";
 import { MdSettings } from "react-icons/md";
 import OrderInput from "./OrderInput";
+import { useSelector } from "react-redux";
+import { RootState } from "../../app/store";
+import OrderLeverageRange from "./OrderLeverageRange";
+import OrderInfo from "./OrderInfo";
+import OrderButton from "./OrderButton";
+import OrderSettingMenu from "./OrderSettingMenu";
 
-const leverage = ["1x", "100x"];
-const dd = "start-[50%]";
 const Order: FC = () => {
+  const {
+    routerContract,
+    marketRegistryContracat,
+    virtualTokenContracts,
+    pairContracts,
+    clearingHouseContract,
+  } = useSelector((state: RootState) => state.contracts);
+
   const [isLong, setIsLong] = useState<boolean>(true);
   const [isMarket, setIsMarket] = useState<boolean>(true);
 
-  const [quoteValue, _setQuoteValue] = useState<string>("0");
-  const [baseValue, _setBaseValue] = useState<string>("0");
+  const [limitPrice, _setLimitPrice] = useState<string>("58000");
+  const [quoteValue, _setQuoteValue] = useState<string>("");
+  const [baseValue, _setBaseValue] = useState<string>("");
 
   const [isExactInput, setIsExactInput] = useState<boolean>(false);
 
-  const [leverageValue, _setLeverageValue] = useState<number>(50);
+  const [leverageValue, _setLeverageValue] = useState<number>(1);
   const [focusLeverage, setFocusLeverage] = useState<boolean>(false);
+
+  const BASE = virtualTokenContracts["BTC"];
+  const QUOTE = virtualTokenContracts["vUSDT"];
+
+  const [baseDecimals, setBaseDecimals] = useState(8n);
+  const [quoteDecimals, setQuoteDecimals] = useState(6n);
+
+  const [slippage, setSlippage] = useState<string>("0.5");
+  const [deadline, setDeadline] = useState<string>("10");
+
+  useEffect(() => {
+    BASE?.decimals().then(setBaseDecimals);
+  }, [BASE]);
+
+  useEffect(() => {
+    QUOTE?.decimals().then(setQuoteDecimals);
+  }, [QUOTE]);
+
+  useEffect(() => {
+    if (quoteValue === "" || baseValue === "" || focusLeverage) return;
+    if (!isMarket) {
+      preOrder(isExactInput ? quoteValue : baseValue, isExactInput);
+      return;
+    }
+    if (isExactInput) {
+      if (isLong) {
+        exactInput(quoteValue);
+      } else {
+        exactOutput(quoteValue);
+      }
+    } else {
+      if (isLong) {
+        exactOutput(baseValue);
+      } else {
+        exactInput(baseValue);
+      }
+    }
+  }, [leverageValue, isLong, focusLeverage, limitPrice, isMarket]);
+
+  const setLimitPrice = (value: string) => {
+    _setLimitPrice(value);
+  };
 
   const setQuoteValue = (value: string) => {
     setIsExactInput(true);
     _setQuoteValue(value);
+    if (!isMarket) {
+      preOrder(value, true);
+      return;
+    }
+
+    if (isLong) exactInput(value);
+    else exactOutput(value);
   };
 
   const setBaseValue = (value: string) => {
     setIsExactInput(false);
     _setBaseValue(value);
+    if (!isMarket) {
+      preOrder(value, false);
+      return;
+    }
+
+    if (isLong) exactOutput(value);
+    else exactInput(value);
+  };
+
+  const preOrder = (value: string, isExact: boolean) => {
+    if (isExact) {
+      _setBaseValue(
+        String((Number(value) * leverageValue) / Number(limitPrice))
+      );
+    } else {
+      _setQuoteValue(
+        String((Number(value) * Number(limitPrice)) / leverageValue)
+      );
+    }
+  };
+
+  const exactInput = (value: string) => {
+    const path = isLong
+      ? [QUOTE.target, BASE.target]
+      : [BASE.target, QUOTE.target];
+
+    const [inputDecimals, outputDecimals] = isLong
+      ? [Number(quoteDecimals), Number(baseDecimals)]
+      : [Number(baseDecimals), Number(quoteDecimals)];
+
+    const _setValue = isLong ? _setBaseValue : _setQuoteValue;
+
+    const _leverageValue = isLong ? leverageValue : 1;
+    const _divValue = isLong ? 1 : leverageValue;
+
+    routerContract
+      ?.getAmountsOut(
+        Number(value) * 10 ** inputDecimals * _leverageValue,
+        path
+      )
+      .then((amounts) => {
+        _setValue(
+          String(Number(amounts[1]) / 10 ** outputDecimals / _divValue)
+        );
+      })
+      .catch(() => _setValue(""));
+  };
+
+  const exactOutput = (value: string) => {
+    const path = isLong
+      ? [QUOTE.target, BASE.target]
+      : [BASE.target, QUOTE.target];
+
+    const [inputDecimals, outputDecimals] = isLong
+      ? [Number(baseDecimals), Number(quoteDecimals)]
+      : [Number(quoteDecimals), Number(baseDecimals)];
+
+    const _setValue = isLong ? _setQuoteValue : _setBaseValue;
+    const _leverageValue = isLong ? 1 : leverageValue;
+    const _divValue = isLong ? leverageValue : 1;
+
+    routerContract
+      ?.getAmountsIn(Number(value) * 10 ** inputDecimals * _leverageValue, path)
+      .then((amounts) =>
+        _setValue(String(Number(amounts[0]) / 10 ** outputDecimals / _divValue))
+      )
+      .catch(() => _setValue(""));
   };
 
   const setLeverageValue = (value: string) => {
@@ -31,7 +160,7 @@ const Order: FC = () => {
   };
 
   return (
-    <div className="flex flex-col justify-between w-full h-full bg-[#131722] text-[#72768f] p-4 pt-7 overflow-x-hidden">
+    <div className="flex flex-col justify-between h-full bg-[#131722] text-[#72768f] p-4 pt-7 border-l-[0.6px] border-[#363A45] w-full">
       <div className="flex flex-col">
         <div className="flex w-full items-center  h-10 justify-between rounded-[4px] bg-[#242534]">
           <button
@@ -68,71 +197,53 @@ const Order: FC = () => {
               Limit
             </button>
           </div>
-          <button>
-            <MdSettings size={18} />
-          </button>
+          <OrderSettingMenu
+            slippage={slippage}
+            setSlippage={setSlippage}
+            deadline={deadline}
+            setDeadline={setDeadline}
+          />
         </div>
         <div className="flex flex-col w-full gap-2">
+          {!isMarket && (
+            <OrderInput
+              value={limitPrice}
+              setValue={setLimitPrice}
+              symbol="USD"
+              placeholder="Limit Price"
+            />
+          )}
           <OrderInput
             value={quoteValue}
             setValue={setQuoteValue}
             symbol="USDT"
+            placeholder="Collateral"
           />
-          <OrderInput value={baseValue} setValue={setBaseValue} symbol="BTC" />
+          <OrderInput
+            value={baseValue}
+            setValue={setBaseValue}
+            symbol="BTC"
+            placeholder="Position Size"
+          />
         </div>
-        <div className="flex flex-col w-full mt-4">
-          <div>Leverage </div>
-          <div className="relative mb-6">
-            <input
-              type="range"
-              min="1"
-              max="100"
-              step="1"
-              onChange={(e) => setLeverageValue(e.target.value)}
-              onMouseDown={() => setFocusLeverage(true)}
-              onMouseUp={() => setFocusLeverage(false)}
-              className="accent-[#584CEA] w-full h-1 rounded-lg  cursor-pointer"
-            />
-            <div className="flex justify-between">
-              {leverage.map((v, i) => (
-                <span
-                  key={i}
-                  className={`text-[12px] text-gray-500 dark:text-gray-400 -bottom-6`}
-                >
-                  {v}
-                </span>
-              ))}
-            </div>
-            {focusLeverage && (
-              <div
-                className={`flex justify-center absolute w-12 -top-8 bg-[#242534] px-2 py-1 rounded-[4px] -translate-x-6 shadow-2xl`}
-                style={{ left: `${leverageValue}%` }}
-              >
-                {leverageValue}x
-              </div>
-            )}
-          </div>
-        </div>
-        <div className="text-[12px] ">
-          <div className="flex justify-between">
-            <div>Entry Price </div>
-            <div className="text-[#f0f0f0]">55,837.1 USD</div>
-          </div>
-          <div className="flex justify-between">
-            <div>Est. Liquidation Price</div>
-            <div className="text-[#f0f0f0]">50,037.1 USD</div>
-          </div>
-          <div className="flex justify-between">
-            <div>Fees</div>
-            <div className="text-[#f0f0f0]">1.3 USD</div>
-          </div>
-        </div>
-        <button
-          className="flex justify-center items-center rounded-[4px]  w-full  h-12 text-white mt-4"
-          style={{ background: "linear-gradient(90deg, #e05fbb, #4250f4)" }}
-        >
-          Wallet Connect
-        </button>
+        <OrderLeverageRange
+          leverageValue={leverageValue}
+          setLeverageValue={setLeverageValue}
+          focusLeverage={focusLeverage}
+          setFocusLeverage={setFocusLeverage}
+        />
+        <OrderInfo
+          quoteValue={quoteValue}
+          baseValue={baseValue}
+          leverageValue={leverageValue}
+          isLong={isLong}
+        />
+        <OrderButton
+          quoteValue={quoteValue}
+          baseValue={baseValue}
+          leverageValue={leverageValue}
+          isLong={isLong}
+        />
       </div>
     </div>
   );

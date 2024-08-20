@@ -115,7 +115,7 @@ const timeInterval = [
   7 * 24 * 60 * 60 * 1000,
 ];
 
-function updatePrice(price, timestamp) {  
+function updatePrice(price, timestamp) {
   lastUpdateTime.forEach((t, idx) => {
     t += timeInterval[idx];
     if (t <= timestamp) {
@@ -127,19 +127,19 @@ function updatePrice(price, timestamp) {
             return;
           }
           db.serialize(() => {
-            db.run('BEGIN TRANSACTION');
+            db.run("BEGIN TRANSACTION");
             while (t + timeInterval[idx] <= timestamp) {
               db.run(
                 `INSERT INTO BTC_DATA_${resolutionToTable[idx]} (time, open, high, low, close, volume) VALUES (?, ?, ?, ?, ?, ?)`,
                 [t, row.close, row.close, row.close, row.close, 0.0]
               );
               t += timeInterval[idx];
-            }            
+            }
             db.run(
               `INSERT INTO BTC_DATA_${resolutionToTable[idx]} (time, open, high, low, close, volume) VALUES (?, ?, ?, ?, ?, ?)`,
               [t, row.close, price, price, price, 0.0]
             );
-            db.run('COMMIT');
+            db.run("COMMIT");
             lastUpdateTime[idx] = t;
           });
         }
@@ -151,7 +151,10 @@ function updatePrice(price, timestamp) {
         [price, price, price, price, price]
       );
     }
+  });
 
+  db.all(`SELECT * FROM BTC_DATA_1`, (err, row) => {
+    console.log("Latest data:", row[row.length - 2], row[row.length - 1]);
   });
 }
 

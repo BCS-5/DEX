@@ -14,6 +14,7 @@ interface IMarketRegistry {
     function setPriceImpactLimit(address _baseToken, uint24 _priceImpactLimit) external;
 
     function getAllPools() external view returns(address[] memory);
+    function getAllBaseTokens() external view returns(address[] memory);
     function getAllPoolsLength() external view returns(uint);
 
     function getClearingHouse() external view returns(address);
