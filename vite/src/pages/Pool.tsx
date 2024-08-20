@@ -7,15 +7,20 @@ import LiquidityProvision from "../components/staking/LiquidityProvision";
 import Swaps from "../components/staking/Swaps";
 import PoolDetails from "../components/staking/PoolDetails";
 import { useMetamask } from "../lib";
-import { useOutletContext } from "react-router-dom";
-import { OutletContext } from "../components/Layout";
+import { setSigner } from "../features/providers/providersSlice";
 import AddLiquidityModal from "../components/staking/AddLiquidityModal";
 import Chart from "../components/staking/Chart";
+import { useDispatch, useSelector } from "react-redux";
+import { JsonRpcSigner } from "ethers";
+import { RootState } from "../app/store";
 
 const Pool: FC = () => {
   const [isStakingIncentivesOpen, setIsStakingIncentivesOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const { signer, setSigner } = useOutletContext<OutletContext>();
+  const dispatch = useDispatch();
+  const { provider, signer } = useSelector(
+    (state: RootState) => state.providers
+  );
 
   const openModal = () => {
     setIsModalOpen(true);
@@ -27,6 +32,10 @@ const Pool: FC = () => {
 
   const toggleAccordion = () => {
     setIsStakingIncentivesOpen(!isStakingIncentivesOpen);
+  };
+
+  const onClickConnectWallet = () => {
+    provider?.getSigner().then((signer: JsonRpcSigner) => dispatch(setSigner(signer)));
   };
 
   return (
@@ -264,7 +273,7 @@ const Pool: FC = () => {
               <div className="bg-[#1E293B] p-4 rounded-b-xl">
                 <button
                   className="w-full h-12 rounded-lg font-bold bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500"
-                  onClick={() => useMetamask(setSigner)}
+                  onClick={onClickConnectWallet}
                 >
                   Connect wallet
                 </button>
