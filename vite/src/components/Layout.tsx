@@ -1,4 +1,4 @@
-import { FC } from "react";
+import { FC, SetStateAction, useEffect, useState } from "react";
 import { Outlet } from "react-router-dom";
 import Header from "./Header";
 import { useDispatch } from "react-redux";
