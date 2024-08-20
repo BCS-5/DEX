@@ -9,6 +9,8 @@ artifacts
 .deps
 .env
 
+charting_library
+
 
 # Logs
 logs
