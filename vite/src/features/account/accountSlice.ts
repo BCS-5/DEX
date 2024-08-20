@@ -1,14 +1,14 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-interface AccountState {
+export interface AccountState {
   balances: { [key: string]: number };
 }
 
-const initialState: AccountState = {
+export const initialState: AccountState = {
   balances: {},
 };
 
-const accountSlice = createSlice({
+export const accountSlice = createSlice({
   name: 'account',
   initialState,
   reducers: {

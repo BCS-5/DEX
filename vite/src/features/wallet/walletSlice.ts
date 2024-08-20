@@ -1,16 +1,16 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-interface WalletState {
+export interface WalletState {
   signer: any | null;
   provider: any | null;
 }
 
-const initialState: WalletState = {
+export const initialState: WalletState = {
   signer: null,
   provider: null,
 };
 
-const walletSlice = createSlice({
+export const walletSlice = createSlice({
   name: 'wallet',
   initialState,
   reducers: {

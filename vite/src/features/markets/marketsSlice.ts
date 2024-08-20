@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import axios from 'axios';
 
-interface Market {
+export interface Market {
   id: string;
   symbol: string;
   name: string;
@@ -13,7 +13,7 @@ interface Market {
   category: string;
 }
 
-interface MarketState {
+export interface MarketState {
   summary: {
     tradingVolume: number;
     openInterest: number;
@@ -24,7 +24,7 @@ interface MarketState {
   error: string | null;
 }
 
-const initialState: MarketState = {
+export const initialState: MarketState = {
   summary: {
     tradingVolume: 0,
     openInterest: 0,
@@ -35,7 +35,7 @@ const initialState: MarketState = {
   error: null,
 };
 
-const assignCategory = (market: Market): string => {
+export const assignCategory = (market: Market): string => {
   if (market.symbol === 'btc' || market.symbol === 'eth') return 'Layer 1';
   if (market.symbol === 'matic' || market.symbol === 'arb') return 'Layer 2';
   if (market.symbol === 'uni' || market.symbol === 'aave') return 'DeFi';
@@ -61,7 +61,7 @@ export const fetchMarkets = createAsyncThunk<Market[], void, { rejectValue: stri
   }
 );
 
-const marketsSlice = createSlice({
+export const marketsSlice = createSlice({
   name: 'markets',
   initialState,
   reducers: {},

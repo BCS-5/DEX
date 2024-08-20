@@ -3,7 +3,7 @@ import { AppThunk } from '../../app/store';
 import { ethers } from 'ethers';
 import { contracts } from '../../contracts/addresses';
 
-interface Position {
+export interface Position {
   id: string;
   pair: string;
   size: string;
@@ -13,7 +13,7 @@ interface Position {
   unrealizedPnl: string;
 }
 
-interface Order {
+export interface Order {
   id: string;
   pair: string;
   type: 'limit' | 'market';
@@ -23,7 +23,7 @@ interface Order {
   status: 'open' | 'filled' | 'cancelled';
 }
 
-interface LiquidityPosition {
+export interface LiquidityPosition {
   id: string;
   pair: string;
   amount: string;
@@ -31,7 +31,7 @@ interface LiquidityPosition {
   upperTick: number;
 }
 
-interface TradeHistoryItem {
+export interface TradeHistoryItem {
   id: string;
   timestamp: number;
   pair: string;
@@ -42,7 +42,7 @@ interface TradeHistoryItem {
   realizedPnl: string;
 }
 
-interface PortfolioState {
+export interface PortfolioState {
   positions: Position[];
   orders: Order[];
   liquidityPositions: LiquidityPosition[];
@@ -53,7 +53,7 @@ interface PortfolioState {
   error: string | null;
 }
 
-const initialState: PortfolioState = {
+export const initialState: PortfolioState = {
   positions: [],
   orders: [],
   liquidityPositions: [],
@@ -64,7 +64,7 @@ const initialState: PortfolioState = {
   error: null,
 };
 
-const portfolioSlice = createSlice({
+export const portfolioSlice = createSlice({
   name: 'portfolio',
   initialState,
   reducers: {
