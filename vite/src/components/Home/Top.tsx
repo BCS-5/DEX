@@ -27,13 +27,15 @@ const Top = () => {
           <div className="p-2 flex gap-7 justify-left ml-11 pt-7">
             <button
               onClick={() => navigate("/trade")}
-              className="text-white border-2 text-[20px] hover:bg-gray-700 p-2 w-[230px] bg-black rounded-full mt-5"
+              className="text-white border-2 text-[20px] p-2 w-[230px] bg-black rounded-full mt-5 transition-transform duration-300 ease-in-out hover:bg-black hover:border-neon hover:shadow-neon hover:-translate-y-0.5 hover:text-blue-100
+    shadow-[0_0_10px_rgba(0,255,255,0.6),0_0_20px_rgba(0,255,255,0.4)] hover:shadow-[0_0_10px_rgba(0,255,255,0.6),0_5px_30px_rgba(0,255,255,0.4)]"
             >
               거래하러 가기
             </button>
             <button
               onClick={() => navigate("/staking")}
-              className="text-white border-2 text-[20px] hover:bg-gray-700 p-2 w-[230px] bg-black rounded-full mt-5"
+              className="text-white border-2 text-[20px] p-2 w-[230px] bg-black rounded-full mt-5 transition-transform duration-300 ease-in-out hover:bg-black hover:border-neon hover:shadow-neon hover:-translate-y-0.5 hover:text-blue-100
+    shadow-[0_0_10px_rgba(0,255,255,0.6),0_0_20px_rgba(0,255,255,0.4)]  hover:shadow-[0_0_10px_rgba(0,255,255,0.6),0_5px_30px_rgba(0,255,255,0.4)]"
             >
               유동성 추가하기
             </button>
