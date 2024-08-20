@@ -7,17 +7,17 @@ const Card = ({
   description: any;
   image: any;
 }) => {
-  console.log(image);
-
   return (
-    <li className="pb-12">
+    <li className="pb-12 ">
       <img
-        className="rounded-xl"
-        src={`/images/card/${image}.jpg`}
+        className="rounded-2xl"
+        src={`/img/cardImg/${image}.jpg`}
         alt={name}
       />
-      <h3 className="pt-5 text-[#333333] text-xl font-bold">{name}</h3>
-      <h5 className="pt-3 text-[#333333] text-md">{description}</h5>
+      <h3 className="pt-5 text-[#333333] text-xl font-bold text-center">
+        {name}
+      </h3>
+      <h5 className="pt-1 text-[#333333] text-md">{description}</h5>
     </li>
   );
 };
