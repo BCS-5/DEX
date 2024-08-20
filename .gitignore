@@ -1,3 +1,9 @@
+# backend
+.env
+*.db
+*.out
+
+# contracts
 artifacts
 
 .deps
