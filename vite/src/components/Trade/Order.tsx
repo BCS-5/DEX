@@ -30,7 +30,7 @@ const Order: FC = () => {
   const [focusLeverage, setFocusLeverage] = useState<boolean>(false);
 
   const BASE = virtualTokenContracts["BTC"];
-  const QUOTE = virtualTokenContracts["vUSDT"];
+  const QUOTE = virtualTokenContracts["USDT"];
 
   const [baseDecimals, setBaseDecimals] = useState(8n);
   const [quoteDecimals, setQuoteDecimals] = useState(6n);

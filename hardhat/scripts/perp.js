@@ -34,25 +34,26 @@ async function main() {
   // );
   // console.log(`accountBalance: ${accountBalance.target}`);
 
-  // const usdt = USDT.attach("0x046A8BB2C22Be6c749EeA89dd38da33565f3Aea4");
-  // const factory = UniswapV2Factory.attach(
-  //   "0x994c9936a10f2DD4bb8569a4D6C2D06F3D3F749d"
-  // );
-  // const router = UniswapV2Router.attach(
-  //   "0x7a0b710ed5D0D2F708Af491F6D3dcff5D872EDef"
-  // );
-  // const vault = Vault.attach("0xdd5F1B42A9caa4883d685bD218CF3a9C08622FEb");
+  const usdt = USDT.attach("0x8e7eF834538bcBbCE5A546a31ed9b41F766A491c");
+  const factory = UniswapV2Factory.attach(
+    "0x01b8293Ead41f293F91A630aD0697e0B2D92E6FC"
+  );
+  const router = UniswapV2Router.attach(
+    "0x4cA5Db20cAC8998bBB2Db00b25c0Bb86535fe68E"
+  );
+  const vault = Vault.attach("0x93b1C7fFbA83E18214F8370883AEC7daEE00557f");
 
   const clearingHouse = ClearingHouse.attach(
-    "0x2BcB8837A936Ef4c15572384738074c2C5EbB623"
+    "0xAb0678c1B6AAb55820F74dC87E13DB61F77B5D90"
   );
-  // const marketRegistry = MarketRegistry.attach(
-  //   "0x621fbbFF937F6F1d2E26e5a42aA4AE812cfD1942"
-  // );
-  // const accountBalance = AccountBalance.attach(
-  //   "0xf58B3a6eCC08A9094517f0dEE9384E01A75bFBb4"
-  // );
+  const marketRegistry = MarketRegistry.attach(
+    "0x0b1Fb4727C2133269f09A743cbF4Cf9338811Ac7"
+  );
+  const accountBalance = AccountBalance.attach(
+    "0x1a726A778C2c215D6B50CB1E87fdd7Dad3B05FA1"
+  );
   // await clearingHouse.setMarketRegistry(marketRegistry);
+
   // await clearingHouse.setRouter(router);
   // await clearingHouse.setAccountBalance(accountBalance);
   // await clearingHouse.setVault(vault);
@@ -74,11 +75,16 @@ async function main() {
   // await clearingHouse.approve(baseTokenAddress);
   // await clearingHouse.approve(poolAddress);
 
-  await clearingHouse.initializePool(
-    "0x6C730CF4cA93aDc80d58eDD8eC70b76568F317e9",
-    100n * 10n ** 8n,
-    5800000n * 10n ** 6n
-  );
+  // await clearingHouse.approve("0xe94cE4efD00c9C002e1402F2BE72E5213EDfeB42");
+  // await clearingHouse.approve("0x1BCe644E5AEe9cEb88b13fa4894f7a583e7E350b");
+  // await clearingHouse.approve("0x51AC7a5363751fa19F1186f850f15a1E1Dd8F8db");
+  await accountBalance.setKeeper(deployer);
+
+  // await clearingHouse.initializePool(
+  //   "0x1BCe644E5AEe9cEb88b13fa4894f7a583e7E350b",
+  //   100n * 10n ** 8n,
+  //   5800000n * 10n ** 6n
+  // );
 }
 
 main();

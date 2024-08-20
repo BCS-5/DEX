@@ -1,13 +1,13 @@
-import AccountBalanceABI from "./abis/AccountBalanceABI.json";
-import ClearingHouseABI from "./abis/ClearingHouseABI.json";
-import ERC20ABI from "./abis/ERC20ABI.json";
-import MarketRegistryABI from "./abis/MarketRegistryABI.json";
-import UniswapV2FactoryABI from "./abis/UniswapV2FactoryABI.json";
-import UniswapV2PairABI from "./abis/UniswapV2PairABI.json";
-import UniswapV2RouterABI from "./abis/UniswapV2RouterABI.json";
-import VaultABI from "./abis/VaultABI.json";
+const AccountBalanceABI = require("./abis/AccountBalanceABI.json");
+const ClearingHouseABI = require("./abis/ClearingHouseABI.json");
+const ERC20ABI = require("./abis/ERC20ABI.json");
+const MarketRegistryABI = require("./abis/MarketRegistryABI.json");
+const UniswapV2FactoryABI = require("./abis/UniswapV2FactoryABI.json");
+const UniswapV2PairABI = require("./abis/UniswapV2PairABI.json");
+const UniswapV2RouterABI = require("./abis/UniswapV2RouterABI.json");
+const VaultABI = require("./abis/VaultABI.json");
 
-export const contracts = {
+const contracts = {
   accountBalance: {
     address: "0x1a726A778C2c215D6B50CB1E87fdd7Dad3B05FA1",
     abi: AccountBalanceABI,
@@ -45,3 +45,5 @@ export const contracts = {
     abi: UniswapV2PairABI,
   },
 };
+
+module.exports = { contracts };
