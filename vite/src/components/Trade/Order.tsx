@@ -162,23 +162,23 @@ const Order: FC = () => {
   return (
     <div className="flex flex-col justify-between h-full bg-[#131722] text-[#72768f] p-4 pt-7 border-l-[0.6px] border-[#363A45] w-full">
       <div className="flex flex-col">
-        <div className="flex w-full items-center  h-10 justify-between rounded-[4px] bg-[#242534]">
+        <div className="flex w-full items-center h-10 justify-between rounded-[4px] bg-[#242534]">
           <button
-            className={`flex justify-center items-center  w-full h-10 rounded-[4px]
+            className={`flex justify-center items-center w-full h-10 rounded-[4px]
               ${isLong ? "bg-[#1DB1A8] text-white" : ""}`}
             onClick={() => setIsLong(true)}
           >
             Long
           </button>
           <button
-            className={`flex justify-center items-center  w-full h-10 rounded-[4px]
+            className={`flex justify-center items-center w-full h-10 rounded-[4px]
               ${isLong ? "" : "bg-[#fd5cb7] text-white"}`}
             onClick={() => setIsLong(false)}
           >
             Short
           </button>
         </div>
-        <div className="flex w-full items-center  h-14 justify-between">
+        <div className="flex w-full items-center h-14 justify-between">
           <div className="flex gap-4">
             <button
               className={`${

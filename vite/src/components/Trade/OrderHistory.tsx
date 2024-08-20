@@ -15,19 +15,19 @@ const OrderHistory: FC = () => {
       <div className="flex justify-between w-full h-12 items-center px-4 border-b-[0.6px] border-[#363A45] ">
         <div className="flex gap-4 ">
           <button
-            className={`${selectedMenu == 0 && "text-[#729aff]"}`}
+            className={`${selectedMenu === 0 ? "text-[#729aff]" : ""}`}
             onClick={() => setSelectedMenu(0)}
           >
             Position (8)
           </button>
           <button
-            className={`${selectedMenu == 1 && "text-[#729aff]"}`}
+            className={`${selectedMenu === 1 ? "text-[#729aff]" : ""}`}
             onClick={() => setSelectedMenu(1)}
           >
             Order (2)
           </button>
           <button
-            className={`${selectedMenu == 2 && "text-[#729aff]"}`}
+            className={`${selectedMenu === 2 ? "text-[#729aff]" : ""}`}
             onClick={() => setSelectedMenu(2)}
           >
             History
@@ -39,7 +39,7 @@ const OrderHistory: FC = () => {
           <button>All My Position &gt;</button>
         </div>
       </div>
-      <div className="overflow-y-auto" style={{ height: height }}>
+      <div className="overflow-y-auto" style={{ height }}>
         {cards[selectedMenu].map((_, i) => (
           <OrderHistoryCard key={i} type={selectedMenu} />
         ))}
