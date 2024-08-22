@@ -34,9 +34,6 @@ const routerContract = new ethers.Contract(
   signer
 );
 
-let longPositions = [];
-let shortPositions = [];
-
 const UINT256_MAX = 2n ** 256n - 1n;
 
 const calculateDxDy = (x, y, k) => {
@@ -69,7 +66,12 @@ const setIndexPrice = async (res) => {
 
 const openPosition = async (indexPrice) => {
   const reserves = await poolContract.getReserves();
-  const [amount0, amount1] = [reserves[0], reserves[1]];
+  const token0 = await poolContract.token0();
+
+  const [amount0, amount1] =
+    token0.toUpperCase() === baseAddress.toUpperCase()
+      ? [reserves[0], reserves[1]]
+      : [reserves[1], reserves[0]];
 
   const { dx } = calculateDxDy(
     Number(amount0),
@@ -93,45 +95,11 @@ const openPosition = async (indexPrice) => {
 };
 
 const buy = async (amount) => {
-  if (shortPositions.length) {
-    const posaitionHash = shortPositions.pop();
-    const position = await clearingHouseContract.getPosition(
-      signer.address,
-      baseAddress,
-      posaitionHash
-    );
-    const positionSize = position[1];
-
-    let closePercent = BigInt(
-      Math.ceil((Number(amount) / Number(positionSize)) * 100)
-    );
-    if (closePercent > 100n) closePercent = 100n;
-    console.log(positionSize, amount, closePercent);
-    closePosition(posaitionHash, false, closePercent);
-  } else {
-    openPositionLong(amount);
-  }
+  openPositionLong(amount);
 };
 
 const sell = async (amount) => {
-  if (longPositions.length) {
-    const posaitionHash = longPositions.pop();
-    const position = await clearingHouseContract.getPosition(
-      signer.address,
-      baseAddress,
-      posaitionHash
-    );
-    const positionSize = position[1];
-    let closePercent = BigInt(
-      Math.ceil((Number(amount) / Number(positionSize)) * 100)
-    );
-    console.log(positionSize, amount, closePercent);
-    if (closePercent > 100n) closePercent = 100n;
-
-    closePosition(posaitionHash, true, closePercent);
-  } else {
-    openPositionShort(amount);
-  }
+  openPositionShort(amount);
 };
 
 const openPositionLong = (amount) => {
@@ -186,20 +154,20 @@ const closePosition = (positionHash, isLong, closePercent) => {
 };
 
 // event UpdatePosition(address indexed trader, address indexed baseToken, bytes32 positionHash, uint margin, uint positionSize, uint openNotional);
-const filter = clearingHouseContract.filters.UpdatePosition(signer.address);
-clearingHouseContract.on(filter, (event) => {
-  clearingHouseContract
-    .getPosition(signer.address, baseAddress, event.args[2])
-    .then((res) => {
-      res[3]
-        ? longPositions.push(event.args[2])
-        : shortPositions.push(event.args[2]);
-    });
-});
+// const filter = clearingHouseContract.filters.UpdatePosition(signer.address);
+// clearingHouseContract.on(filter, (event) => {
+//   clearingHouseContract
+//     .getPosition(signer.address, baseAddress, event.args[2])
+//     .then((res) => {
+//       res[3]
+//         ? longPositions.push(event.args[2])
+//         : shortPositions.push(event.args[2]);
+//     });
+// });
 
 setInterval(() => {
   getIndexPrice();
-}, 60 * 1000);
+}, 15 * 1000);
 
 // setTimeout(() => {
 //   getIndexPrice();
