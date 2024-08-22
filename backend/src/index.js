@@ -14,6 +14,7 @@ app.use(cors());
 // 차트 정보 요청
 app.get("/api/history", (req, res) => {
   const { symbol, resolution, from, to } = req.query;
+  
   db.all(
     `SELECT * FROM ${symbol}_PRICE_VOLUME_${resolution} WHERE time BETWEEN ? AND ?`,
     [from * 1000, to * 1000],
@@ -21,7 +22,7 @@ app.get("/api/history", (req, res) => {
       if (err) {
         res.status(500).json({ error: err.message });
         return;
-      }
+      }      
       res.json(rows);
     }
   );
@@ -143,7 +144,10 @@ app.listen(port, () => {
     "0x56f7b6eD57d7Ce8804F6f89Dc38D5dF5Ef1f8499",
     "BTC"
   );
-  handler.subscribe();
+  setTimeout(() => {
+    handler.subscribe();
+  }, 15000)
+  
 });
 
 // nohup node src/index.js > index.out 2>&1 &

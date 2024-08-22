@@ -20,7 +20,7 @@ class TradingVolumeHandler {
   constructor(poolAddress, baseAddress, poolName) {
     this.volumeTable = new PriceVolume(
       `${poolName}_PRICE_VOLUME_`,
-      1722470400000
+      1724227200000
     );
 
     this.volumeTable.createTable();
@@ -52,8 +52,6 @@ class TradingVolumeHandler {
       contracts.clearingHouse.address
     );
 
-    console.log(contracts.clearingHouse.address);
-
     this.baseAddress = baseAddress;
     this.decimals = 8;
     this.isBase = false;
@@ -83,7 +81,6 @@ class TradingVolumeHandler {
 
   async updateVolume(volume) {
     this.getCurrentPrice().then((price) => {
-      console.log(price);
       this.volumeTable.updatePrice(price, Date.now(), Number(volume) / 10 ** 6);
     });
   }
@@ -91,6 +88,7 @@ class TradingVolumeHandler {
   //   event ClosePosition(address indexed trader, address indexed baseToken, bytes32 positionHash, uint margin, uint positionSize, uint openNotional, bool isLong);
 
   async updatePosition(position) {
+    console.log("update:", position)
     this.positionsTable.updatePosition(
       position.trader,
       position.baseToken,
@@ -103,6 +101,7 @@ class TradingVolumeHandler {
   }
 
   async closePosition(position) {
+    console.log("close:", position)
     this.positionsTable.closePosition(
       position.trader,
       position.baseToken,
@@ -115,13 +114,14 @@ class TradingVolumeHandler {
   }
 
   async updateFundingRate() {
-    const longValue = await accountBalanceContract.methods
+    const longValue = await this.accountBalanceContract.methods
       .cumulativeLongFundingRates(this.baseAddress)
       .call();
-    const shortValue = await accountBalanceContract.methods
+    const shortValue = await this.accountBalanceContract.methods
       .cumulativeShortFundingRates(this.baseAddress)
       .call();
 
+    console.log("updateFundingRate:", longValue, shortValue)
     this.fundingRateTable.insertFundingRate(
       longValue.toString(),
       shortValue.toString()
@@ -143,13 +143,13 @@ class TradingVolumeHandler {
       .Buy({
         fromBlock: "lastest",
       })
-      .on("data", (event) => updateVolume(event.returnValues.amountIn));
+      .on("data", (event) => this.updateVolume(event.returnValues.amountIn));
 
     this.clearingHouseContract.events
       .Sell({
         fromBlock: "lastest",
       })
-      .on("data", (event) => updateVolume(event.returnValues.amountOut));
+      .on("data", (event) => this.updateVolume(event.returnValues.amountOut));
 
     this.clearingHouseContract.events
       .UpdatePosition({

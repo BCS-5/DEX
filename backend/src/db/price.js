@@ -15,6 +15,7 @@ class PriceVolume {
   constructor(tableName, startTime) {
     // this.tableName = "BTC_PRICE_VOLUME_";
     this.tableName = tableName;
+    
     this.lastUpdateTime = [];
     for (let i in resolutionToTable) {
       this.lastUpdateTime.push(startTime);
@@ -63,7 +64,7 @@ class PriceVolume {
             }
           }
         );
-      });
+      });      
     });
   }
 
