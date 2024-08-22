@@ -128,7 +128,7 @@ contract ClearingHouse is IClearingHouse, Ownable{
             position.margin += uint(amount);
         else
             position.margin -= uint(-amount);
-        emit UpdatePosition(trader, baseToken, positionHash, position.margin, position.positionSize, position.openNotional);
+        emit UpdatePosition(trader, baseToken, positionHash, position.margin, position.positionSize, position.openNotional, position.isLong);
     }
 
     // 포지션 오픈
@@ -183,7 +183,7 @@ contract ClearingHouse is IClearingHouse, Ownable{
             IAccountBalance(accountBalance).cumulativeLongFundingRates(baseToken) : IAccountBalance(accountBalance).cumulativeShortFundingRates(baseToken);        
 
         positionMap[trader][baseToken][positionHash] = position;
-        emit UpdatePosition(trader, baseToken, positionHash, position.margin, position.positionSize, position.openNotional);
+        emit UpdatePosition(trader, baseToken, positionHash, position.margin, position.positionSize, position.openNotional, position.isLong);
     }
 
     // 사용자에 의해 호출되는 포지션 종료
@@ -238,7 +238,7 @@ contract ClearingHouse is IClearingHouse, Ownable{
         // 모든 계약이 청산되면 Close, 일부 남아 있으면 Update
         if(position.positionSize == 0) {
             delete positionMap[trader][baseToken][positionHash];
-            emit ClosePosition(trader, baseToken, positionHash, position.margin, position.positionSize, position.openNotional);
+            emit ClosePosition(trader, baseToken, positionHash, position.margin, position.positionSize, position.openNotional, position.isLong);
         } else {
             _updatePosition(position, trader, baseToken, positionHash);
         }
@@ -277,8 +277,8 @@ contract ClearingHouse is IClearingHouse, Ownable{
             amounts = IUniswapV2Router02(router).swapTokensForExactTokens(amountOut, amountInMaximum, path, address(this), deadline);
             fee = amounts[0] * 3 / 1e4;
         }        
+        emit Buy(trader, path[1], amounts[0], amounts[1]);
         amounts[0] += fee;
-        emit Buy(trader, path[1], amountIn, amountOut);
     }
 
     // baseToken => quoteToken(롱포지션 종료 or 숏포지션 오픈)
@@ -294,8 +294,8 @@ contract ClearingHouse is IClearingHouse, Ownable{
             fee = amountOut * 3 / 1e4;
             amounts = IUniswapV2Router02(router).swapTokensForExactTokens(amountOut + fee, amountInMaximum, path, address(this), deadline);
         }        
+        emit Sell(trader, path[0], amounts[0], amounts[1]);
         amounts[1] -= fee;
-        emit Sell(trader, path[0], amountIn, amountOut);
     }
 
     // 다수의 포지션 동시에 정리

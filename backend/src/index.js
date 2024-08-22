@@ -42,30 +42,106 @@ app.get("/api/latest", (req, res) => {
 });
 
 // 24시간 거래량, 총 미결제 약정, 24시간 발생 수수료
-app.get("/api/getMarket", (req, res) => {});
+app.get("/api/getMarket", (req, res) => {
+  res.json({
+    volume: 123,
+    openInterest: 456,
+    fee: 789,
+  });
+});
 
 // 유동성 가치, 24시간 거래량, 24시간 수수료, APR 반환
-app.get("/api/getLiquidityPool", (req, res) => {});
+app.get("/api/getLiquidityPool", (req, res) => {
+  res.json({
+    volume: 123,
+    fee: 456,
+  });
+});
 
 // 24H 거래량, 1h Funding (Long), 1h Funding(Short)
-app.get("/api/getPerpetualPool", (req, res) => {});
+app.get("/api/getPerpetualPool", (req, res) => {
+  res.json({
+    volume: 123,
+    longFunding: 456,
+    shortFunding: 789,
+  });
+});
 
 // Volume, TVL, Fees 일별 정보
-app.get("/api/getChart", (req, res) => {});
+app.get("/api/getChart", (req, res) => {
+  res.json([
+    {
+      time: 1724307147000,
+      volume: 123,
+    },
+    {
+      time: 1724307148000,
+      volume: 456,
+    },
+    {
+      time: 1724307149000,
+      volume: 789,
+    },
+  ]);
+});
 
 // 풀 이름    포지션크기     가격  현재 풀 가격  수익률    청산 가격    롱숏 여부
-app.get("/api/getPositions", (req, res) => {});
+app.get("/api/getPositions", (req, res) => {
+  res.json([
+    {
+      positionHash: "0x1234",
+      time: 1724307147000,
+      trader: "0x0000",
+      baseToken: "0x1111",
+      margin: "1000",
+      positionSize: "2000",
+      openNotional: "3000",
+      isLong: 1,
+    },
+    {
+      positionHash: "0x5678",
+      time: 1724307148000,
+      trader: "0x0000",
+      baseToken: "0x1111",
+      margin: "2000",
+      positionSize: "3000",
+      openNotional: "4000",
+      isLong: 0,
+    },
+  ]);
+});
 
 // 풀 이름    포지션크기    진입 가격  현재 풀 가격  수익률    청산 가격    롱숏 여부
 app.get("/api/getOrders", (req, res) => {});
 
+// trader TEXT,         -- 트레이더 주소 (Ethereum address 형식)
+//     poolName TEXT,       -- 풀 이름
+//     earnedFees TEXT      -- uint256 형식으로 저장할 earnedFees (TEXT로 저장)
+
 // 풀 이름     LP토큰 개수    예치된 토큰 가치   파밍된 수수료    청구되지 않은 수수료
-app.get("/api/getLiquidityPositions", (req, res) => {});
+app.get("/api/getLiquidityPositions", (req, res) => {
+  res.json([
+    {
+      trader: "0x1234",
+      poolName: "BTC",
+      earnedFees: "12345678",
+    },
+    {
+      trader: "0x1234",
+      poolName: "ETH",
+      earnedFees: "777777",
+    },
+  ]);
+});
 
 // 서버 시작
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
-  const handler = new TradingVolumeHandler("0x51AC7a5363751fa19F1186f850f15a1E1Dd8F8db","0x1BCe644E5AEe9cEb88b13fa4894f7a583e7E350b","BTC");
+  const handler = new TradingVolumeHandler(
+    "0x51AC7a5363751fa19F1186f850f15a1E1Dd8F8db",
+    "0x1BCe644E5AEe9cEb88b13fa4894f7a583e7E350b",
+    "BTC"
+  );
   handler.subscribe();
 });
 

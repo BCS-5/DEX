@@ -23,6 +23,12 @@ interface IVault {
     /// @param clearingHouse The address of clearingHouse
     event ClearingHouseChanged(address indexed clearingHouse);
 
+    /// @notice Emitted when trader claim fee
+    /// @param trader The address of trader
+    /// @param poolAddress The address of liquidity pool address
+    /// @param amount The amount of token claimed
+    event Claimed(address indexed trader, address indexed poolAddress, uint256 amount);
+
     /// @notice Get settlement token decimals
     /// @return decimals The decimals of settlement token
     function decimals() external view returns (uint8 decimals);
@@ -94,5 +100,10 @@ interface IVault {
     /// @param trader The address of the trader
     /// @param pool The address of the liquidity pool contract
     function getUserLP(address trader, address pool) external view returns(uint256);
+
+    /// @notice Get the trader's LP token balance.
+    /// @param trader The address of the trader
+    /// @param pool The address of the liquidity pool contract
+    function getUnclaimedRewards(address trader, address pool) external view returns(uint256);
 
 }

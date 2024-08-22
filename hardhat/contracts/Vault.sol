@@ -238,12 +238,13 @@ contract Vault is IVault, SafeOwnable {
     function claimRewards(address user, address poolAddr) external {
         address token = _settlementToken;
         // uint256 amount = (getCumulativeTransactionFee(poolAddr) - liquidityProviders[user][poolAddr].cumulativeTransactionFeeLast) * liquidityProviders[user][poolAddr].userLP;
-        uint256 amount = (getCumulativeTransactionFee(poolAddr) - liquidityProviders[user][poolAddr].cumulativeTransactionFeeLast) * liquidityProviders[user][poolAddr].userLP / 2**128;
+        uint256 amount = getUnclaimedRewards(user, poolAddr);
         // 보증금 업데이트
         collateral[user].totalCollateral += amount;
+        emit Claimed(user, poolAddr, amount);
         // _deposit(address(this), user, token, amount);
 
-        liquidityProviders[user][poolAddr].cumulativeTransactionFeeLast = getCumulativeTransactionFee(poolAddr);
+        liquidityProviders[user][poolAddr].cumulativeTransactionFeeLast = getCumulativeTransactionFee(poolAddr);        
     }
 
     // pool 거래 수수료 업데이트
@@ -259,5 +260,9 @@ contract Vault is IVault, SafeOwnable {
 
     function getUserLP(address user, address poolAddr) external view returns(uint) {
         return liquidityProviders[user][poolAddr].userLP;
+    }
+
+    function getUnclaimedRewards(address user, address poolAddr) public view returns(uint256) {
+        return (getCumulativeTransactionFee(poolAddr) - liquidityProviders[user][poolAddr].cumulativeTransactionFeeLast) * liquidityProviders[user][poolAddr].userLP / 2**128;
     }
 }
