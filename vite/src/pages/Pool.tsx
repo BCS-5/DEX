@@ -35,7 +35,9 @@ const Pool: FC = () => {
   };
 
   const onClickConnectWallet = () => {
-    provider?.getSigner().then((signer: JsonRpcSigner) => dispatch(setSigner(signer)));
+    provider
+      ?.getSigner()
+      .then((signer: JsonRpcSigner) => dispatch(setSigner(signer)));
   };
 
   return (
@@ -54,7 +56,7 @@ const Pool: FC = () => {
               </div>
               <div className="content-center">BTC</div>
               <div className="w-auto content-center text-sm text-[#94A3B8]">
-                80%
+                50%
               </div>
             </div>
             <div className="flex gap-2 px-3 h-10 bg-[#162031] text-lg rounded-lg">
@@ -66,7 +68,7 @@ const Pool: FC = () => {
                 />
               </div>
               <div className="content-center">USDT</div>
-              <div className="content-center text-sm text-[#94A3B8]">20%</div>
+              <div className="content-center text-sm text-[#94A3B8]">50%</div>
             </div>
           </div>
           <div className="text-[#94A3B8] pt-2">
@@ -141,8 +143,8 @@ const Pool: FC = () => {
                   </button>
                 </div>
                 <div className="pt-4 text-[#94A3B8] text-xs">
-                  Liquidity Providers encounter risks when using DeFi and
-                  조선안전 pools. Before proceeding, view this&nbsp;
+                  Liquidity Providers encounter risks when using DeFi and FutuRX
+                  pools. Before proceeding, view this&nbsp;
                   <a className="font-medium text-[#60A5FA] hover:text-[#FED553] hover:underline">
                     pool's risks
                   </a>

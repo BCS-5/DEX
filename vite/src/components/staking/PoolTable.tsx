@@ -39,13 +39,13 @@ const PoolTable: FC = () => {
               <div className="flex content-center gap-2 px-3 bg-[#334155] text-lg rounded-lg">
                 BTC
                 <div className="w-auto content-center text-sm text-[#94A3B8]">
-                  80%
+                  50%
                 </div>
               </div>
               <div className="flex content-center gap-2 px-3 bg-[#334155] text-lg rounded-lg">
                 USDT
                 <div className="w-auto content-center text-sm text-[#94A3B8]">
-                  20%
+                  50%
                 </div>
               </div>
             </div>
