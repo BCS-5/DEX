@@ -15,7 +15,10 @@ async function getDecimals(address) {
 
 class TradingVolumeHandler {
   constructor(poolAddress, baseAddress, poolName) {
-    this.volumeTable = new PriceVolume(`${poolName}_PRICE_VOLUME_`, 1722470400000);
+    this.volumeTable = new PriceVolume(
+      `${poolName}_PRICE_VOLUME_`,
+      1722470400000
+    );
 
     this.volumeTable.createTable();
     this.volumeTable.initialize();
@@ -23,10 +26,13 @@ class TradingVolumeHandler {
     this.poolContract = new web3.eth.Contract(
       contracts.uniswapV2Pair.abi,
       poolAddress
-      // "0x51AC7a5363751fa19F1186f850f15a1E1Dd8F8db"
     );
 
-    // this.baseAddress = "0x1BCe644E5AEe9cEb88b13fa4894f7a583e7E350b";
+    this.clearingHouseContract = new web3.eth.Contract(
+      contracts.clearingHouse.abi,
+      contracts.clearingHouse.address
+    );
+
     this.baseAddress = baseAddress;
     this.decimals = 8;
     this.isBase = false;
@@ -62,10 +68,31 @@ class TradingVolumeHandler {
           this.volumeTable.updatePrice(
             (Number(data._reserve1) * 10 ** this.decimals) /
               Number(data._reserve0),
-            Number(newBlock.timestamp) * 1000, 0.0
+            Number(newBlock.timestamp) * 1000,
+            0.0
           );
         });
     });
+
+    this.clearingHouseContract.events.Buy(
+      {
+        filter: {},
+        fromBlock: "latest",
+      },
+      (error, event) => {
+        console.log("Buy event:", event.returnValues);
+      }
+    );
+
+    this.clearingHouseContract.events.Sell(
+      {
+        filter: {},
+        fromBlock: "latest",
+      },
+      (error, event) => {
+        console.log("Sell event:", event.returnValues);
+      }
+    );
   }
 
   async unsubscribe() {
