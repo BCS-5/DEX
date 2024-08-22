@@ -1,10 +1,12 @@
-const V2PairABI = require("./abis/UniswapV2Pair.json");
-const ERC20ABI = require("./abis/ERC20.json");
+const { contracts } = require("../../contracts/addresses");
 const PriceVolume = require("../db/price");
 require("dotenv").config();
 
 async function getDecimals(address) {
-  const tokenContract = new web3.eth.Contract(ERC20ABI, address);
+  const tokenContract = new web3.eth.Contract(
+    contracts.virtualToken.abi,
+    address
+  );
   const decimals = await tokenContract.methods.decimals().call();
   return decimals;
 }
@@ -17,7 +19,7 @@ class TradingVolumeHandler {
     this.volumeTable.initialize();
 
     this.poolContract = new web3.eth.Contract(
-      V2PairABI,
+      contracts.uniswapV2Pair.abi,
       poolAddress
       // "0x51AC7a5363751fa19F1186f850f15a1E1Dd8F8db"
     );

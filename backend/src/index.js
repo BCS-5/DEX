@@ -1,5 +1,6 @@
 const express = require("express");
 const cors = require("cors");
+const TradingVolumeHandler = require("./web3/updatePrice");
 
 const app = express();
 const port = 8090;
@@ -63,15 +64,9 @@ app.get("/api/getLiquidityPositions", (req, res) => {});
 // 서버 시작
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
+  const handler = new TradingVolumeHandler();
+  handler.subscribe();
 });
-
-const baseAddress = "0x1BCe644E5AEe9cEb88b13fa4894f7a583e7E350b";
-
-async function getDecimals(address) {
-  const tokenContract = new web3.eth.Contract(ERC20ABI, address);
-  const decimals = await tokenContract.methods.decimals().call();
-  return decimals;
-}
 
 // nohup node src/index.js > index.out 2>&1 &
 
