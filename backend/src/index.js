@@ -1,6 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 const TradingVolumeHandler = require("./web3/updatePrice");
+const db = require("./db/database");
 
 const app = express();
 const port = 8090;
@@ -13,7 +14,7 @@ app.use(cors());
 app.get("/api/history", (req, res) => {
   const { symbol, resolution, from, to } = req.query;
   db.all(
-    `SELECT * FROM ${symbol}_DATA_${resolution} WHERE time BETWEEN ? AND ?`,
+    `SELECT * FROM ${symbol}_PRICE_VOLUME_${resolution} WHERE time BETWEEN ? AND ?`,
     [from * 1000, to * 1000],
     (err, rows) => {
       if (err) {
@@ -29,7 +30,7 @@ app.get("/api/history", (req, res) => {
 app.get("/api/latest", (req, res) => {
   const { symbol, resolution } = req.query;
   db.all(
-    `SELECT * FROM ${symbol}_DATA_${resolution} WHERE id = (SELECT MAX(id) FROM ${symbol}_DATA_${resolution}) `,
+    `SELECT * FROM ${symbol}_PRICE_VOLUME_${resolution} WHERE id = (SELECT MAX(id) FROM ${symbol}_PRICE_VOLUME_${resolution}) `,
     (err, row) => {
       if (err) {
         res.status(500).json({ error: err.message });
@@ -64,7 +65,7 @@ app.get("/api/getLiquidityPositions", (req, res) => {});
 // 서버 시작
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
-  const handler = new TradingVolumeHandler();
+  const handler = new TradingVolumeHandler("0x51AC7a5363751fa19F1186f850f15a1E1Dd8F8db","0x1BCe644E5AEe9cEb88b13fa4894f7a583e7E350b","BTC");
   handler.subscribe();
 });
 

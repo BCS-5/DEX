@@ -1,5 +1,7 @@
 const { contracts } = require("../../contracts/addresses");
 const PriceVolume = require("../db/price");
+const web3 = require("./web3Provider");
+
 require("dotenv").config();
 
 async function getDecimals(address) {
@@ -13,7 +15,7 @@ async function getDecimals(address) {
 
 class TradingVolumeHandler {
   constructor(poolAddress, baseAddress, poolName) {
-    this.volumeTable = new PriceVolume("BTC_PRICE_VOLUME_", 1722470400000);
+    this.volumeTable = new PriceVolume(`${poolName}_PRICE_VOLUME_`, 1722470400000);
 
     this.volumeTable.createTable();
     this.volumeTable.initialize();
@@ -60,7 +62,7 @@ class TradingVolumeHandler {
           this.volumeTable.updatePrice(
             (Number(data._reserve1) * 10 ** this.decimals) /
               Number(data._reserve0),
-            Number(newBlock.timestamp) * 1000
+            Number(newBlock.timestamp) * 1000, 0.0
           );
         });
     });

@@ -2,7 +2,7 @@ const { Web3, WebSocketProvider } = require("web3");
 require("dotenv").config();
 
 const websocketUrl = `wss://sepolia.infura.io/ws/v3/${process.env.INFURA_API_KEY}`;
-PriceVolume;
+
 // WebSocketProvider를 사용하여 Web3 인스턴스 생성
 function createWeb3Instance() {
   const provider = new WebSocketProvider(
