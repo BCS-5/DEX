@@ -78,7 +78,7 @@ class Positions {
 
   closePosition(positionHash) {
     const deleteQuery = `
-        DELETE FROM positions WHERE positionHash = ?;
+        DELETE FROM ${this.tableName} WHERE positionHash = ?;
     `;
 
     db.run(deleteQuery, [positionHash]);

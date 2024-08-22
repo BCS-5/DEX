@@ -15,7 +15,7 @@ class PriceVolume {
   constructor(tableName, startTime) {
     // this.tableName = "BTC_PRICE_VOLUME_";
     this.tableName = tableName;
-    
+
     this.lastUpdateTime = [];
     for (let i in resolutionToTable) {
       this.lastUpdateTime.push(startTime);
@@ -24,6 +24,7 @@ class PriceVolume {
 
   createTable() {
     db.serialize(() => {
+      db.run("BEGIN EXCLUSIVE TRANSACTION");
       resolutionToTable.forEach((t, idx) => {
         db.run(
           `CREATE TABLE IF NOT EXISTS ${this.tableName}${t} (
@@ -64,12 +65,14 @@ class PriceVolume {
             }
           }
         );
-      });      
+      });
+      db.run("COMMIT");
     });
   }
 
   initialize() {
     db.serialize(() => {
+      db.run("BEGIN EXCLUSIVE TRANSACTION");
       resolutionToTable.forEach((t, idx) => {
         db.get(
           `SELECT * FROM ${this.tableName}${t} WHERE id = (SELECT MAX(id) FROM ${this.tableName}${t}{t})`,
@@ -83,15 +86,16 @@ class PriceVolume {
           }
         );
       });
+      db.run("COMMIT");
     });
   }
 
   updatePrice(price, timestamp, volume) {
-    this.lastUpdateTime.forEach((t, idx) => {
-      t += timeInterval[idx];
+    db.serialize(() => {
+      db.run("BEGIN EXCLUSIVE TRANSACTION");
+      this.lastUpdateTime.forEach((t, idx) => {
+        t += timeInterval[idx];
 
-      db.serialize(() => {
-        db.run("BEGIN EXCLUSIVE TRANSACTION");
         if (t <= timestamp) {
           db.get(
             `SELECT * FROM ${this.tableName}${resolutionToTable[idx]} WHERE id = (SELECT MAX(id) FROM ${this.tableName}${resolutionToTable[idx]})`,
@@ -116,8 +120,9 @@ class PriceVolume {
             [price, price, price, price, price, volume]
           );
         }
-        db.run("COMMIT");
       });
+
+      db.run("COMMIT");
     });
   }
 }

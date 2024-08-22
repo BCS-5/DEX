@@ -89,28 +89,40 @@ app.get("/api/getChart", (req, res) => {
 
 // 풀 이름    포지션크기     가격  현재 풀 가격  수익률    청산 가격    롱숏 여부
 app.get("/api/getPositions", (req, res) => {
-  res.json([
-    {
-      positionHash: "0x1234",
-      time: 1724307147000,
-      trader: "0x0000",
-      baseToken: "0x1111",
-      margin: "1000",
-      positionSize: "2000",
-      openNotional: "3000",
-      isLong: 1,
-    },
-    {
-      positionHash: "0x5678",
-      time: 1724307148000,
-      trader: "0x0000",
-      baseToken: "0x1111",
-      margin: "2000",
-      positionSize: "3000",
-      openNotional: "4000",
-      isLong: 0,
-    },
-  ]);
+  // res.json([
+  //   {
+  //     positionHash: "0x1234",
+  //     time: 1724307147000,
+  //     trader: "0x0000",
+  //     baseToken: "0x1111",
+  //     margin: "1000",
+  //     positionSize: "2000",
+  //     openNotional: "3000",
+  //     isLong: 1,
+  //   },
+  //   {
+  //     positionHash: "0x5678",
+  //     time: 1724307148000,
+  //     trader: "0x0000",
+  //     baseToken: "0x1111",
+  //     margin: "2000",
+  //     positionSize: "3000",
+  //     openNotional: "4000",
+  //     isLong: 0,
+  //   },
+  // ]);
+
+  const { address } = req.query;
+  db.all(
+    `SELECT * FROM BTC_POSITIONS WHERE trader = "${address}"`,
+    (err, rows) => {
+      if (err) {
+        res.status(500).json({ error: err.message });
+        return;
+      }
+      res.json(rows);
+    }
+  );
 });
 
 // 풀 이름    포지션크기    진입 가격  현재 풀 가격  수익률    청산 가격    롱숏 여부
