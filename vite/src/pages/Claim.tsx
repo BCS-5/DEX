@@ -1,6 +1,7 @@
 import { FC } from "react";
-import claimBanner from "../images/staking/claim_banner.svg";
+import claimBanner from "../images/staking/staking_4.png";
 import { useNavigate } from "react-router-dom";
+import Tooltip from "../components/staking/Tooltip";
 
 const Claim: FC = () => {
   const navigate = useNavigate();
@@ -8,24 +9,37 @@ const Claim: FC = () => {
   return (
     <div className="flex flex-col min-h-screen bg-[#0F172A]">
       <div className="mb-10">
-        <div className="relative justify-center">
+        <div className="relative justify-center h-[280px] overflow-hidden">
           <img src={claimBanner} className="w-full" />
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[#F8FAFC] text-center">
-            <div className="font-bold text-5xl pb-2">DeFi liquidity pools</div>
-            <div className="text-2xl mt-2">Built on 조선안전 protocol</div>
+          <div className="w-full absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[#F8FAFC] text-center">
+            <div className="px-10 pl-40">
+              <div className="flex grid-cols-2">
+                <div className="py-4 text-left w-[33%]">
+                  <div className="mb-3 text-4xl font-bold">
+                    Claim liquidity incentives
+                  </div>
+                  <div>
+                    FutuRX Protocol liquidity incentives are directed to pools
+                    by veBAL voters. Stake in these pools to earn incentives.
+                    Boost with veBAL for up to 2.5x extra.
+                  </div>
+                </div>
+                <div className=""></div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
       <div className="flex justify-center">
         <div className="flex flex-col max-w-[1504px] w-full">
-          <div className="flex gap-3 font-bold">
+          <div className="flex border-b border-[#1E222D] gap-7 font-bold mx-5">
             <button
-              className="bg-[#1D283A] hover:bg-[#1E3A8A] text-[#F8FAFC] rounded-lg px-5 py-2 active:bg-[#1E3A8A]"
+              className="text-xl text-[#F8FAFC] hover:text-[#FFFC7D] py-2"
               onClick={() => navigate("/staking")}
             >
               Staking
             </button>
-            <button className="border border-[#3B82F6] bg-[#1E3A8A] text-[#F8FAFC] rounded-lg px-5 py-2 active:bg-[#1E3A8A]">
+            <button className="border-b-2 border-[#AB71E2] text-xl text-[#AB71E2] py-2">
               Claim
             </button>
           </div>
@@ -34,8 +48,28 @@ const Claim: FC = () => {
               <div className="px-4 text-2xl font-bold">
                 Ethereum liquidity incentives
               </div>
-              <div className="px-4 mt-6 mb-2 font-semibold text-xl">
-                BAL incentives
+              <div className="flex px-4 mt-6 mb-2 font-semibold text-xl">
+                LP incentives
+                <div className="content-center text-[#94A3B8] ml-2">
+                  <Tooltip text="Incentives for LPs who stake in eligible pools (based on the previous week's voting). This doesn't include swap fees or intrinsic yield from certain yield-bearing tokens which accumulate into LP positions automatically.">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="12"
+                      height="12"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      className="feather feather-info cursor-pointer"
+                    >
+                      <circle cx="12" cy="12" r="10"></circle>
+                      <line x1="12" y1="16" x2="12" y2="12"></line>
+                      <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                    </svg>
+                  </Tooltip>
+                </div>
               </div>
               <table className="table-auto w-full bg-[#162031] text-[#F8FAFC] rounded-xl overflow-hidden">
                 <thead className="border-b-2 border-b-[#0F172A]">
@@ -49,50 +83,11 @@ const Claim: FC = () => {
                 <tbody>
                   <tr className="hover:bg-[#1e293b]">
                     <td className="p-6 text-[#94A3B8]">
-                      No BAL incentives to claim from staking
+                      No LP incentives to claim from staking
                     </td>
                     <td className="px-6 py-4"></td>
                     <td className="px-6 py-4"></td>
                     <td className="px-6 py-4"></td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-            <div className="mb-16">
-              <div className="px-4 mt-6 mb-2 font-semibold text-xl">
-                Protocol revenue & veBAL incentives
-              </div>
-              <table className="table-auto w-full bg-[#162031] text-[#F8FAFC] rounded-xl overflow-hidden">
-                <thead className="border-b-2 border-b-[#0F172A]">
-                  <tr className="font-bold">
-                    <th className="p-6 text-left">Token</th>
-                    <th className="p-6 text-left">Amount</th>
-                    <th className="p-6 text-left">Value</th>
-                    <th className="p-6 text-left"></th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr className="hover:bg-[#1e293b]">
-                    <td className="p-6 text-[#94A3B8]">
-                      Nothing to claim from holding veBAL
-                    </td>
-                    <td className="px-6 py-4"></td>
-                    <td className="px-6 py-4"></td>
-                    <td className="px-6 py-4"></td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-            <div>
-              <div className="px-4 mt-6 mb-2 font-semibold text-xl">
-                Other token incentives
-              </div>
-              <table className="table-auto w-full bg-[#162031] text-[#F8FAFC] rounded-xl overflow-hidden">
-                <tbody>
-                  <tr>
-                    <td className="p-6 text-[#94A3B8]">
-                      No claimable incentives
-                    </td>
                   </tr>
                 </tbody>
               </table>
