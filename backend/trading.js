@@ -7,8 +7,8 @@ const provider = new WebSocketProvider(
 
 const signer = new ethers.Wallet("0x" + process.env.PRIVATE_KEY, provider);
 
-const baseAddress = "0x1BCe644E5AEe9cEb88b13fa4894f7a583e7E350b";
-const quoteAddress = "0xe94cE4efD00c9C002e1402F2BE72E5213EDfeB42";
+const baseAddress = "0x56f7b6eD57d7Ce8804F6f89Dc38D5dF5Ef1f8499";
+const quoteAddress = "0x3EA41003BC70e4da782567359B16C47CcF4650C3";
 
 const accountBalanceContract = new ethers.Contract(
   contracts.accountBalance.address,
@@ -23,7 +23,7 @@ const clearingHouseContract = new ethers.Contract(
 );
 
 const poolContract = new ethers.Contract(
-  "0x51AC7a5363751fa19F1186f850f15a1E1Dd8F8db",
+  "0xAc4EB76D5eA83Ec19cD88BA2e637415eA0D4428C",
   contracts.uniswapV2Pair.abi,
   signer
 );
@@ -34,12 +34,7 @@ const routerContract = new ethers.Contract(
   signer
 );
 
-let longPositions = [
-  "0x99E382DD9A60BC30446A1BC74511DCE2C82725D99F83C32DE7CDD8DDBC21283D",
-  "0xBC851A6D7C4862B92AAD130677B519615CCCA3AE2C782C2B0A3EC2E9FCDD1D4E",
-  "0x0EBF4AB858E84DCBE4F215FD3C345D8D759F082DE655661F2D827D8B19489BBC",
-  "0x1BF7ECD9D9B91710E585EC5F2B1187F6F18FB54C6EAFB02FCDBBEB67FE7719C4",
-];
+let longPositions = [];
 let shortPositions = [];
 
 const UINT256_MAX = 2n ** 256n - 1n;
@@ -65,7 +60,7 @@ const setIndexPrice = async (res) => {
   let indexPrice = BigInt(res.RAW.BTC.USD.PRICE * 10 ** 18);
   console.log(res.RAW.BTC.USD.PRICE);
   await accountBalanceContract.setIndexPrice(
-    "0x1BCe644E5AEe9cEb88b13fa4894f7a583e7E350b",
+    "0x56f7b6eD57d7Ce8804F6f89Dc38D5dF5Ef1f8499",
     indexPrice
   );
 

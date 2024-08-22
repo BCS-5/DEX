@@ -1,4 +1,7 @@
 const { contracts } = require("../../contracts/addresses");
+const FundingRate = require("../db/funding");
+const LiquidityPositions = require("../db/liquidity");
+const Positions = require("../db/positions");
 const PriceVolume = require("../db/price");
 const web3 = require("./web3Provider");
 
@@ -22,6 +25,22 @@ class TradingVolumeHandler {
 
     this.volumeTable.createTable();
     this.volumeTable.initialize();
+
+    this.positionsTable = new Positions("BTC_POSITIONS");
+    this.positionsTable.createTable();
+
+    this.liquidityPositionsTable = new LiquidityPositions(
+      "LIQUIDITY_POSITIONS"
+    );
+    this.liquidityPositionsTable.createTable();
+
+    this.fundingRateTable = new FundingRate("BTC_FUNDING_RATE");
+    this.fundingRateTable.createTable();
+
+    this.accountBalanceContract = new web3.eth.Contract(
+      contracts.accountBalance.abi,
+      contracts.accountBalance.address
+    );
 
     this.poolContract = new web3.eth.Contract(
       contracts.uniswapV2Pair.abi,
@@ -65,12 +84,48 @@ class TradingVolumeHandler {
   async updateVolume(volume) {
     this.getCurrentPrice().then((price) => {
       console.log(price);
-      this.volumeTable.updatePrice(
-        price,
-        Date.now(),
-        Number(volume) / 10**6
-      );
+      this.volumeTable.updatePrice(price, Date.now(), Number(volume) / 10 ** 6);
     });
+  }
+
+  //   event ClosePosition(address indexed trader, address indexed baseToken, bytes32 positionHash, uint margin, uint positionSize, uint openNotional, bool isLong);
+
+  async updatePosition(position) {
+    this.positionsTable.updatePosition(
+      position.trader,
+      position.baseToken,
+      position.positionHash,
+      position.margin.toString(),
+      position.positionSize.toString(),
+      position.openNotional.toString(),
+      position.isLong
+    );
+  }
+
+  async closePosition(position) {
+    this.positionsTable.closePosition(
+      position.trader,
+      position.baseToken,
+      position.positionHash,
+      position.margin.toString(),
+      position.positionSize.toString(),
+      position.openNotional.toString(),
+      position.isLong
+    );
+  }
+
+  async updateFundingRate() {
+    const longValue = await accountBalanceContract.methods
+      .cumulativeLongFundingRates(this.baseAddress)
+      .call();
+    const shortValue = await accountBalanceContract.methods
+      .cumulativeShortFundingRates(this.baseAddress)
+      .call();
+
+    this.fundingRateTable.insertFundingRate(
+      longValue.toString(),
+      shortValue.toString()
+    );
   }
 
   async subscribe() {
@@ -81,6 +136,7 @@ class TradingVolumeHandler {
       }
 
       this.updateVolume(0);
+      this.updateFundingRate();
     });
 
     this.clearingHouseContract.events
@@ -94,31 +150,22 @@ class TradingVolumeHandler {
         fromBlock: "lastest",
       })
       .on("data", (event) => updateVolume(event.returnValues.amountOut));
-    
+
     this.clearingHouseContract.events
       .UpdatePosition({
         fromBlock: "lastest",
       })
-      .on("data", (event) => { });
-    
+      .on("data", (event) => {
+        this.updatePosition(event.returnValues);
+      });
+
     this.clearingHouseContract.events
       .ClosePosition({
         fromBlock: "lastest",
       })
-      .on("data", (event) => { });
-    
-    this.clearingHouseContract.events
-      .AddLiquidity({
-        fromBlock: "lastest",
-      })
-      .on("data", (event) => { });
-    
-    this.clearingHouseContract.events
-      .RemoveLiquidity({
-        fromBlock: "lastest",
-      })
-      .on("data", (event) => { });
-    
+      .on("data", (event) => {
+        this.closePosition(event.returnValues);
+      });
   }
 
   async unsubscribe() {

@@ -7,8 +7,8 @@ const provider = new WebSocketProvider(
 
 const signer = new ethers.Wallet("0x" + process.env.PRIVATE_KEY, provider);
 
-const baseAddress = "0x1BCe644E5AEe9cEb88b13fa4894f7a583e7E350b";
-const quoteAddress = "0xe94cE4efD00c9C002e1402F2BE72E5213EDfeB42";
+const baseAddress = "0x56f7b6eD57d7Ce8804F6f89Dc38D5dF5Ef1f8499";
+const quoteAddress = "0x3EA41003BC70e4da782567359B16C47CcF4650C3";
 
 const accountBalanceContract = new ethers.Contract(
   contracts.accountBalance.address,
@@ -23,7 +23,7 @@ const clearingHouseContract = new ethers.Contract(
 );
 
 const poolContract = new ethers.Contract(
-  "0x51AC7a5363751fa19F1186f850f15a1E1Dd8F8db",
+  "0xAc4EB76D5eA83Ec19cD88BA2e637415eA0D4428C",
   contracts.uniswapV2Pair.abi,
   signer
 );

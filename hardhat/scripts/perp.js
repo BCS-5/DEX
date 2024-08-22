@@ -15,6 +15,26 @@ async function main() {
   const UniswapV2Router = await hre.ethers.getContractFactory(
     "UniswapV2Router02"
   );
+
+  const usdt = USDT.attach("0x85885d5a79e6f55a2e8CcC19E08Ac12a7A310651");
+  const factory = UniswapV2Factory.attach(
+    "0x70aFa16650dEC132e8AeBAab7Cf281fD2e58b684"
+  );
+  const router = UniswapV2Router.attach(
+    "0x67c284d74131Ff5EBFBcE5bbCd3C923e55C6F738"
+  );
+  const vault = Vault.attach("0x8dF9874dDEe99fd4c591a37f9ecA1724266F7366");
+
+  const clearingHouse = ClearingHouse.attach(
+    "0x056931211F0859b47Fa9c80d8B3b257E5f8D6cB7"
+  );
+  const marketRegistry = MarketRegistry.attach(
+    "0x821b411e0d50517751F9cA7257a85bb9946e40E4"
+  );
+  const accountBalance = AccountBalance.attach(
+    "0x6355315C226aE4F31FbAe9b61F8c044079D19145"
+  );
+
   // const usdt = await USDT.deploy(2n ** 256n - 1n, "Tether USD", "USDT", 6);
   // console.log(`usdt: ${usdt.target}`);
   // const factory = await UniswapV2Factory.deploy(deployer);
@@ -34,24 +54,6 @@ async function main() {
   // );
   // console.log(`accountBalance: ${accountBalance.target}`);
 
-  const usdt = USDT.attach("0x8e7eF834538bcBbCE5A546a31ed9b41F766A491c");
-  const factory = UniswapV2Factory.attach(
-    "0x01b8293Ead41f293F91A630aD0697e0B2D92E6FC"
-  );
-  const router = UniswapV2Router.attach(
-    "0x4cA5Db20cAC8998bBB2Db00b25c0Bb86535fe68E"
-  );
-  const vault = Vault.attach("0x93b1C7fFbA83E18214F8370883AEC7daEE00557f");
-
-  const clearingHouse = ClearingHouse.attach(
-    "0xAb0678c1B6AAb55820F74dC87E13DB61F77B5D90"
-  );
-  const marketRegistry = MarketRegistry.attach(
-    "0x0b1Fb4727C2133269f09A743cbF4Cf9338811Ac7"
-  );
-  const accountBalance = AccountBalance.attach(
-    "0x1a726A778C2c215D6B50CB1E87fdd7Dad3B05FA1"
-  );
   // await clearingHouse.setMarketRegistry(marketRegistry);
 
   // await clearingHouse.setRouter(router);
@@ -67,6 +69,7 @@ async function main() {
   // const queteTokenAddress = txResult.logs[5].args[2];
 
   // await marketRegistry.createPool("Ethereum", "ETH", 18);
+
   // await vault.setSettlementToken(usdt);
   // await vault.setClearingHouse(clearingHouse);
 
@@ -75,25 +78,18 @@ async function main() {
   // await clearingHouse.approve(baseTokenAddress);
   // await clearingHouse.approve(poolAddress);
 
-  // await clearingHouse.approve("0xe94cE4efD00c9C002e1402F2BE72E5213EDfeB42");
-  // await clearingHouse.approve("0x1BCe644E5AEe9cEb88b13fa4894f7a583e7E350b");
-  // await clearingHouse.approve("0x51AC7a5363751fa19F1186f850f15a1E1Dd8F8db");
   // await accountBalance.setKeeper(deployer);
 
   // await clearingHouse.initializePool(
-  //   "0x1BCe644E5AEe9cEb88b13fa4894f7a583e7E350b",
-  //   100n * 10n ** 8n,
-  //   5800000n * 10n ** 6n
+  //   baseTokenAddress,
+  //   1000n * 10n ** 8n,
+  //   61000000n * 10n ** 6n
   // );
 
-  vault.on("Deposited", (collateralToken, trader, event) =>
-    console.log(collateralToken, trader, event)
-  );
-
-  // const balance = await usdt.balanceOf(deployer);
+  const balance = await usdt.balanceOf(deployer);
   // await usdt.approve(vault, balance);
 
-  await vault.deposit(1n);
+  await vault.deposit(balance / 2n);
 }
 
 main();

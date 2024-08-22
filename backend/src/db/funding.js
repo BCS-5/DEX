@@ -12,8 +12,8 @@ class FundingRate {
         `CREATE TABLE IF NOT EXISTS ${this.tableName} (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             time INTEGER,
-            long REAL,
-            short REAL
+            long TEXT,
+            short TEXT
         );`
       );
 

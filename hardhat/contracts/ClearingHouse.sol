@@ -192,7 +192,7 @@ contract ClearingHouse is IClearingHouse, Ownable{
     }
 
     function closePositionBatch (address[] memory baseTokens, bytes32[] memory positionHashs, uint[] memory slippageAdjustedAmounts, uint deadline) public {
-        require(baseTokens.length == positionHashs.length && positionHashs.length == slippageAdjustedAmounts, "Array lengths do not match");
+        require(baseTokens.length == positionHashs.length && positionHashs.length == slippageAdjustedAmounts.length, "Array lengths do not match");
 
         for(uint i = 0; i < baseTokens.length; i++ ) {
             _closePosition(msg.sender, baseTokens[i], positionHashs[i], 100, slippageAdjustedAmounts[i], deadline);

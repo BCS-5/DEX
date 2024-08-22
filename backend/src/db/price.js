@@ -23,7 +23,7 @@ class PriceVolume {
 
   createTable() {
     db.serialize(() => {
-      resolutionToTable.forEach((t) => {
+      resolutionToTable.forEach((t, idx) => {
         db.run(
           `CREATE TABLE IF NOT EXISTS ${this.tableName}${t} (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -51,6 +51,18 @@ class PriceVolume {
             );
           }
         });
+
+        db.get(
+          `SELECT * FROM ${this.tableName}${t} WHERE id = (SELECT MAX(id) FROM ${this.tableName}${t}{t})`,
+          (err, row) => {
+            if (row) {
+              this.lastUpdateTime[idx] = Math.max(
+                row.time,
+                this.lastUpdateTime[idx]
+              );
+            }
+          }
+        );
       });
     });
   }

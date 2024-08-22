@@ -2,6 +2,7 @@ const express = require("express");
 const cors = require("cors");
 const TradingVolumeHandler = require("./web3/handler");
 const db = require("./db/database");
+const { contracts } = require("../contracts/addresses");
 
 const app = express();
 const port = 8090;
@@ -138,8 +139,8 @@ app.get("/api/getLiquidityPositions", (req, res) => {
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
   const handler = new TradingVolumeHandler(
-    "0x51AC7a5363751fa19F1186f850f15a1E1Dd8F8db",
-    "0x1BCe644E5AEe9cEb88b13fa4894f7a583e7E350b",
+    "0xAc4EB76D5eA83Ec19cD88BA2e637415eA0D4428C",
+    "0x56f7b6eD57d7Ce8804F6f89Dc38D5dF5Ef1f8499",
     "BTC"
   );
   handler.subscribe();
