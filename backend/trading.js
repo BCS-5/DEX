@@ -72,7 +72,6 @@ const openPosition = async (indexPrice) => {
     token0.toUpperCase() === baseAddress.toUpperCase()
       ? [reserves[0], reserves[1]]
       : [reserves[1], reserves[0]];
-
   const { dx } = calculateDxDy(
     Number(amount0),
     Number(amount1),
@@ -80,6 +79,7 @@ const openPosition = async (indexPrice) => {
   );
 
   let amount = BigInt(Math.floor(dx));
+
   const maxAmount = abs((amount0 * 3n) / 1000n);
 
   amount =
@@ -121,14 +121,15 @@ const openPositionLong = (amount) => {
 };
 
 const openPositionShort = (amount) => {
-  const path = [quoteAddress, baseAddress];
+  const path = [baseAddress, quoteAddress];
+
   routerContract.getAmountsOut(amount, path).then((amounts) => {
     clearingHouseContract.openPosition(
       baseAddress,
       true,
       false,
-      amounts[0],
       amounts[1],
+      amounts[0],
       0,
       Math.floor(Date.now() / 1000) + 600,
       {

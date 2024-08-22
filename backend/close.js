@@ -78,55 +78,12 @@ async function getPastLogs() {
   );
 }
 
+// const positions =
+
 async function close() {
-  await closePosition(
-    "0x235fadb12c67cac1ebd40c09e8463be355995ee95bff02f9b545148856ee4be6",
-    true
-  );
-  await closePosition(
-    "0x6095b3818bf260de750582bd8e7c6df741017d4f5c0bc2223816d2b7f388be5c",
-    true
-  );
-  await closePosition(
-    "0x18be9ddebc62708e953be132121bb0ee381dcc4d98055459e982fcf378a82c79",
-    true
-  );
-  await closePosition(
-    "0x5c419d798ef30d7cce6b47b289d65bbb04aa1c8c7b6e839d60a72b323d025eed",
-    true
-  );
-  await closePosition(
-    "0x8b66e308511aad000660a2cb5ef781dbb3a60cac062ec920e38d480c7022a8a4",
-    true
-  );
-  await closePosition(
-    "0x7fcf9971d7246e95cc63c79bb9aaf126530d504ec4f055937b75460348d31ea6",
-    true
-  );
-  await closePosition(
-    "0x8bca6189829f65cde725c6d5691c5fcd89c0df7a6e672815417dd2443ecc0bae",
-    true
-  );
-  await closePosition(
-    "0x8bca6189829f65cde725c6d5691c5fcd89c0df7a6e672815417dd2443ecc0bae",
-    true
-  );
-  await closePosition(
-    "0x8816e21d0d093e442bee6fcbddb2943fb3d46a6cc6284f71496c36f6c5ab0827",
-    true
-  );
-  await closePosition(
-    "0x8bca6189829f65cde725c6d5691c5fcd89c0df7a6e672815417dd2443ecc0bae",
-    true
-  );
-  await closePosition(
-    "0x8bca6189829f65cde725c6d5691c5fcd89c0df7a6e672815417dd2443ecc0bae",
-    true
-  );
-  await closePosition(
-    "0x8bca6189829f65cde725c6d5691c5fcd89c0df7a6e672815417dd2443ecc0bae",
-    true
-  );
+  for (const position of positions) {
+    await closePosition(position.positionHash, position.isLong);
+  }
 }
 
 // getPastLogs();

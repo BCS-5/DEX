@@ -52,6 +52,11 @@ class TradingVolumeHandler {
       contracts.clearingHouse.address
     );
 
+    this.vaultContract = new web3.eth.Contract(
+      contracts.vault.abi,
+      contracts.vault.address
+    );
+
     this.baseAddress = baseAddress;
     this.decimals = 8;
     this.isBase = false;
@@ -88,7 +93,6 @@ class TradingVolumeHandler {
   //   event ClosePosition(address indexed trader, address indexed baseToken, bytes32 positionHash, uint margin, uint positionSize, uint openNotional, bool isLong);
 
   async updatePosition(position) {
-    console.log("update:", position)
     this.positionsTable.updatePosition(
       position.trader,
       position.baseToken,
@@ -101,7 +105,6 @@ class TradingVolumeHandler {
   }
 
   async closePosition(position) {
-    console.log("close:", position)
     this.positionsTable.closePosition(
       position.trader,
       position.baseToken,
@@ -113,6 +116,16 @@ class TradingVolumeHandler {
     );
   }
 
+  async claimRewards(lpProvider) {
+    console.log(lpProvider);
+
+    this.liquidityPositionsTable.updateFees(
+      lpProvider.trader,
+      lpProvider.poolAddress,
+      lpProvider.amount
+    );
+  }
+
   async updateFundingRate() {
     const longValue = await this.accountBalanceContract.methods
       .cumulativeLongFundingRates(this.baseAddress)
@@ -121,7 +134,7 @@ class TradingVolumeHandler {
       .cumulativeShortFundingRates(this.baseAddress)
       .call();
 
-    console.log("updateFundingRate:", longValue, shortValue)
+    console.log("updateFundingRate:", longValue, shortValue);
     this.fundingRateTable.insertFundingRate(
       longValue.toString(),
       shortValue.toString()
@@ -163,6 +176,15 @@ class TradingVolumeHandler {
       .ClosePosition({
         fromBlock: "lastest",
       })
+      .on("data", (event) => {
+        this.closePosition(event.returnValues);
+      });
+
+    this.vaultContract.events
+      .ClosePosition({
+        fromBlock: "lastest",
+      })
+
       .on("data", (event) => {
         this.closePosition(event.returnValues);
       });
