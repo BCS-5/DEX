@@ -12,7 +12,7 @@ class LiquidityPositions {
         `CREATE TABLE IF NOT EXISTS ${this.tableName} (
             trader TEXT,         -- 트레이더 주소 (Ethereum address 형식)
             poolName TEXT,       -- 풀 이름
-            earnedFees TEXT,     -- uint256 형식으로 저장할 earnedFees (TEXT로 저장)
+            earnedFees REAL,     -- uint256 형식으로 저장할 earnedFees (TEXT로 저장)
             PRIMARY KEY (trader, poolName) -- trader와 poolName을 복합 PRIMARY KEY로 설정
         );`
       );
