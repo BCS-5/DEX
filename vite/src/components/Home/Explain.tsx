@@ -1,6 +1,6 @@
 const Explain = () => {
   return (
-    <div className="pb-[60px]">
+    <div className="pb-[60px] ">
       <h3 className="text-[25px] mb-4 font-bold pt-[60px] pb-[25px] text-center">
         Own yourself, for everything
       </h3>

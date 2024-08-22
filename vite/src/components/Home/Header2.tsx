@@ -5,7 +5,7 @@ const Header2 = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="top-0 left-8 bg-black flex justify-between sticky">
+    <div className="top-0 left-8 bg-black flex justify-between sticky z-10">
       <div className="pt-5 pl-[66px] text-white ">거래소 로고위치</div>
       <div className="pt-2 pb-2 pr-[66px] transition-transform duration-300 ease-in-out hover:-translate-x-1">
         <button

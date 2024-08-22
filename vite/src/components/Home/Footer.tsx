@@ -1,5 +1,4 @@
 import { VscGithub } from "react-icons/vsc";
-import { Link } from "react-router-dom";
 
 const Footer = () => {
   return (
