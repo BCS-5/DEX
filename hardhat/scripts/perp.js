@@ -78,13 +78,22 @@ async function main() {
   // await clearingHouse.approve("0xe94cE4efD00c9C002e1402F2BE72E5213EDfeB42");
   // await clearingHouse.approve("0x1BCe644E5AEe9cEb88b13fa4894f7a583e7E350b");
   // await clearingHouse.approve("0x51AC7a5363751fa19F1186f850f15a1E1Dd8F8db");
-  await accountBalance.setKeeper(deployer);
+  // await accountBalance.setKeeper(deployer);
 
   // await clearingHouse.initializePool(
   //   "0x1BCe644E5AEe9cEb88b13fa4894f7a583e7E350b",
   //   100n * 10n ** 8n,
   //   5800000n * 10n ** 6n
   // );
+
+  vault.on("Deposited", (collateralToken, trader, event) =>
+    console.log(collateralToken, trader, event)
+  );
+
+  // const balance = await usdt.balanceOf(deployer);
+  // await usdt.approve(vault, balance);
+
+  await vault.deposit(1n);
 }
 
 main();

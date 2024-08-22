@@ -1,5 +1,5 @@
 const express = require("express");
-const cors = require('cors');
+const cors = require("cors");
 const sqlite3 = require("sqlite3").verbose();
 const { Web3 } = require("web3");
 const V2PairABI = require("./abis/UniswapV2Pair.json");
@@ -9,7 +9,7 @@ require("dotenv").config();
 // const web3 = new Web3("wss://ethereum-sepolia-rpc.publicnode.com");
 // const web3 = new Web3("wss://ethereum-rpc.publicnode.com");
 const web3 = new Web3(
-  `wss://mainnet.infura.io/ws/v3/${process.env.INFURA_API_KEY}`
+  `wss://sepolia.infura.io/ws/v3/${process.env.INFURA_API_KEY}`
 );
 const app = express();
 const port = 8090;
@@ -68,37 +68,75 @@ db.serialize(() => {
 });
 
 db.serialize(() => {
-  resolutionToTable.forEach((t,idx) => {
-    db.get(`SELECT * FROM BTC_DATA_${t} WHERE id = (SELECT MAX(id) FROM BTC_DATA_${t})`, (err, row) => {
-      if (row) {
-        lastUpdateTime[idx] = Math.max(row.time, lastUpdateTime[idx]);
+  resolutionToTable.forEach((t, idx) => {
+    db.get(
+      `SELECT * FROM BTC_DATA_${t} WHERE id = (SELECT MAX(id) FROM BTC_DATA_${t})`,
+      (err, row) => {
+        if (row) {
+          lastUpdateTime[idx] = Math.max(row.time, lastUpdateTime[idx]);
+        }
       }
-    })
+    );
   });
-})
+});
+
+db.serialize(() => {
+  db.run(
+    "CREATE TABLE IF NOT EXISTS transactions (id INTEGER PRIMARY KEY AUTOINCREMENT, timestamp INTEGER, volume TEXT)"
+  );
+});
 
 // 차트 정보 요청
 app.get("/api/history", (req, res) => {
   const { symbol, resolution, from, to } = req.query;
-  db.all(`SELECT * FROM ${symbol}_DATA_${resolution} WHERE time BETWEEN ? AND ?`, [from*1000, to*1000], (err, rows) => {
-    if (err) {
-      res.status(500).json({ error: err.message });
-      return;
+  db.all(
+    `SELECT * FROM ${symbol}_DATA_${resolution} WHERE time BETWEEN ? AND ?`,
+    [from * 1000, to * 1000],
+    (err, rows) => {
+      if (err) {
+        res.status(500).json({ error: err.message });
+        return;
+      }
+      res.json(rows);
     }
-    res.json(rows);
-  });
+  );
 });
 
+// 차트 최신 정보 요청
 app.get("/api/latest", (req, res) => {
   const { symbol, resolution } = req.query;
-  db.all(`SELECT * FROM ${symbol}_DATA_${resolution} WHERE id = (SELECT MAX(id) FROM ${symbol}_DATA_${resolution}) `, (err, row) => {
-    if (err) {
-      res.status(500).json({ error: err.message });
-      return;
+  db.all(
+    `SELECT * FROM ${symbol}_DATA_${resolution} WHERE id = (SELECT MAX(id) FROM ${symbol}_DATA_${resolution}) `,
+    (err, row) => {
+      if (err) {
+        res.status(500).json({ error: err.message });
+        return;
+      }
+      res.json(row[0]);
     }
-    res.json(row[0]);
-  });
+  );
 });
+
+// 24시간 거래량, 총 미결제 약정, 24시간 발생 수수료
+app.get("/api/getMarket", (req, res) => {});
+
+// 유동성 가치, 24시간 거래량, 24시간 수수료, APR 반환
+app.get("/api/getLiquidityPool", (req, res) => {});
+
+// 24H 거래량, 1h Funding (Long), 1h Funding(Short)
+app.get("/api/getPerpetualPool", (req, res) => {});
+
+// Volume, TVL, Fees 일별 정보
+app.get("/api/getChart", (req, res) => {});
+
+// 풀 이름    포지션크기     가격  현재 풀 가격  수익률    청산 가격    롱숏 여부
+app.get("/api/getPositions", (req, res) => {});
+
+// 풀 이름    포지션크기    진입 가격  현재 풀 가격  수익률    청산 가격    롱숏 여부
+app.get("/api/getOrders", (req, res) => {});
+
+// 풀 이름     LP토큰 개수    예치된 토큰 가치   파밍된 수수료    청구되지 않은 수수료
+app.get("/api/getLiquidityPositions", (req, res) => {});
 
 // 서버 시작
 app.listen(port, () => {
@@ -158,7 +196,7 @@ function updatePrice(price, timestamp) {
   });
 }
 
-const baseAddress = "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2";
+const baseAddress = "0x1BCe644E5AEe9cEb88b13fa4894f7a583e7E350b";
 
 async function getDecimals(address) {
   const tokenContract = new web3.eth.Contract(ERC20ABI, address);
@@ -169,7 +207,7 @@ async function getDecimals(address) {
 async function main() {
   const V2PairContract = new web3.eth.Contract(
     V2PairABI,
-    "0x0d4a11d5EEaaC28EC3F61d100daF4d40471f1852"
+    "0x51AC7a5363751fa19F1186f850f15a1E1Dd8F8db"
   );
   const token0 = await V2PairContract.methods.token0().call();
   const token1 = await V2PairContract.methods.token1().call();
@@ -183,9 +221,9 @@ async function main() {
   const subscription = await web3.eth.subscribe("newHeads");
   subscription.on("data", (newBlock) => {
     if (Number(newBlock.number) % 300 == 0) {
-      console.log(newBlock.number)  
+      console.log(newBlock.number);
     }
-    
+
     V2PairContract.methods
       .getReserves()
       .call()
@@ -193,7 +231,7 @@ async function main() {
         if (!isBase) {
           [data._reserve1, data._reserve0] = [data._reserve0, data._reserve1];
         }
-        
+
         updatePrice(
           (Number(data._reserve1) * 10 ** decimalsDiff) /
             Number(data._reserve0),
@@ -206,3 +244,17 @@ async function main() {
 main();
 
 // nohup node index.js > index.out 2>&1 &
+
+/*
+테이블1: 24시간 거래량, 수수료
+
+
+테이블2: 1시간 단위 cumulativeLongFundingRates, cumulativeShortFundingRates
+
+테이블3,4: Volume, TVL 일별 정보
+
+테이블5: 포지션 크기
+테이블6: 예약주문 목록
+테이블7: 사용자별 유동성 목록
+
+*/

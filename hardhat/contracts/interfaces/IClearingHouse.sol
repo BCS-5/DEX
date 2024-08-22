@@ -39,6 +39,7 @@ interface IClearingHouse {
     function openPositionForOrderBook(address trader, address baseToken, bool isExactInput, bool isLong, uint margin, uint amountIn, uint amountOut, uint deadline) external;
 
     function closePosition (address baseToken, bytes32 positionHash, uint amountIn, uint amountOut, uint deadline) external;
+    function closePositionBatch (address[] memory baseTokens, bytes32[] memory positionHashs, uint[] memory slippageAdjustedAmounts, uint deadline) external;
     function closePositionForOrderBook (address trader, address baseToken, bytes32 positionHash, uint closePercent, uint slippageAdjustedAmount, uint deadline) external;
 
     function liquidateBatch (address[] memory traders, address[] memory baseTokens, bytes32[] memory positionHashs) external ;

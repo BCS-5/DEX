@@ -191,6 +191,14 @@ contract ClearingHouse is IClearingHouse, Ownable{
         _closePosition(msg.sender, baseToken, positionHash, closePercent, slippageAdjustedAmount, deadline);
     }
 
+    function closePositionBatch (address[] memory baseTokens, bytes32[] memory positionHashs, uint[] memory slippageAdjustedAmounts, uint deadline) public {
+        require(baseTokens.length == positionHashs.length && positionHashs.length == slippageAdjustedAmounts, "Array lengths do not match");
+
+        for(uint i = 0; i < baseTokens.length; i++ ) {
+            _closePosition(msg.sender, baseTokens[i], positionHashs[i], 100, slippageAdjustedAmounts[i], deadline);
+        }
+    }
+
     // 예약 주문에 의해 호출되는 포지션 종료
     function closePositionForOrderBook (address trader, address baseToken, bytes32 positionHash, uint closePercent, uint slippageAdjustedAmount, uint deadline) public onlyOrderBook{
         _closePosition(trader, baseToken, positionHash, closePercent, slippageAdjustedAmount, deadline);
