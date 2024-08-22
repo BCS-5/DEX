@@ -1,6 +1,6 @@
 const express = require("express");
 const cors = require("cors");
-const TradingVolumeHandler = require("./web3/updatePrice");
+const TradingVolumeHandler = require("./web3/handler");
 const db = require("./db/database");
 
 const app = express();

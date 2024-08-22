@@ -33,6 +33,8 @@ class TradingVolumeHandler {
       contracts.clearingHouse.address
     );
 
+    console.log(contracts.clearingHouse.address);
+
     this.baseAddress = baseAddress;
     this.decimals = 8;
     this.isBase = false;
@@ -50,6 +52,27 @@ class TradingVolumeHandler {
       );
   }
 
+  async getCurrentPrice() {
+    const data = await this.poolContract.methods.getReserves().call();
+    if (!this.isBase) {
+      [data._reserve1, data._reserve0] = [data._reserve0, data._reserve1];
+    }
+    return (
+      (Number(data._reserve1) * 10 ** this.decimals) / Number(data._reserve0)
+    );
+  }
+
+  async updateVolume(volume) {
+    this.getCurrentPrice().then((price) => {
+      console.log(price);
+      this.volumeTable.updatePrice(
+        price,
+        Date.now(),
+        Number(volume) / 10**6
+      );
+    });
+  }
+
   async subscribe() {
     this.subscription = await web3.eth.subscribe("newHeads");
     this.subscription.on("data", (newBlock) => {
@@ -57,42 +80,45 @@ class TradingVolumeHandler {
         console.log(newBlock.number);
       }
 
-      this.poolContract.methods
-        .getReserves()
-        .call()
-        .then((data) => {
-          if (!this.isBase) {
-            [data._reserve1, data._reserve0] = [data._reserve0, data._reserve1];
-          }
-
-          this.volumeTable.updatePrice(
-            (Number(data._reserve1) * 10 ** this.decimals) /
-              Number(data._reserve0),
-            Number(newBlock.timestamp) * 1000,
-            0.0
-          );
-        });
+      this.updateVolume(0);
     });
 
-    this.clearingHouseContract.events.Buy(
-      {
-        filter: {},
-        fromBlock: "latest",
-      },
-      (error, event) => {
-        console.log("Buy event:", event.returnValues);
-      }
-    );
+    this.clearingHouseContract.events
+      .Buy({
+        fromBlock: "lastest",
+      })
+      .on("data", (event) => updateVolume(event.returnValues.amountIn));
 
-    this.clearingHouseContract.events.Sell(
-      {
-        filter: {},
-        fromBlock: "latest",
-      },
-      (error, event) => {
-        console.log("Sell event:", event.returnValues);
-      }
-    );
+    this.clearingHouseContract.events
+      .Sell({
+        fromBlock: "lastest",
+      })
+      .on("data", (event) => updateVolume(event.returnValues.amountOut));
+    
+    this.clearingHouseContract.events
+      .UpdatePosition({
+        fromBlock: "lastest",
+      })
+      .on("data", (event) => { });
+    
+    this.clearingHouseContract.events
+      .ClosePosition({
+        fromBlock: "lastest",
+      })
+      .on("data", (event) => { });
+    
+    this.clearingHouseContract.events
+      .AddLiquidity({
+        fromBlock: "lastest",
+      })
+      .on("data", (event) => { });
+    
+    this.clearingHouseContract.events
+      .RemoveLiquidity({
+        fromBlock: "lastest",
+      })
+      .on("data", (event) => { });
+    
   }
 
   async unsubscribe() {
