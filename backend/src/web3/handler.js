@@ -181,12 +181,12 @@ class TradingVolumeHandler {
       });
 
     this.vaultContract.events
-      .ClosePosition({
+      .Claimed({
         fromBlock: "lastest",
       })
 
       .on("data", (event) => {
-        this.closePosition(event.returnValues);
+        this.claimRewards(event.returnValues);
       });
   }
 

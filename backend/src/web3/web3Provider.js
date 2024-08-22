@@ -37,5 +37,9 @@ function createWeb3Instance() {
   return web3;
 }
 
+process.on("uncaughtException", (error) => {
+  console.error("uncaughtException:", error.message);
+});
+
 const web3 = createWeb3Instance();
 module.exports = web3;

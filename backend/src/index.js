@@ -3,6 +3,7 @@ const cors = require("cors");
 const TradingVolumeHandler = require("./web3/handler");
 const db = require("./db/database");
 const { contracts } = require("../contracts/addresses");
+const FundingRate = require("./db/funding");
 
 const app = express();
 const port = 8090;
@@ -11,10 +12,12 @@ const port = 8090;
 app.use(express.json());
 app.use(cors());
 
+const fundingRateTable = new FundingRate("BTC_FUNDING_RATE");
+
 // 차트 정보 요청
 app.get("/api/history", (req, res) => {
   const { symbol, resolution, from, to } = req.query;
-  
+
   db.all(
     `SELECT * FROM ${symbol}_PRICE_VOLUME_${resolution} WHERE time BETWEEN ? AND ?`,
     [from * 1000, to * 1000],
@@ -22,7 +25,7 @@ app.get("/api/history", (req, res) => {
       if (err) {
         res.status(500).json({ error: err.message });
         return;
-      }      
+      }
       res.json(rows);
     }
   );
@@ -60,12 +63,33 @@ app.get("/api/getLiquidityPool", (req, res) => {
   });
 });
 
+app.get("/api/getRecentVolume", (req, res) => {
+  db.get(
+    `
+        SELECT SUM(volume) as totalVolume
+        FROM (
+            SELECT volume
+            FROM BTC_PRICE_VOLUME_60
+            ORDER BY id DESC
+            LIMIT 24
+        );
+    `,
+    (err, row) => {
+      if (err) {
+        res.status(500).json({ error: err.message });
+        return;
+      }
+      res.json({
+        volume: row.totalVolume,
+      });
+    }
+  );
+});
+
 // 24H 거래량, 1h Funding (Long), 1h Funding(Short)
 app.get("/api/getPerpetualPool", (req, res) => {
-  res.json({
-    volume: 123,
-    longFunding: 456,
-    shortFunding: 789,
+  fundingRateTable.selectRecentFundingRate((recentData, nearHourData) => {
+    res.json([recentData, nearHourData]);
   });
 });
 
@@ -89,29 +113,6 @@ app.get("/api/getChart", (req, res) => {
 
 // 풀 이름    포지션크기     가격  현재 풀 가격  수익률    청산 가격    롱숏 여부
 app.get("/api/getPositions", (req, res) => {
-  // res.json([
-  //   {
-  //     positionHash: "0x1234",
-  //     time: 1724307147000,
-  //     trader: "0x0000",
-  //     baseToken: "0x1111",
-  //     margin: "1000",
-  //     positionSize: "2000",
-  //     openNotional: "3000",
-  //     isLong: 1,
-  //   },
-  //   {
-  //     positionHash: "0x5678",
-  //     time: 1724307148000,
-  //     trader: "0x0000",
-  //     baseToken: "0x1111",
-  //     margin: "2000",
-  //     positionSize: "3000",
-  //     openNotional: "4000",
-  //     isLong: 0,
-  //   },
-  // ]);
-
   const { address } = req.query;
   db.all(
     `SELECT * FROM BTC_POSITIONS WHERE trader = "${address}"`,
@@ -128,24 +129,19 @@ app.get("/api/getPositions", (req, res) => {
 // 풀 이름    포지션크기    진입 가격  현재 풀 가격  수익률    청산 가격    롱숏 여부
 app.get("/api/getOrders", (req, res) => {});
 
-// trader TEXT,         -- 트레이더 주소 (Ethereum address 형식)
-//     poolName TEXT,       -- 풀 이름
-//     earnedFees TEXT      -- uint256 형식으로 저장할 earnedFees (TEXT로 저장)
-
 // 풀 이름     LP토큰 개수    예치된 토큰 가치   파밍된 수수료    청구되지 않은 수수료
 app.get("/api/getLiquidityPositions", (req, res) => {
-  res.json([
-    {
-      trader: "0x1234",
-      poolName: "BTC",
-      earnedFees: "12345678",
-    },
-    {
-      trader: "0x1234",
-      poolName: "ETH",
-      earnedFees: "777777",
-    },
-  ]);
+  const { address } = req.query;
+  db.all(
+    `SELECT * FROM LIQUIDITY_POSITIONS WHERE trader = "${address}"`,
+    (err, rows) => {
+      if (err) {
+        res.status(500).json({ error: err.message });
+        return;
+      }
+      res.json(rows);
+    }
+  );
 });
 
 // 서버 시작
@@ -158,8 +154,7 @@ app.listen(port, () => {
   );
   setTimeout(() => {
     handler.subscribe();
-  }, 15000)
-  
+  }, 15000);
 });
 
 // nohup node src/index.js > index.out 2>&1 &
