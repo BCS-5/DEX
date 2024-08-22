@@ -24,7 +24,7 @@ class TradingVolumeHandler {
     );
 
     this.volumeTable.createTable();
-    this.volumeTable.initialize();
+    // this.volumeTable.initialize();
 
     this.positionsTable = new Positions("BTC_POSITIONS");
     this.positionsTable.createTable();
@@ -122,7 +122,7 @@ class TradingVolumeHandler {
     this.liquidityPositionsTable.updateFees(
       lpProvider.trader,
       lpProvider.poolAddress,
-      lpProvider.amount
+      Number(lpProvider.amount) / 10**6
     );
   }
 
@@ -134,7 +134,7 @@ class TradingVolumeHandler {
       .cumulativeShortFundingRates(this.baseAddress)
       .call();
 
-    console.log("updateFundingRate:", longValue, shortValue);
+    // console.log("updateFundingRate:", longValue, shortValue);
     this.fundingRateTable.insertFundingRate(
       longValue.toString(),
       shortValue.toString()
