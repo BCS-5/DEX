@@ -9,6 +9,7 @@ const signer = new ethers.Wallet("0x" + process.env.PRIVATE_KEY, provider);
 
 const baseAddress = "0x56f7b6eD57d7Ce8804F6f89Dc38D5dF5Ef1f8499";
 const quoteAddress = "0x3EA41003BC70e4da782567359B16C47CcF4650C3";
+const poolAddress = "0xAc4EB76D5eA83Ec19cD88BA2e637415eA0D4428C";
 
 const accountBalanceContract = new ethers.Contract(
   contracts.accountBalance.address,
@@ -22,8 +23,14 @@ const clearingHouseContract = new ethers.Contract(
   signer
 );
 
+const vault = new ethers.Contract(
+  contracts.vault.address,
+  contracts.vault.abi,
+  signer
+);
+
 const poolContract = new ethers.Contract(
-  "0xAc4EB76D5eA83Ec19cD88BA2e637415eA0D4428C",
+  poolAddress,
   contracts.uniswapV2Pair.abi,
   signer
 );
@@ -58,7 +65,8 @@ const setIndexPrice = async (res) => {
   console.log(res.RAW.BTC.USD.PRICE);
   await accountBalanceContract.setIndexPrice(
     "0x56f7b6eD57d7Ce8804F6f89Dc38D5dF5Ef1f8499",
-    indexPrice
+    indexPrice,
+    { gasLimit: 100000 }
   );
 
   openPosition(indexPrice);
@@ -154,6 +162,10 @@ const closePosition = (positionHash, isLong, closePercent) => {
   );
 };
 
+const claimRewards = () => {
+  vault.claimRewards(signer.address, poolAddress);
+};
+
 // event UpdatePosition(address indexed trader, address indexed baseToken, bytes32 positionHash, uint margin, uint positionSize, uint openNotional);
 // const filter = clearingHouseContract.filters.UpdatePosition(signer.address);
 // clearingHouseContract.on(filter, (event) => {
@@ -168,7 +180,7 @@ const closePosition = (positionHash, isLong, closePercent) => {
 
 setInterval(() => {
   getIndexPrice();
-}, 15 * 1000);
+}, 30 * 1000);
 
 // setTimeout(() => {
 //   getIndexPrice();
@@ -177,5 +189,7 @@ setInterval(() => {
 //   "0x3F8F6796FC06C5400B70D62A274A93A3CAB09C4E2583AC7F162E59FF1F603B0C",
 //   true
 // );
+
+// claimRewards();
 
 // nohup node trading.js > trading.out 2>&1 &

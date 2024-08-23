@@ -3,7 +3,7 @@ const FundingRate = require("../db/funding");
 const LiquidityPositions = require("../db/liquidity");
 const Positions = require("../db/positions");
 const PriceVolume = require("../db/price");
-const web3 = require("./web3Provider");
+const { web3, setSubscriptionCallback } = require("./web3Provider");
 
 require("dotenv").config();
 
@@ -124,7 +124,7 @@ class TradingVolumeHandler {
     this.liquidityPositionsTable.updateFees(
       lpProvider.trader,
       lpProvider.poolAddress,
-      Number(lpProvider.amount) / 10**6
+      Number(lpProvider.amount) / 10 ** 6
     );
   }
 
@@ -153,52 +153,28 @@ class TradingVolumeHandler {
   }
 
   async subscribe() {
-    this.subscription = await web3.eth.subscribe("newHeads");
-    this.subscription.on("data", (newBlock) => {
-      if (Number(newBlock.number) % 300 == 0) {
-        console.log(newBlock.number);
-      }
+    const subscribeCallback = async () => {
+      this.subscription = await web3.eth.subscribe("newHeads");
+      this.subscription.on("data", (newBlock) => {
+        if (Number(newBlock.number) % 300 == 0) {
+          console.log(newBlock.number);
+        }
 
-      this.updateVolume(0);
-      this.updateFundingRate();
-    });
-
-    this.clearingHouseContract.events
-      .Buy({
-        fromBlock: "lastest",
-      })
-      .on("data", (event) => this.updateVolume(event.returnValues.amountIn));
-
-    this.clearingHouseContract.events
-      .Sell({
-        fromBlock: "lastest",
-      })
-      .on("data", (event) => this.updateVolume(event.returnValues.amountOut));
-
-    this.clearingHouseContract.events
-      .UpdatePosition({
-        fromBlock: "lastest",
-      })
-      .on("data", (event) => {
-        this.updatePosition(event.returnValues);
+        this.updateVolume(0);
+        this.updateFundingRate();
       });
 
-    this.clearingHouseContract.events
-      .ClosePosition({
-        fromBlock: "lastest",
-      })
-      .on("data", (event) => {
-        this.closePosition(event.returnValues);
-      });
+      this.clearingHouseContract.events
+        .Buy({
+          fromBlock: "lastest",
+        })
+        .on("data", (event) => this.updateVolume(event.returnValues.amountIn));
 
-    this.vaultContract.events
-      .Claimed({
-        fromBlock: "lastest",
-      })
-
-      .on("data", (event) => {
-        this.claimRewards(event.returnValues);
-      });
+      this.clearingHouseContract.events
+        .Sell({
+          fromBlock: "lastest",
+        })
+        .on("data", (event) => this.updateVolume(event.returnValues.amountOut));
     
     this.clearingHouseContract.events
       .AddLiquidity({
@@ -207,10 +183,35 @@ class TradingVolumeHandler {
       .on("data", (event) => {
         this.addLiquidity(event.returnValues);
       });
-  }
+  
+      this.clearingHouseContract.events
+        .UpdatePosition({
+          fromBlock: "lastest",
+        })
+        .on("data", (event) => {
+          this.updatePosition(event.returnValues);
+        });
 
-  async unsubscribe() {
-    this.subscription.unsubscribe();
+      this.clearingHouseContract.events
+        .ClosePosition({
+          fromBlock: "lastest",
+        })
+        .on("data", (event) => {
+          this.closePosition(event.returnValues);
+        });
+
+      this.vaultContract.events
+        .Claimed({
+          fromBlock: "lastest",
+        })
+
+        .on("data", (event) => {
+          this.claimRewards(event.returnValues);
+        });
+    };
+
+    setSubscriptionCallback(subscribeCallback);
+    subscribeCallback();
   }
 }
 
