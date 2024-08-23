@@ -1,8 +1,8 @@
 const { Web3, WebSocketProvider } = require("web3");
 require("dotenv").config();
 
-// const websocketUrl = `wss://sepolia.infura.io/ws/v3/${process.env.INFURA_API_KEY}`;
-const websocketUrl = `wss://ethereum-sepolia-rpc.publicnode.com`;
+const websocketUrl = `wss://sepolia.infura.io/ws/v3/${process.env.INFURA_API_KEY}`;
+// const websocketUrl = `wss://ethereum-sepolia-rpc.publicnode.com`;
 
 function subscribeToEvents(callback) {
   console.log(`run callback: ${Date.now()}`);
