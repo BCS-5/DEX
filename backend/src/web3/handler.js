@@ -47,6 +47,8 @@ class TradingVolumeHandler {
       poolAddress
     );
 
+    this.poolAddress = poolAddress;
+
     this.clearingHouseContract = new web3.eth.Contract(
       contracts.clearingHouse.abi,
       contracts.clearingHouse.address
@@ -126,6 +128,15 @@ class TradingVolumeHandler {
     );
   }
 
+  // event AddLiquidity(address indexed provider, address indexed baseToken, uint liquidity);
+  async addLiquidity(lpProvider) {
+    this.liquidityPositionsTable.updateFees(
+      lpProvider.provider,
+      this.poolAddress,
+      0
+    );
+  }
+
   async updateFundingRate() {
     const longValue = await this.accountBalanceContract.methods
       .cumulativeLongFundingRates(this.baseAddress)
@@ -187,6 +198,14 @@ class TradingVolumeHandler {
 
       .on("data", (event) => {
         this.claimRewards(event.returnValues);
+      });
+    
+    this.clearingHouseContract.events
+      .AddLiquidity({
+        fromBlock: "lastest",
+      })
+      .on("data", (event) => {
+        this.addLiquidity(event.returnValues);
       });
   }
 

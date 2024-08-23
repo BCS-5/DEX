@@ -44,7 +44,7 @@ class PriceVolume {
 
         const query = `SELECT COUNT(*) AS count FROM ${this.tableName}${t}`;
         db.get(query, (err, row) => {
-          if (row.count == 0) {
+          if (row.count == 0) {            
             db.run(
               `INSERT INTO ${this.tableName}${t}
                     (time, open, high, low, close, volume)
@@ -53,9 +53,9 @@ class PriceVolume {
             );
           }
         });
-
+        
         db.get(
-          `SELECT * FROM ${this.tableName}${t} WHERE id = (SELECT MAX(id) FROM ${this.tableName}${t}{t})`,
+          `SELECT * FROM ${this.tableName}${t} WHERE id = (SELECT MAX(id) FROM ${this.tableName}${t})`,
           (err, row) => {
             if (row) {
               this.lastUpdateTime[idx] = Math.max(
@@ -69,26 +69,6 @@ class PriceVolume {
       db.run("COMMIT");
     });
   }
-
-  // initialize() {
-  //   db.serialize(() => {
-  //     db.run("BEGIN EXCLUSIVE TRANSACTION");
-  //     resolutionToTable.forEach((t, idx) => {
-  //       db.get(
-  //         `SELECT * FROM ${this.tableName}${t} WHERE id = (SELECT MAX(id) FROM ${this.tableName}${t}{t})`,
-  //         (err, row) => {
-  //           if (row) {
-  //             this.lastUpdateTime[idx] = Math.max(
-  //               row.time,
-  //               this.lastUpdateTime[idx]
-  //             );
-  //           }
-  //         }
-  //       );
-  //     });
-  //     db.run("COMMIT");
-  //   });
-  // }
 
   updatePrice(price, timestamp, volume) {
     db.serialize(() => {
