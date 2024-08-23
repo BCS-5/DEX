@@ -211,7 +211,6 @@ class TradingVolumeHandler {
     };
 
     setSubscriptionCallback(subscribeCallback);
-    subscribeCallback();
   }
 }
 

@@ -57,5 +57,6 @@ module.exports = {
   web3,
   setSubscriptionCallback: (callback) => {
     global.subscribeCallback = callback;
+    subscribeToEvents(callback);
   },
 };
