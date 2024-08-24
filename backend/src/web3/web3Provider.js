@@ -3,6 +3,7 @@ require("dotenv").config();
 
 const websocketUrl = `wss://sepolia.infura.io/ws/v3/${process.env.INFURA_API_KEY}`;
 // const websocketUrl = `wss://ethereum-sepolia-rpc.publicnode.com`;
+// wss://eth-sepolia.g.alchemy.com/v2/bgoVUh2kk8P8fAm81apAEGKddDOM_YXY
 
 function subscribeToEvents(callback) {
   console.log(`run callback: ${Date.now()}`);

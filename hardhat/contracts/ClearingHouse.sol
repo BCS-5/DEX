@@ -207,7 +207,10 @@ contract ClearingHouse is IClearingHouse, Ownable{
     // 사용자 또는 청산자에 의해 호출되는 포지션 종료
     function _closePosition(address trader, address baseToken, bytes32 positionHash, uint closePercent, uint slippageAdjustedAmount, uint deadline) internal {
         address pool = IMarketRegistry(marketRegistry).getPool(baseToken);
-        Position memory position = positionMap[trader][baseToken][positionHash];                
+        Position memory position = positionMap[trader][baseToken][positionHash];        
+
+        if(closePercent == 100) 
+            emit ClosePosition(trader, baseToken, positionHash, position.margin, position.positionSize, position.openNotional, position.isLong);        
         
         // fundingPayment AccountBalance에 계산 요청         
         int256 fundingPayment = IAccountBalance(accountBalance).calculateFundingPayment(position, baseToken, pool);
@@ -228,17 +231,15 @@ contract ClearingHouse is IClearingHouse, Ownable{
             }            
 
             // 포지션의 크기에 비례하는 수익 또는 손해, 펀딩비 정산
-            _settlePNL(position, trader, amounts[0], amounts[1], fundingPayment);  
-            
-        }        
+            _settlePNL(position, trader, amounts[0], amounts[1], fundingPayment);
 
-        // 종료된 포지션의 크기만큼 Long, Short OI 감소
-        IAccountBalance(accountBalance).setOpenInterest(baseToken, -int256(position.positionSize), position.isLong);
+            // 종료된 포지션의 크기만큼 Long, Short OI 감소
+            IAccountBalance(accountBalance).setOpenInterest(baseToken, -int256(closePositionSize), position.isLong);              
+        }        
 
         // 모든 계약이 청산되면 Close, 일부 남아 있으면 Update
         if(position.positionSize == 0) {
             delete positionMap[trader][baseToken][positionHash];
-            emit ClosePosition(trader, baseToken, positionHash, position.margin, position.positionSize, position.openNotional, position.isLong);
         } else {
             _updatePosition(position, trader, baseToken, positionHash);
         }
