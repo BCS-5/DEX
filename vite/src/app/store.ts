@@ -6,7 +6,7 @@ import eventsReducer from "../features/events/eventsSlice";
 import marketsReducer from '../features/markets/marketsSlice';
 import portfolioReducer from '../features/portfolio/portfolioSlice';
 import accountReducer from '../features/account/accountSlice';
-import walletReducer from '../features/wallet/walletSlice';
+
 
 export const store = configureStore({
   reducer: {
@@ -16,7 +16,6 @@ export const store = configureStore({
     markets: marketsReducer,
     portfolio: portfolioReducer,
     account: accountReducer,
-    wallet: walletReducer,
     
   },
   middleware: (getDefaultMiddleware) =>

@@ -1,36 +1,13 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { useSelector } from 'react-redux';
-import { ethers } from 'ethers';
 import { RootState } from '../../app/store';
-import { contracts } from '../../contracts/addresses';
 import { Link } from 'react-router-dom';
 
-interface TradeHistoryItem {
-  id: string;
-  timestamp: number;
-  pair: string;
-  type: string;
-  side: string;
-  size: string;
-  price: string;
-  pnl: string;
-}
-
 const PortfolioHistory: React.FC = () => {
-  const [tradeHistory, setTradeHistory] = useState<TradeHistoryItem[]>([]);
-  const { signer } = useSelector((state: RootState) => state.wallet);
+  const tradeHistory = useSelector((state: RootState) => state.portfolio.tradeHistory);
 
-  useEffect(() => {
-    const fetchTradeHistory = async () => {
-      if (!signer) return;
-      const clearingHouseContract = new ethers.Contract(contracts.clearingHouse.address, contracts.clearingHouse.abi, signer);
-      const address = await signer.getAddress();
-      const history = await clearingHouseContract.getTradeHistory(address);
-      setTradeHistory(history);
-    };
-
-    fetchTradeHistory();
-  }, [signer]);
+  // 거래 내역을 시간순으로 정렬
+  const sortedHistory = [...tradeHistory].sort((a, b) => b.timestamp - a.timestamp);
 
   return (
     <div className="p-4 bg-[#1E222D] rounded-lg shadow-lg">
@@ -38,26 +15,24 @@ const PortfolioHistory: React.FC = () => {
       <div className="overflow-x-auto">
         <table className="w-full text-sm text-left text-[#f0f0f0]">
           <thead className="text-xs uppercase bg-[#131722]">
-            <tr>
-              <th className="px-6 py-3">Time</th>
-              <th className="px-6 py-3">Pair</th>
-              <th className="px-6 py-3">Type</th>
-              <th className="px-6 py-3">Side</th>
-              <th className="px-6 py-3">Size</th>
-              <th className="px-6 py-3">Price</th>
-              <th className="px-6 py-3">PNL</th>
+          <tr className="text-[#72768f] text-xs">
+            <th className="px-6 py-2">Time</th>
+            <th className="px-6 py-2">Type</th>
+            <th className="px-6 py-2">Pair</th>
+            <th className="px-6 py-2">Price</th>
+            <th className="px-6 py-2">Size</th>
+            <th className="px-6 py-2">PNL</th>
             </tr>
           </thead>
           <tbody>
-            {tradeHistory.length > 0 ? (
-              tradeHistory.map((trade) => (
-                <tr key={trade.id} className="border-b border-[#2A2E3E] hover:bg-[#1E222D]">
-                  <td className="px-6 py-4">{new Date(trade.timestamp * 1000).toLocaleString()}</td>
-                  <td className="px-6 py-4">{trade.pair}</td>
+            {sortedHistory.length > 0 ? (
+              sortedHistory.map((trade, index) => (
+                <tr key={index} className="border-b border-[#2A2E3E] hover:bg-[#1E222D]">
+                  <td className="px-6 py-4">{new Date(trade.timestamp).toLocaleString()}</td>
                   <td className="px-6 py-4">{trade.type}</td>
-                  <td className="px-6 py-4">{trade.side}</td>
-                  <td className="px-6 py-4">{trade.size}</td>
+                  <td className="px-6 py-4">{trade.pair}</td>
                   <td className="px-6 py-4">{trade.price}</td>
+                  <td className="px-6 py-4">{trade.size}</td>
                   <td className={`px-6 py-4 ${Number(trade.pnl) >= 0 ? 'text-green-400' : 'text-red-400'}`}>
                     {trade.pnl}
                   </td>
@@ -65,7 +40,7 @@ const PortfolioHistory: React.FC = () => {
               ))
             ) : (
               <tr>
-                <td colSpan={7} className="text-center py-4">
+                <td colSpan={6} className="text-center py-4">
                   <div className="text-[#72768f]">No Record</div>
                   <Link to="/trade" className="text-[#1DB1A8] text-xs">Trade Now &gt;</Link>
                 </td>
