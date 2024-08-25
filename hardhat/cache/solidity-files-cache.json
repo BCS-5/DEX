@@ -1400,8 +1400,8 @@
       ]
     },
     "C:\\Users\\안성민\\Desktop\\DEX\\hardhat\\contracts\\interfaces\\IClearingHouse.sol": {
-      "lastModificationDate": 1724306046129,
-      "contentHash": "e8490355e00b371d30a88f5904154f50",
+      "lastModificationDate": 1724553183153,
+      "contentHash": "05279105afc15ded2ee45732b2cf31f7",
       "sourceName": "contracts/interfaces/IClearingHouse.sol",
       "solcConfig": {
         "version": "0.8.26",
@@ -1443,8 +1443,8 @@
       ]
     },
     "C:\\Users\\안성민\\Desktop\\DEX\\hardhat\\contracts\\ClearingHouse.sol": {
-      "lastModificationDate": 1724460538923,
-      "contentHash": "34ca44d93985d32942d657627ba0068b",
+      "lastModificationDate": 1724564555684,
+      "contentHash": "c156914eba52a0cfe85bf025048a7671",
       "sourceName": "contracts/ClearingHouse.sol",
       "solcConfig": {
         "version": "0.8.26",
@@ -2203,6 +2203,44 @@
       "artifacts": [
         "ERC20",
         "VirtualToken2"
+      ]
+    },
+    "C:\\Users\\안성민\\Desktop\\DEX\\hardhat\\contracts\\Faucet.sol": {
+      "lastModificationDate": 1724507110613,
+      "contentHash": "701cec6fac992dde73a83ae65613f087",
+      "sourceName": "contracts/Faucet.sol",
+      "solcConfig": {
+        "version": "0.8.26",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 999999
+          },
+          "evmVersion": "paris",
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "./USDT.sol"
+      ],
+      "versionPragmas": [
+        "^0.8.26"
+      ],
+      "artifacts": [
+        "Faucet"
       ]
     }
   }

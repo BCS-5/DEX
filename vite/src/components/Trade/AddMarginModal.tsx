@@ -4,6 +4,7 @@ import logo_WBTC from "../../images/staking/logo_WBTC.png";
 import { useSelector } from "react-redux";
 import { RootState } from "../../app/store";
 import { formatUnits, parseUnits } from "ethers";
+import { notify } from "../../lib";
 
 interface AddMarginModalProps {
   isOpen: boolean;
@@ -32,11 +33,19 @@ const AddMarginModal: FC<AddMarginModalProps> = ({
   };
 
   const onClickAddMargin = () => {
-    clearingHouseContract?.addMargin(
-      virtualTokenContracts?.BTC?.target,
-      positionHash,
-      parseUnits(value, 6)
-    );
+    clearingHouseContract
+      ?.addMargin(
+        virtualTokenContracts?.BTC?.target,
+        positionHash,
+        parseUnits(value, 6)
+      )
+      .then((tx) => {
+        notify("Pending Transaction ...", true);
+        tx.wait().then(() =>
+          notify("Transaction confirmed successfully !", true)
+        );
+      })
+      .catch((error) => notify(error.shortMessage, false));
   };
 
   useEffect(() => {

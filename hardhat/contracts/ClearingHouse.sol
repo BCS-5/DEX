@@ -153,13 +153,16 @@ contract ClearingHouse is IClearingHouse, Ownable{
             
             // Long: USDT => baseToken, short: baseToken => USDT
             (path[0], path[1]) = isLong ? (quoteToken, baseToken) : (baseToken, quoteToken);
-            (uint[] memory amounts, uint fee) = isLong ? _buy(trader, path, isExactInput, amountIn, amountOut, deadline) : _sell(trader, path, isExactInput, amountIn, amountOut, deadline);
+            (uint[] memory amounts, uint liquidityFee, uint orderBookFee) = isLong ? _buy(trader, path, isExactInput, amountIn, amountOut, deadline) : _sell(trader, path, isExactInput, amountIn, amountOut, deadline);
             
             (position.positionSize, position.openNotional) = isLong ? (amounts[1], amounts[0]) : (amounts[0], amounts[1]);            
             require(position.openNotional <= margin * 100, "Exceeded the maximum allowed leverage");
 
             // 수수료 누적
-            IVault(vault).setCumulativeTransactionFee(pool, fee);
+            IVault(vault).setCumulativeTransactionFee(pool, liquidityFee);
+            if(orderBookFee > 0) {
+                IVault(vault).updateCollateral(tx.origin, orderBookFee, true);
+            }
         }                    
 
         // feePerLiquidityCumulative값 Valut에 요청
@@ -221,17 +224,20 @@ contract ClearingHouse is IClearingHouse, Ownable{
             
             uint closePositionSize = closePercent * position.positionSize / 100;
 
-            (uint[] memory amounts, uint fee) = position.isLong ? _sell(trader, path, true, closePositionSize, slippageAdjustedAmount, deadline) : _buy(trader, path, false, slippageAdjustedAmount, closePositionSize, deadline);
+            (uint[] memory amounts, uint liquidityFee, uint orderBookFee) = position.isLong ? _sell(trader, path, true, closePositionSize, slippageAdjustedAmount, deadline) : _buy(trader, path, false, slippageAdjustedAmount, closePositionSize, deadline);
             
             // 수수료 적립
-            IVault(vault).setCumulativeTransactionFee(pool, fee);
+            IVault(vault).setCumulativeTransactionFee(pool, liquidityFee);
+            if(orderBookFee > 0) {
+                IVault(vault).updateCollateral(tx.origin, orderBookFee, true);
+            }
 
             if(!position.isLong) {
                 (amounts[0], amounts[1]) = (amounts[1], amounts[0]); // amounts[0]: closePositionSize, amounts[1]: closeNotional                             
             }            
 
             // 포지션의 크기에 비례하는 수익 또는 손해, 펀딩비 정산
-            _settlePNL(position, trader, amounts[0], amounts[1], fundingPayment);
+            _settlePNL(position, trader, baseToken, positionHash, amounts[0], amounts[1], fundingPayment);
 
             // 종료된 포지션의 크기만큼 Long, Short OI 감소
             IAccountBalance(accountBalance).setOpenInterest(baseToken, -int256(closePositionSize), position.isLong);              
@@ -246,53 +252,70 @@ contract ClearingHouse is IClearingHouse, Ownable{
     }
 
     // 손익 계산 및 정산
-    function _settlePNL(Position memory position, address trader, uint closePositionSize, uint closeNotional, int256 fundingPayment) private {
+    function _settlePNL(Position memory position, address trader, address baseToken, bytes32 positionHash, uint closePositionSize, uint closeNotional, int256 fundingPayment) private {                
+        
         uint closePercent = closePositionSize * 100 / position.positionSize;
         uint refundMargin = position.margin * closePercent / 100;        
+        int PNL = int256(refundMargin) + fundingPayment;
         uint256 leverage = position.openNotional * closePercent / 100;
 
         position.margin -= refundMargin;
         position.positionSize -= closePositionSize;
         position.openNotional -= leverage;
 
-        int PNL = int256(refundMargin) + fundingPayment;
-        if(position.isLong) {
+        bool isLong = position.isLong;        
+        if(isLong) {
             PNL += int256(closeNotional) - int256(leverage);
-        }else {
+        } else {
             PNL += int256(leverage) - int256(closeNotional);
         }
-
+        
         IVault(vault).updateCollateral(trader, PNL > 0 ? uint(PNL) : uint(-PNL), PNL > 0);
+        
+        emit SettlePNL(trader, baseToken, positionHash, refundMargin, closePositionSize, closeNotional, isLong);
     }
 
     // base => quote, quote => base 모두 quote로 지불
     // quoteToken => baseToken(롱포지션 오픈 or 숏포지션 종료)
-    function _buy(address trader, address[] memory path, bool isExactInput, uint amountIn, uint amountOut, uint deadline) private returns(uint[] memory amounts, uint fee){           
+    function _buy(address trader, address[] memory path, bool isExactInput, uint amountIn, uint amountOut, uint deadline) private returns(uint[] memory amounts, uint liquidityFee, uint orderBookFee){           
         (uint amountInMaximum, uint amountOutMinimum) = (amountIn, amountOut);
+        bool isOrderBook = msg.sender == orderBook;
+        uint fee;
+
         if(isExactInput) {  
-            // 0.03%만큼 baseToken이 적게 나오도록 함
-            fee = amountIn * 3 / 1e4; // 수수료 0.03%
+            // 0.03%~0.05% 만큼 baseToken이 적게 나오도록 함
+            liquidityFee = amountIn * 3 / 1e4;
+            orderBookFee = isOrderBook ? amountIn * 2 / 1e4 : 0;            
+            fee = liquidityFee + orderBookFee; 
             amounts = IUniswapV2Router02(router).swapExactTokensForTokens(amountIn - fee, amountOutMinimum, path, address(this), deadline);                
         } else {                        
-            // 지불한 금액의 0.03% 만큼 USDT를 추가로 지불하게 함
-            amounts = IUniswapV2Router02(router).swapTokensForExactTokens(amountOut, amountInMaximum, path, address(this), deadline);
-            fee = amounts[0] * 3 / 1e4;
+            // 지불한 금액의 0.03%~0.05% 만큼 USDT를 추가로 지불하게 함
+            amounts = IUniswapV2Router02(router).swapTokensForExactTokens(amountOut, amountInMaximum, path, address(this), deadline);            
+            liquidityFee = amounts[0] * 3 / 1e4;
+            orderBookFee = isOrderBook ? amounts[0] * 2 / 1e4 : 0;            
+            fee = liquidityFee + orderBookFee; 
         }        
         emit Buy(trader, path[1], amounts[0], amounts[1]);
         amounts[0] += fee;
     }
 
     // baseToken => quoteToken(롱포지션 종료 or 숏포지션 오픈)
-    function _sell(address trader, address[] memory path, bool isExactInput, uint amountIn, uint amountOut, uint deadline) private returns(uint[] memory amounts, uint fee) {           
+    function _sell(address trader, address[] memory path, bool isExactInput, uint amountIn, uint amountOut, uint deadline) private returns(uint[] memory amounts, uint liquidityFee, uint orderBookFee) {           
         (uint amountInMaximum, uint amountOutMinimum) = (amountIn, amountOut);
+        bool isOrderBook = msg.sender == orderBook;
+        uint fee;
 
         if(isExactInput) {
-            // 0.03%만큼 USDT가 적게 나오도록 함
+            // 0.03%~0.05%만큼 USDT가 적게 나오도록 함
             amounts = IUniswapV2Router02(router).swapExactTokensForTokens(amountIn, amountOutMinimum, path, address(this), deadline);
-            fee = amounts[1] * 3 / 1e4;
+            liquidityFee = amounts[1] * 3 / 1e4;
+            orderBookFee = isOrderBook ? amounts[1] * 2 / 1e4 : 0;            
+            fee = liquidityFee + orderBookFee; 
         } else {
-            // 0.03%만큼 USDT가 더 나오도록 baseToken을 더 요구함
-            fee = amountOut * 3 / 1e4;
+            // 0.03%~0.05%만큼 USDT가 더 나오도록 baseToken을 더 요구함
+            liquidityFee = amountOut * 3 / 1e4;
+            orderBookFee = isOrderBook ? amountOut * 2 / 1e4 : 0;            
+            fee = liquidityFee + orderBookFee; 
             amounts = IUniswapV2Router02(router).swapTokensForExactTokens(amountOut + fee, amountInMaximum, path, address(this), deadline);
         }        
         emit Sell(trader, path[0], amounts[0], amounts[1]);

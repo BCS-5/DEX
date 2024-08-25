@@ -24,6 +24,7 @@ interface IClearingHouse {
     event RemoveLiquidity(address indexed provider, address indexed baseToken, uint liquidity);
     event UpdatePosition(address indexed trader, address indexed baseToken, bytes32 positionHash, uint margin, uint positionSize, uint openNotional, bool isLong);
     event ClosePosition(address indexed trader, address indexed baseToken, bytes32 positionHash, uint margin, uint positionSize, uint openNotional, bool isLong);
+    event SettlePNL(address indexed trader, address indexed baseToken, bytes32 positionHash, uint margin, uint positionSize, uint closeNotional, bool isLong);
     event Buy(address indexed trader, address indexed baseToken, uint amountIn, uint amountOut);
     event Sell(address indexed trader, address indexed baseToken, uint amountIn, uint amountOut);
 

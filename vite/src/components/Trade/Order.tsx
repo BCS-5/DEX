@@ -233,7 +233,7 @@ const Order: FC = () => {
             className="self-end text-[12px] font-semibold tracking-tighter mt-2"
             onClick={() => setQuoteValue(collateral)}
           >
-            {collateral} USDT
+            Available: {collateral} USDT
             {/* Available: 22.17 USDT */}
           </button>
           <OrderInput

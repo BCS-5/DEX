@@ -1,7 +1,7 @@
 import { FC, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "../../app/store";
-import { formatPrice, formatUTCDate } from "../../lib";
+import { formatPrice, formatUTCDate, notify } from "../../lib";
 import CloseModal from "./CloseModal";
 import AddMarginModal from "./AddMarginModal";
 
@@ -126,24 +126,21 @@ const OrderHistoryCard: FC<OrderHistoryCardParams> = ({ type, position }) => {
 
   const getLiquidPrice = () => {
     const _position = position as Position;
-
+    let liquidPrice = 0;
     if (_position.isLong) {
-      setLiquidPrice(
-        formatPrice(
-          ((Number(_position.openNotional) - Number(_position.margin) * 0.9) *
-            100) /
-            Number(_position.positionSize)
-        )
-      );
+      liquidPrice =
+        ((Number(_position.openNotional) - Number(_position.margin) * 0.9) *
+          100) /
+        Number(_position.positionSize);
     } else {
-      setLiquidPrice(
-        formatPrice(
-          ((Number(_position.openNotional) + Number(_position.margin) * 0.9) *
-            100) /
-            Number(_position.positionSize)
-        )
-      );
+      liquidPrice =
+        ((Number(_position.openNotional) + Number(_position.margin) * 0.9) *
+          100) /
+        Number(_position.positionSize);
     }
+
+    if (liquidPrice < 0) liquidPrice = 0;
+    setLiquidPrice(formatPrice(liquidPrice));
   };
 
   const getTime = () => {
@@ -201,13 +198,21 @@ const OrderHistoryCard: FC<OrderHistoryCardParams> = ({ type, position }) => {
         BigInt(Math.floor((Number(amounts[0]) * Number(slippage)) / 100));
     }
 
-    clearingHouseContract?.closePosition(
-      _position.baseToken,
-      _position.positionHash,
-      parseInt(closePercent),
-      slippageAdjustedAmount,
-      Math.floor(Date.now() / 1000) + Number(deadline) * 60
-    );
+    clearingHouseContract
+      ?.closePosition(
+        _position.baseToken,
+        _position.positionHash,
+        parseInt(closePercent),
+        slippageAdjustedAmount,
+        Math.floor(Date.now() / 1000) + Number(deadline) * 60
+      )
+      .then((tx) => {
+        notify("Pending Transaction ...", true);
+        tx.wait().then(() =>
+          notify("Transaction confirmed successfully !", true)
+        );
+      })
+      .catch((error) => notify(error.shortMessage, false));
   };
 
   useEffect(() => {

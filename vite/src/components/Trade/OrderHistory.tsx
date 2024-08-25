@@ -1,9 +1,10 @@
-import { FC, useEffect, useState } from "react";
+import { FC, useState } from "react";
 import OrderHistoryCard from "./OrderHistoryCard";
 import { RootState } from "../../app/store";
 import { useSelector } from "react-redux";
 import EmptyData from "./EmptyData";
 import ResizeHandler from "./ResizeHandler";
+import { notify } from "../../lib";
 
 const cards = [
   [1, 2, 3, 4, 5, 6, 7, 8],
@@ -19,14 +20,11 @@ const OrderHistory: FC = () => {
     (state: RootState) => state.events
   );
 
-  const [selectedMenu, setSelectedMenu] = useState<number>(0);
-  const { signer } = useSelector((state: RootState) => state.providers);
-  const { blockNumber } = useSelector((state: RootState) => state.events);
+  const { positions, orders, history } = useSelector(
+    (state: RootState) => state.history
+  );
 
-  const [positions, setPositions] = useState<Position[]>([]);
-  const [orders, setOrders] = useState<Position[]>([]);
-  const [history, setHistory] = useState<History[]>([]);
-  const [markPrice, setMarkPrice] = useState<string>("0.0");
+  const [selectedMenu, setSelectedMenu] = useState<number>(0);
 
   const onClickCloseAll = () => {
     const positionHashs = [] as string[];
@@ -71,128 +69,23 @@ const OrderHistory: FC = () => {
       }
     });
 
-    Promise.all(promises).then((data) => {
-      // closePositionBatch (address[] memory baseTokens, bytes32[] memory positionHashs, uint[] memory slippageAdjustedAmounts, uint deadline)
-      clearingHouseContract?.closePositionBatch(
-        baseTokens,
-        positionHashs,
-        slippageAdjustedAmounts,
-        Math.floor(Date.now() / 1000) + parseInt(deadline) * 60
-      );
+    Promise.all(promises).then(() => {
+      clearingHouseContract
+        ?.closePositionBatch(
+          baseTokens,
+          positionHashs,
+          slippageAdjustedAmounts,
+          Math.floor(Date.now() / 1000) + parseInt(deadline) * 60
+        )
+        .then((tx) => {
+          notify("Pending Transaction ...", true);
+          tx.wait().then(() =>
+            notify("Transaction confirmed successfully !", true)
+          );
+        })
+        .catch((error) => notify(error.shortMessage, false));
     });
   };
-
-  const getHistory = async () => {
-    if (!clearingHouseContract) return;
-    const updateEventFilter = clearingHouseContract.filters.UpdatePosition(
-      signer?.address
-    );
-    const closeEventFilter = clearingHouseContract.filters.ClosePosition(
-      signer?.address
-    );
-
-    const updateEvent = clearingHouseContract?.queryFilter(
-      updateEventFilter,
-      0,
-      "latest"
-    );
-    const closeEvent = clearingHouseContract?.queryFilter(
-      closeEventFilter,
-      0,
-      "latest"
-    );
-
-    Promise.all([updateEvent, closeEvent]).then((res) =>
-      parseHistory([...res[0], ...res[1]])
-    );
-  };
-
-  const parseHistory = (events: any[]) => {
-    events.sort((a, b) => a.blockNumber - b.blockNumber);
-    const historyMap: { [key: string]: any } = {};
-
-    const history = [] as any[];
-    const positions = [] as any[];
-    events.forEach((v) => {
-      const [
-        trader,
-        baseToken,
-        positionHash,
-        margin,
-        positionSize,
-        openNotional,
-        isLong,
-      ] = v.args;
-      if (v.eventName == "UpdatePosition") {
-        if (positionHash in historyMap) {
-          if (historyMap[positionHash].margin - margin >= 0) {
-            history.push({
-              type: "Close",
-              margin: historyMap[positionHash].margin - margin,
-              positionSize:
-                historyMap[positionHash].positionSize - positionSize,
-              openNotional:
-                historyMap[positionHash].openNotional - openNotional,
-              isLong,
-              blockNumber: v.blockNumber,
-              transactionHash: v.transactionHash,
-            });
-          }
-
-          historyMap[positionHash].margin = margin;
-          historyMap[positionHash].positionSize = positionSize;
-          historyMap[positionHash].openNotional = openNotional;
-        } else {
-          historyMap[positionHash] = {
-            trader,
-            baseToken,
-            positionHash,
-            margin,
-            positionSize,
-            openNotional,
-            isLong,
-          };
-
-          history.push({
-            type: "OPEN",
-            margin,
-            positionSize,
-            openNotional,
-            isLong,
-            blockNumber: v.blockNumber,
-            transactionHash: v.transactionHash,
-          });
-        }
-      } else {
-        history.push({
-          type: "CLOSE",
-          margin,
-          positionSize,
-          openNotional,
-          isLong,
-          blockNumber: v.blockNumber,
-          transactionHash: v.transactionHash,
-        });
-
-        delete historyMap[positionHash];
-      }
-    });
-
-    Object.keys(historyMap).forEach((v) => {
-      positions.push(historyMap[v]);
-    });
-
-    setHistory(history.reverse());
-    setPositions(positions);
-  };
-
-  useEffect(() => {
-    getHistory();
-  }, [signer]);
-
-  useEffect(() => {
-    getHistory();
-  }, [blockNumber]);
 
   const [height, setHeight] = useState<number>(252);
   const [isHover, setIsHover] = useState<boolean>(false);
@@ -238,7 +131,7 @@ const OrderHistory: FC = () => {
       <div className="overflow-y-auto" style={{ height }}>
         {selectedMenu == 0 &&
           (positions.length ? (
-            positions.map((v, i) => (
+            positions.map((v) => (
               <OrderHistoryCard
                 key={`${v.positionHash} ${positions.length}`}
                 type={selectedMenu}

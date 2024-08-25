@@ -15,25 +15,35 @@ async function main() {
   const UniswapV2Router = await hre.ethers.getContractFactory(
     "UniswapV2Router02"
   );
+  const Faucet = await hre.ethers.getContractFactory("Faucet");
 
   const usdt = USDT.attach("0x85885d5a79e6f55a2e8CcC19E08Ac12a7A310651");
-  const factory = UniswapV2Factory.attach(
-    "0x70aFa16650dEC132e8AeBAab7Cf281fD2e58b684"
-  );
-  const router = UniswapV2Router.attach(
-    "0x67c284d74131Ff5EBFBcE5bbCd3C923e55C6F738"
-  );
+  // const factory = UniswapV2Factory.attach(
+  //   "0x70aFa16650dEC132e8AeBAab7Cf281fD2e58b684"
+  // );
+  // const router = UniswapV2Router.attach(
+  //   "0x67c284d74131Ff5EBFBcE5bbCd3C923e55C6F738"
+  // );
   const vault = Vault.attach("0x8dF9874dDEe99fd4c591a37f9ecA1724266F7366");
 
-  const clearingHouse = ClearingHouse.attach(
-    "0x056931211F0859b47Fa9c80d8B3b257E5f8D6cB7"
-  );
-  const marketRegistry = MarketRegistry.attach(
-    "0x821b411e0d50517751F9cA7257a85bb9946e40E4"
-  );
-  const accountBalance = AccountBalance.attach(
-    "0x6355315C226aE4F31FbAe9b61F8c044079D19145"
-  );
+  // vault.depositFor(
+  //   "0x2FFA65948795F91D2FcB6E10c3F8cc4440d416a6",
+  //   10000000n * 10n ** 6n
+  // );
+
+  vault
+    .getTotalCollateral("0x2FFA65948795F91D2FcB6E10c3F8cc4440d416a6")
+    .then(console.log);
+
+  // const clearingHouse = ClearingHouse.attach(
+  //   "0x056931211F0859b47Fa9c80d8B3b257E5f8D6cB7"
+  // );
+  // const marketRegistry = MarketRegistry.attach(
+  //   "0x821b411e0d50517751F9cA7257a85bb9946e40E4"
+  // );
+  // const accountBalance = AccountBalance.attach(
+  //   "0x6355315C226aE4F31FbAe9b61F8c044079D19145"
+  // );
 
   // const usdt = await USDT.deploy(2n ** 256n - 1n, "Tether USD", "USDT", 6);
   // console.log(`usdt: ${usdt.target}`);
@@ -53,7 +63,10 @@ async function main() {
   //   vault.target
   // );
   // console.log(`accountBalance: ${accountBalance.target}`);
+  // const faucet = await Faucet.deploy();
+  // console.log(`faucet: ${faucet.target}`);
 
+  // await faucet.setUSDTAddress("0x85885d5a79e6f55a2e8CcC19E08Ac12a7A310651");
   // await clearingHouse.setMarketRegistry(marketRegistry);
 
   // await clearingHouse.setRouter(router);
@@ -86,10 +99,10 @@ async function main() {
   //   61000000n * 10n ** 6n
   // );
 
-  const balance = await usdt.balanceOf(deployer);
-  // await usdt.approve(vault, balance);
+  // const balance = await usdt.balanceOf(deployer);
+  // // await usdt.approve(vault, balance);
 
-  await vault.deposit(balance / 2n);
+  // await vault.deposit(balance / 2n);
 }
 
 main();

@@ -1,9 +1,9 @@
-import { FC } from "react";
+import { FC, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../app/store";
 import { setSigner } from "../../features/providers/providersSlice";
 import { switchNetwork } from "../../features/events/eventsSlice";
-import { getSlippageAdjustedAmount } from "../../lib";
+import { getSlippageAdjustedAmount, notify } from "../../lib";
 import { parseUnits } from "ethers";
 import { Contract } from "ethers";
 
@@ -36,6 +36,8 @@ const OrderButton: FC<OrderButtonParams> = ({
   );
 
   const dispatch = useDispatch();
+
+  useEffect(() => {}, []);
 
   const onClickConnectWallet = () => {
     provider?.getSigner().then((signer) => dispatch(setSigner(signer)));
@@ -71,15 +73,23 @@ const OrderButton: FC<OrderButtonParams> = ({
       }
 
       // function openPosition(address baseToken, bool isExactInput, bool isLong, uint margin, uint amountIn, uint amountOut, uint deadline) public hasPool(baseToken) {
-      clearingHouseContract?.openPosition(
-        virtualTokenContracts?.BTC?.target,
-        isExactInput,
-        isLong,
-        margin,
-        amountIn,
-        amountOut,
-        Math.floor(Date.now() / 1000) + parseInt(deadline) * 60
-      );
+      clearingHouseContract
+        ?.openPosition(
+          virtualTokenContracts?.BTC?.target,
+          isExactInput,
+          isLong,
+          margin,
+          amountIn,
+          amountOut,
+          Math.floor(Date.now() / 1000) + parseInt(deadline) * 60
+        )
+        .then((tx) => {
+          notify("Pending Transaction ...", true);
+          tx.wait().then(() =>
+            notify("Transaction confirmed successfully !", true)
+          );
+        })
+        .catch((error) => notify(error.shortMessage, false));
     } else {
       const path = [
         virtualTokenContracts?.BTC?.target,
@@ -105,15 +115,23 @@ const OrderButton: FC<OrderButtonParams> = ({
         amountOut = slippageAdjustedAmount;
       }
 
-      clearingHouseContract?.openPosition(
-        virtualTokenContracts?.BTC?.target,
-        !isExactInput,
-        isLong,
-        margin,
-        amountIn,
-        amountOut,
-        Math.floor(Date.now() / 1000) + parseInt(deadline) * 60
-      );
+      clearingHouseContract
+        ?.openPosition(
+          virtualTokenContracts?.BTC?.target,
+          !isExactInput,
+          isLong,
+          margin,
+          amountIn,
+          amountOut,
+          Math.floor(Date.now() / 1000) + parseInt(deadline) * 60
+        )
+        .then((tx) => {
+          notify("Pending Transaction ...", true);
+          tx.wait().then(() =>
+            notify("Transaction confirmed successfully !", true)
+          );
+        })
+        .catch((error) => notify(error.shortMessage, false));
     }
   };
   return (

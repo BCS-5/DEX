@@ -1,6 +1,8 @@
 import { Contract } from "ethers";
 import { JsonRpcSigner, ethers } from "ethers";
 import { Dispatch, SetStateAction } from "react";
+import { MdError } from "react-icons/md";
+import { toast } from "react-toastify";
 
 export const getSigner = async (
   setSigner: Dispatch<SetStateAction<JsonRpcSigner | null>>
@@ -79,3 +81,21 @@ export async function getSlippageAdjustedAmount(
     );
   }
 }
+
+export const notify = (message: string, isSuccess: boolean) => {
+  toast.success(message, {
+    position: "bottom-right",
+    autoClose: 3000,
+    icon: <MdError size={24} />,
+    hideProgressBar: false,
+    closeOnClick: true,
+    pauseOnHover: true,
+    draggable: true,
+    progress: undefined,
+    className: `${
+      isSuccess ? "bg-success-color" : "bg-error-color"
+    } text-white`,
+    bodyClassName: "font-bold",
+    progressClassName: `${isSuccess ? "bg-green-600" : "bg-red-600"}`,
+  });
+};
