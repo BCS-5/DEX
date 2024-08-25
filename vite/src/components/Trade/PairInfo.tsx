@@ -32,7 +32,7 @@ const PairContainer: FC = () => {
     fetch(url)
       .then((response) => response.json())
       .then((data) => {
-        if (data.open == 0) data.open = 70000;
+        if (data.open == 0) data.open = 64157;
         dispatch(setMarkPrice(formatPrice(data.close)));
 
         setPercent((((data.close - data.open) / data.open) * 100).toFixed(2));
