@@ -173,5 +173,5 @@ const subscribe = async () => {
 
 subscribe();
 
-// node src/keeper/index.js
-// nohup node src/keeper/index.js > keeper.out 2>&1 &
+// node src/keeper/keeper.js
+// nohup node src/keeper/keeper.js > keeper.out 2>&1 &
