@@ -1,6 +1,3 @@
-const MinPriorityQueue = require("js-priority-queue"); // 오름차순 우선순위 큐
-const MaxPriorityQueue = require("js-priority-queue"); // 내림차순 우선순위 큐
-
 const { web3, setSubscriptionCallback } = require("./keeperProvider");
 const { contracts } = require("../../contracts/addresses");
 
