@@ -91,7 +91,7 @@ const updatePosition = (position) => {
     isLong,
   } = position;
 
-  // if (trader === "0x77777777C54FD7A001F50fa752e524ec9B08A487") return;
+  //   if (trader === "0x000000c2028C057617891ECB15B8159F4249F0E3") return;
 
   clearingHouseContract.methods
     .getPosition(trader, baseToken, positionHash)
@@ -153,7 +153,7 @@ const subscribe = async () => {
 
     clearingHouseContract.events
       .UpdatePosition({
-        fromBlock: 6567633,
+        fromBlock: 0,
       })
       .on("data", (event) => {
         updatePosition(event.returnValues);
@@ -161,7 +161,7 @@ const subscribe = async () => {
 
     clearingHouseContract.events
       .ClosePosition({
-        fromBlock: 6567633,
+        fromBlock: 0,
       })
       .on("data", (event) => {
         closePosition(event.returnValues);
@@ -174,3 +174,4 @@ const subscribe = async () => {
 subscribe();
 
 // node src/keeper/index.js
+// nohup node src/keeper/index.js > keeper.out 2>&1 &

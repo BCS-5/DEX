@@ -20,7 +20,7 @@ class TradingVolumeHandler {
   constructor(poolAddress, baseAddress, poolName) {
     this.volumeTable = new PriceVolume(
       `${poolName}_PRICE_VOLUME_`,
-      1724227200000
+      1724587200000
     );
 
     this.volumeTable.createTable();
