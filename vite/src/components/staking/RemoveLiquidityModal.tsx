@@ -1,42 +1,34 @@
 import { FC, useEffect, useRef, useState } from "react";
-import logo_USDT from "../../images/staking/logo_USDT.png";
-import logo_WBTC from "../../images/staking/logo_WBTC.png";
+import logo_LP from "../../images/staking/logo_LP.png";
 import { useSelector } from "react-redux";
 import { RootState } from "../../app/store";
 import Tooltip from "./Tooltip";
-import { ethers } from "ethers";
 import { BigNumber } from "@ethersproject/bignumber";
 
 interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
-  poolRatio: string;
-  markPrice: string;
-  pairAddr: string;
+  userLP: string;
+  LPValue: string;
 }
 
-const AddLiquidityModal: FC<ModalProps> = ({
+const RemoveLiquidityModal: FC<ModalProps> = ({
   isOpen,
   onClose,
-  poolRatio,
-  markPrice,
-  pairAddr,
+  userLP,
+  LPValue,
 }) => {
   if (!isOpen) return null;
-  const { vaultContract, clearingHouseContract, virtualTokenContracts } =
-    useSelector((state: RootState) => state.contracts);
+  const { clearingHouseContract, virtualTokenContracts } = useSelector(
+    (state: RootState) => state.contracts
+  );
   const { signer } = useSelector((state: RootState) => state.providers);
   const [deadline, setDeadline] = useState<string>("10");
-  const [canAddLiquidity, setCanAddLiquidity] = useState<boolean>(false);
-  const [addLiquidityLoading, setAddLiquidityLoading] =
+  const [canRemoveLiquidity, setCanRemoveLiquidity] = useState<boolean>(false);
+  const [removeLiquidityLoading, setRemoveLiquidityLoading] =
     useState<boolean>(false);
-  const [userBalance, setUserBalance] = useState<string>("0");
-  const [inputUsdt, setInputUsdt] = useState<number | null>(null);
-  const [inputBtc, setInputBtc] = useState<number | null>(null);
-  const [inputBtcValue, setInputBtcValue] = useState<number | null>(null);
-  const [totalAddLiquidityValue, setTotalAddLiquidityValue] = useState<
-    number | null
-  >(null);
+  const [inputLP, setinputLP] = useState<number | null>(null);
+  const [inputLPValue, setInputLPValue] = useState<string>("");
   const [slippageTolerance, setSlippageTolerance] = useState<0.5 | 1.0 | 2.0>(
     0.5
   );
@@ -65,42 +57,40 @@ const AddLiquidityModal: FC<ModalProps> = ({
     setIsSlippageOpen(!isSlippageOpen);
   };
 
-  const handleInputUsdtChange = (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
+  const handleinputLPChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const inputValue = event.target.value;
     const numericValue = parseFloat(inputValue);
     if (!isNaN(numericValue)) {
-      setInputUsdt(numericValue);
+      setinputLP(numericValue);
     } else {
-      setInputUsdt(null);
+      setinputLP(null);
     }
   };
 
-  const onClickAddLiquidity = async () => {
+  const onClickRemoveLiquidity = async () => {
     if (!clearingHouseContract) return;
 
     try {
       const contractWithSigner = clearingHouseContract.connect(signer);
 
-      setAddLiquidityLoading(true);
+      setRemoveLiquidityLoading(true);
 
-      const calculateQuoteMinimum =
-        Number(inputUsdt) * (1 - slippageTolerance / 100);
-      const calculateBaseTokenMinimum =
-        Number(inputBtcValue) * (1 - slippageTolerance / 100);
+      // const calculateQuoteMinimum =
+      //   Number(inputLP) * (1 - slippageTolerance / 100);
+      // const calculateBaseTokenMinimum =
+      //   Number(inputBtcValue) * (1 - slippageTolerance / 100);
       // const maxUint256 = (BigInt(1) << BigInt(256)) - BigInt(1);
       const deadline = Math.floor(Date.now() / 1000) + 5 * 60;
 
       // if (
-      //   Number(inputUsdt) > ethers.MaxUint256 ||
+      //   Number(inputLP) > ethers.MaxUint256 ||
       //   calculateQuoteMinimum > ethers.MaxUint256 ||
       //   calculateBaseTokenMinimum > ethers.MaxUint256
       // ) {
       //   throw new Error("Input value exceeds uint256 limit.");
       // }
 
-      // console.log(ethers.parseUnits(Number(inputUsdt).toString(), 18));
+      // console.log(ethers.parseUnits(Number(inputLP).toString(), 18));
       // console.log(ethers.parseUnits(calculateQuoteMinimum.toString(), 18));
       // console.log(ethers.parseUnits(calculateBaseTokenMinimum.toString(), 18));
       // LP 24개 얻는 코드
@@ -111,84 +101,47 @@ const AddLiquidityModal: FC<ModalProps> = ({
       //   0n,
       //   deadline
       // );
-      const tx = await contractWithSigner.addLiquidity(
+      const tx = await contractWithSigner.removeLiquidity(
         virtualTokenContracts.BTC.target,
-        BigNumber.from(
-          ethers.parseUnits(Number(inputUsdt).toString(), 6)
-        ).toString(),
+        BigNumber.from(Number(inputLP)).toString(),
         0n,
         0n,
         deadline
       );
-      // console.log(BigNumber.from(inputUsdt).toString());
+      // console.log(BigNumber.from(inputLP).toString());
       // console.log(calculateQuoteMinimum);
       // console.log(calculateBaseTokenMinimum);
       // console.log(BigNumber.from(calculateQuoteMinimum).toString());
       // console.log(BigNumber.from(calculateBaseTokenMinimum).toString());
       // const tx = await contractWithSigner.addLiquidity(
       //   virtualTokenContracts.BTC.target,
-      //   BigNumber.from(inputUsdt).toString(),
+      //   BigNumber.from(inputLP).toString(),
       //   BigNumber.from(calculateQuoteMinimum).toString(),
       //   BigNumber.from(calculateBaseTokenMinimum).toString(),
       //   deadline
       // );
 
       await tx.wait();
-      console.log("Liquidity added successfully");
+      console.log("Liquidity removed successfully");
     } catch (error) {
-      console.error("Error adding liquidity: ", error);
+      console.error("Error removing liquidity: ", error);
     } finally {
-      setAddLiquidityLoading(false);
+      setRemoveLiquidityLoading(false);
     }
   };
 
   useEffect(() => {
-    const fetchUserBalance = async () => {
-      if (vaultContract) {
-        try {
-          const balance = await vaultContract.getTotalCollateral(
-            signer?.address
-          );
-          setUserBalance((Number(balance) / 10 ** 6).toString());
-          // console.log("user balance:  ", balance);
-        } catch (error) {
-          console.error("Error fetching user balance:", error);
-        }
-      } else {
-        console.warn("vaultContract.getTotalCollateral is null or undefined");
-      }
-    };
-
-    fetchUserBalance();
-  }, [vaultContract, signer]);
+    setInputLPValue((Number(inputLP) * Number(LPValue)).toFixed(2).toString());
+  }, [inputLP, LPValue]);
 
   useEffect(() => {
-    if (!inputUsdt) {
-      setInputBtc(null);
-      setInputBtcValue(null);
-      setTotalAddLiquidityValue(null);
+    console.log(userLP);
+    if (Number(inputLP) > 0 && Number(inputLP) <= Number(userLP)) {
+      setCanRemoveLiquidity(true);
     } else {
-      setInputBtc(inputUsdt * Number(poolRatio));
+      setCanRemoveLiquidity(false);
     }
-  }, [inputUsdt]);
-
-  useEffect(() => {
-    if (!inputBtc) return;
-    setInputBtcValue(inputBtc * Number(markPrice));
-  }, [inputBtc]);
-
-  useEffect(() => {
-    if (!inputUsdt || !inputBtcValue) return;
-    setTotalAddLiquidityValue(inputUsdt + inputBtcValue);
-  }, [inputUsdt, inputBtcValue]);
-
-  useEffect(() => {
-    if (Number(inputUsdt) > 0 && Number(inputUsdt) <= Number(userBalance)) {
-      setCanAddLiquidity(true);
-    } else {
-      setCanAddLiquidity(false);
-    }
-  }, [inputUsdt, userBalance]);
+  }, [inputLP, userLP]);
 
   return (
     <div className="fixed inset-0 flex items-center justify-center z-50">
@@ -206,7 +159,7 @@ const AddLiquidityModal: FC<ModalProps> = ({
         <div className="w-full p-4 pb-0">
           <div className="text-[#94A3B8] text-xs">Sepolia</div>
           <div className="flex justify-between content-center h-11 font-bold text-xl">
-            <div className="content-center">Add liquidity</div>
+            <div className="content-center">Remove liquidity</div>
             <div>
               <div
                 className="w-9 relative"
@@ -283,55 +236,30 @@ const AddLiquidityModal: FC<ModalProps> = ({
               <div className="flex content-center mr-2 px-4 rounded-xl bg-[#334155]">
                 <div className="content-center">
                   <img
-                    src={logo_USDT}
-                    alt="logo_USDT"
+                    src={logo_LP}
+                    alt="logo_LP"
                     className="w-6 h-6 mr-2 rounded-full"
                   />
                 </div>
-                <span className="content-center">USDT</span>
+                <span className="content-center">LP</span>
               </div>
               <input
                 type="number"
-                value={inputUsdt ? inputUsdt : ""}
-                onChange={handleInputUsdtChange}
+                value={inputLP ? inputLP : ""}
+                onChange={handleinputLPChange}
                 className="text-xl text-right h-10 bg-[#1E293B] focus:outline-none"
                 placeholder="0.0"
               />
             </div>
             <div className="flex justify-between p-1 pt-2 text-sm text-[#94A3B8]">
-              <div>Balance: {Number(userBalance)}</div>
-              {inputUsdt && <div>${inputUsdt.toFixed(2)}</div>}
+              <div>Balance: {userLP}</div>
+              {inputLPValue && <div>${Number(inputLPValue).toFixed(2)}</div>}
             </div>
-            {Number(userBalance) < Number(inputUsdt) && (
+            {Number(userLP) < Number(inputLP) && (
               <div className="text-sm text-red-500 font-semibold px-1">
                 Exceeds wallet balance
               </div>
             )}
-          </div>
-          <div className="bg-[#1E293B] rounded-xl p-2 mb-4">
-            <div className="flex justify-between p-1 h-12">
-              <div className="flex content-center mr-2 px-4 rounded-xl bg-[#334155]">
-                <div className="content-center">
-                  <img
-                    src={logo_WBTC}
-                    alt="logo_WBTC"
-                    className="w-6 h-6 mr-2 rounded-full"
-                  />
-                </div>
-                <span className="content-center">BTC</span>
-              </div>
-              <input
-                type="number"
-                value={inputBtc ? inputBtc?.toFixed(10) : ""}
-                className="text-xl text-right h-10 bg-[#1E293B] focus:outline-none"
-                placeholder="0.0"
-                readOnly
-              />
-            </div>
-            <div className="flex justify-between p-1 pt-2 text-sm text-[#94A3B8]">
-              <div>&nbsp;</div>
-              {inputBtc && <div>${inputBtcValue?.toFixed(2)}</div>}
-            </div>
           </div>
           <div>
             <table className="w-full border border-[#0F172A] rounded-xl">
@@ -341,8 +269,8 @@ const AddLiquidityModal: FC<ModalProps> = ({
                     Total
                   </td>
                   <td className="p-2 content-center border border-[#0F172A]">
-                    {totalAddLiquidityValue
-                      ? "$" + totalAddLiquidityValue.toFixed(2)
+                    {inputLPValue
+                      ? "$" + Number(inputLPValue).toFixed(2)
                       : "$0.00"}
                   </td>
                 </tr>
@@ -403,14 +331,14 @@ const AddLiquidityModal: FC<ModalProps> = ({
           </div>
           <div
             className={`gap-4 w-full h-12 text-center font-bold content-center mt-4 rounded-lg ${
-              canAddLiquidity
+              canRemoveLiquidity
                 ? "bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 cursor-pointer"
                 : "bg-gray-700 text-[#94A3B8] cursor-not-allowed"
-            } ${addLiquidityLoading && "animate-pulse cursor-not-allowed"}`}
-            onClick={onClickAddLiquidity}
+            } ${removeLiquidityLoading && "animate-pulse cursor-not-allowed"}`}
+            onClick={onClickRemoveLiquidity}
             // disabled={addLiquidityLoading}
           >
-            {addLiquidityLoading ? "Loading" : "Add Liquidity"}
+            {removeLiquidityLoading ? "Loading" : "Remove Liquidity"}
           </div>
         </div>
       </div>
@@ -418,4 +346,4 @@ const AddLiquidityModal: FC<ModalProps> = ({
   );
 };
 
-export default AddLiquidityModal;
+export default RemoveLiquidityModal;
