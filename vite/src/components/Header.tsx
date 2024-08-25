@@ -77,6 +77,12 @@ const Header: FC = () => {
       if (!signer) {
         dispatch(setContract(provider));
       }
+
+      const isLogin = localStorage.getItem("login");
+      if (isLogin) {
+        onClickConnectWallet();
+      }
+
       provider
         .getNetwork()
         .then((network) => dispatch(setChainId(Number(network.chainId))));
@@ -124,6 +130,7 @@ const Header: FC = () => {
   }, [marketRegistryContracat]);
 
   const onClickConnectWallet = () => {
+    localStorage.setItem("login", "true");
     provider?.getSigner().then((signer) => dispatch(setSigner(signer)));
   };
 

@@ -10,6 +10,7 @@ import { setSigner } from "../../features/providers/providersSlice";
 const WalletMenu: FC = () => {
   const dispatch = useDispatch();
   const onClickDisConnect = () => {
+    localStorage.removeItem("login");
     dispatch(setSigner(null));
   };
   return (
