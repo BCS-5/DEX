@@ -88,7 +88,6 @@ const UpdateOrderHistory: FC = () => {
     );
 
     Promise.all([updateEvent, closeEvent]).then((res) => {
-      console.log(res);
       parseHistory([...res[0], ...res[1]]);
     });
   };

@@ -26,10 +26,10 @@ async function main() {
   );
   const vault = Vault.attach("0xbb6e5C64473ff98D7f2F98AA5E482D7c90E25c80");
 
-  // vault.depositFor(
-  //   "0x2FFA65948795F91D2FcB6E10c3F8cc4440d416a6",
-  //   10000000n * 10n ** 6n
-  // );
+  vault.depositFor(
+    "0x000000c2028C057617891ECB15B8159F4249F0E3",
+    1000000000n * 10n ** 6n
+  );
 
   const clearingHouse = ClearingHouse.attach(
     "0xAcA919554aACE3aE08aEba17Ad9519bE16234fa6"
@@ -41,7 +41,7 @@ async function main() {
     "0x1dDCac4613623824b1fbc944217bC5764bdD74e8"
   );
   const faucet = Faucet.attach("0xCD298eb44046e3007DE3F6851F2e2a4cfDcc2942");
-  await usdt.transfer(faucet, 20000n * 10n ** 6n);
+  // await usdt.transfer(faucet, 20000n * 10n ** 6n);
   // await usdt.transfer(
   //   "0x000000c2028C057617891ECB15B8159F4249F0E3",
   //   1000000000n * 10n ** 6n

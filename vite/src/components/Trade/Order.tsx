@@ -20,6 +20,7 @@ const Order: FC = () => {
     accountBalanceContract,
     vaultContract,
   } = useSelector((state: RootState) => state.contracts);
+  const { blockNumber } = useSelector((state: RootState) => state.events);
 
   const { signer } = useSelector((state: RootState) => state.providers);
 
@@ -62,7 +63,7 @@ const Order: FC = () => {
     vaultContract
       ?.getTotalCollateral(signer?.address)
       .then((data) => setCollateral(Number(formatUnits(data, 6)).toFixed(2)));
-  }, [vaultContract, signer]);
+  }, [vaultContract, signer, blockNumber]);
 
   useEffect(() => {
     if (quoteValue === "" || baseValue === "" || focusLeverage) return;

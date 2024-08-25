@@ -257,20 +257,20 @@ const OrderHistoryCard: FC<OrderHistoryCardParams> = ({ type, position }) => {
             <div className="flex flex-col w-[120px] flex-1">
               <div
                 className={`text-sm ${
-                  Number(pnl) >= 0 ? "text-[#2BBDB5]" : "text-[#FF5AB5]"
+                  Number(pnl) > 0 ? "text-[#2BBDB5]" : "text-[#FF5AB5]"
                 }`}
               >
-                {Number(pnl) >= 0 && "+"}
+                {Number(pnl) > 0 && "+"}
                 {pnl} USDT
               </div>
               <div className="text-xs text-[#72768f]">
                 PNL
                 <span
                   className={`${
-                    Number(pnl) >= 0 ? "text-[#2BBDB5]" : "text-[#FF5AB5]"
+                    Number(pnlPercent) > 0 ? "text-[#2BBDB5]" : "text-[#FF5AB5]"
                   }`}
                 >
-                  {Number(pnl) >= 0 && "+"} {pnlPercent}%
+                  {Number(pnlPercent) > 0 && "+"} {pnlPercent}%
                 </span>
               </div>
             </div>

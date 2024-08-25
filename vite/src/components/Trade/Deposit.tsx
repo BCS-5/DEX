@@ -9,6 +9,8 @@ const Deposit: FC = () => {
   const { vaultContract, faucetContract } = useSelector(
     (state: RootState) => state.contracts
   );
+  const { blockNumber } = useSelector((state: RootState) => state.events);
+
   const { signer } = useSelector((state: RootState) => state.providers);
   const { positions } = useSelector((state: RootState) => state.history);
 
@@ -39,7 +41,7 @@ const Deposit: FC = () => {
     vaultContract
       .getTotalCollateral(signer.address)
       .then((data) => setAvailable(Number(formatUnits(data, 6)).toFixed(2)));
-  }, [vaultContract, signer]);
+  }, [vaultContract, signer, blockNumber]);
 
   useEffect(() => {
     if (!positions.length) return;

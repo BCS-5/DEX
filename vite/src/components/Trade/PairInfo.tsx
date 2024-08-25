@@ -40,10 +40,6 @@ const PairContainer: FC = () => {
   };
   const getIndexPrice = () => {
     if (!virtualTokenContracts?.BTC?.target) return;
-    console.log(
-      accountBalanceContract?.target,
-      virtualTokenContracts?.BTC?.target
-    );
     accountBalanceContract
       ?.getIndexPrice(virtualTokenContracts?.BTC?.target)
       .then((price) => {
@@ -59,10 +55,11 @@ const PairContainer: FC = () => {
           const _shortFundingRate =
             BigInt(data[0].short) - BigInt(data[1].short);
 
-          setLongFundingRate((Number(_longFundingRate) / 10 ** 18).toFixed(4));
-          setShortFundingRate(
-            (Number(_shortFundingRate) / 10 ** 18).toFixed(4)
-          );
+          const _long = (Number(_longFundingRate) / 10 ** 18).toFixed(4);
+          const _short = (Number(_shortFundingRate) / 10 ** 18).toFixed(4);
+
+          setLongFundingRate(Number(_long) == 0 ? "0.0000" : _long);
+          setShortFundingRate(Number(_short) == 0 ? "0.0000" : _short);
         })
     );
   };
@@ -117,17 +114,17 @@ const PairContainer: FC = () => {
         <div className="flex ml-1 mr-[6px] flex-col items-end justify-center">
           <div
             className={`text-sm tracking-wide ${
-              Number(percent) >= 0 ? "text-[#2BBDB5]" : "text-[#FF5AB5]"
+              Number(percent) > 0 ? "text-[#2BBDB5]" : "text-[#FF5AB5]"
             }  font-semibold`}
           >
             {markPrice}
           </div>
           <span
             className={`text-xs ${
-              Number(percent) >= 0 ? "text-[#2BBDB5]" : "text-[#FF5AB5]"
+              Number(percent) > 0 ? "text-[#2BBDB5]" : "text-[#FF5AB5]"
             }`}
           >
-            {Number(percent) >= 0 && "+"}
+            {Number(percent) > 0 && "+"}
             {percent}%
           </span>
 

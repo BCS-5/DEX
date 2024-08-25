@@ -127,12 +127,12 @@ const getIndexPrice = async () => {
 
 const setIndexPrice = async (res) => {
   let indexPrice = BigInt(res.RAW.BTC.USD.PRICE * 10 ** 18);
-  console.log(indexPrice)
+  console.log(indexPrice);
   accountBalanceContract.methods
     .setIndexPrice("0x80d7c7205142CBf369f628DA4547191f9bE40A03", indexPrice)
     .send({
       from: account.address,
-      gas: "100000",
+      gas: "300000",
       nonce: nonce++,
     });
 };
@@ -143,7 +143,7 @@ const subscribe = async () => {
       nonce = await web3.eth.getTransactionCount(account.address);
 
       liquidate();
-      
+
       if (parseInt(newBlock.number) % 2 == 0) {
         getIndexPrice();
       }

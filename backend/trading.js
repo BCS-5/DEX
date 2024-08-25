@@ -5,7 +5,10 @@ const provider = new WebSocketProvider(
   "wss://ethereum-sepolia-rpc.publicnode.com"
 );
 
-const signer = new ethers.Wallet("0x" + process.env.TRADING_PRIVATE_KEY, provider);
+const signer = new ethers.Wallet(
+  "0x" + process.env.TRADING_PRIVATE_KEY,
+  provider
+);
 
 const baseAddress = "0x80d7c7205142CBf369f628DA4547191f9bE40A03";
 const quoteAddress = "0xe05CDD30272f2D6Fa590Aa0f1dA18C80da807F0F";
@@ -175,7 +178,7 @@ const claimRewards = () => {
 
 setInterval(() => {
   getIndexPrice();
-}, 30 * 1000);
+}, 45 * 1000);
 
 // setTimeout(() => {
 //   getIndexPrice();
