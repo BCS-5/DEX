@@ -78,6 +78,49 @@ const Claim: FC = () => {
     }
   };
 
+  useEffect(() => {
+    const fetchgetDetail = async () => {
+      try {
+        const pair = "BTC";
+        const contract: Contract = pairContracts[pair];
+
+        if (contract) {
+          setPairAddr(pairContracts[pair].target.toString());
+        }
+      } catch (error) {
+        console.error("Error: ", error);
+      }
+    };
+
+    fetchgetDetail();
+  }, [pairContracts]);
+
+  useEffect(() => {
+    const fetchUserBalance = async () => {
+      if (!signer) return;
+      if (vaultContract) {
+        try {
+          const myLP = await vaultContract.getUserLP(signer?.address, pairAddr);
+          const LPValue = await vaultContract.getCumulativeTransactionFee(
+            pairAddr
+          );
+          setUserLP(myLP);
+          setLPValue((Number(LPValue) / 2 ** 128).toString());
+          setMyPoolBalance(
+            ((Number(myLP) * Number(LPValue)) / 2 ** 128).toFixed(2).toString()
+          );
+          console.log("user LP:  ", myLP);
+          console.log("LP value:  ", Number(LPValue) / 2 ** 128);
+        } catch (error) {
+          console.error("Error fetching user LP:", error);
+        }
+      } else {
+        console.warn("vaultContract.getUserLP is null or undefined");
+      }
+    };
+
+    fetchUserBalance();
+  }, [vaultContract, signer]);
   return (
     <div className="flex flex-col min-h-screen bg-[#0F172A]">
       <div className="mb-10">

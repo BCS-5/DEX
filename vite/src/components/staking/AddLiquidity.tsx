@@ -127,7 +127,6 @@ const AddLiquidity: FC<AddLiquidityProps> = ({
             onClose={closeModal}
             userLP={userLP}
             LPValue={LPValue}
-            pairAddr={pairAddr}
           />
         </>
       ) : (
