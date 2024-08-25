@@ -17,31 +17,35 @@ async function main() {
   );
   const Faucet = await hre.ethers.getContractFactory("Faucet");
 
-  const usdt = USDT.attach("0xFBcfcc01567ABD73EbFBf5F7cbc34f9af46c05a8");
-  // const factory = UniswapV2Factory.attach(
-  //   "0xA257877ebD73E9a4a965633a49185A96A67c2d85"
-  // );
-  // const router = UniswapV2Router.attach(
-  //   "0x33d402939C6f29e3c690EeF38fEE8fDC325cefb0"
-  // );
-  const vault = Vault.attach("0xabBDc5FDFA7fA501f4D40BAF61a351a5ba4dD44E");
+  const usdt = USDT.attach("0xD7DBa4C3296477E3a97cEeE7D937D95f8aDD458E");
+  const factory = UniswapV2Factory.attach(
+    "0x246EC513dFB505977161eBE4e81b025aF47A96DE"
+  );
+  const router = UniswapV2Router.attach(
+    "0x921C79fa5E725a8851501540fD0F73FD303173b3"
+  );
+  const vault = Vault.attach("0xbb6e5C64473ff98D7f2F98AA5E482D7c90E25c80");
 
-  // // vault.depositFor(
-  // //   "0x2FFA65948795F91D2FcB6E10c3F8cc4440d416a6",
-  // //   10000000n * 10n ** 6n
-  // // );
+  // vault.depositFor(
+  //   "0x2FFA65948795F91D2FcB6E10c3F8cc4440d416a6",
+  //   10000000n * 10n ** 6n
+  // );
 
-  // const clearingHouse = ClearingHouse.attach(
-  //   "0xA39FBe956E5e28ef652BE0f9061e0cE0Fd10844C"
+  const clearingHouse = ClearingHouse.attach(
+    "0xAcA919554aACE3aE08aEba17Ad9519bE16234fa6"
+  );
+  const marketRegistry = MarketRegistry.attach(
+    "0x9a37A60c1CaA20081E5543dF598Ac5a3CcA815C9"
+  );
+  const accountBalance = AccountBalance.attach(
+    "0x1dDCac4613623824b1fbc944217bC5764bdD74e8"
+  );
+  const faucet = Faucet.attach("0xCD298eb44046e3007DE3F6851F2e2a4cfDcc2942");
+  await usdt.transfer(faucet, 20000n * 10n ** 6n);
+  // await usdt.transfer(
+  //   "0x000000c2028C057617891ECB15B8159F4249F0E3",
+  //   1000000000n * 10n ** 6n
   // );
-  // const marketRegistry = MarketRegistry.attach(
-  //   "0x47D5EE506c1Fbc1f29d355846D1ad5EeD496D70c"
-  // );
-  // const accountBalance = AccountBalance.attach(
-  //   "0x882931AcDD87E8A20D7eda00C594cB9b6811eAC7"
-  // );
-  const faucet = Faucet.attach("0x5BaA076CECF48FD5d760E80A095B950205AD7855");
-  usdt.transfer(faucet, 20000n * 10n ** 6n);
 
   // const usdt = await USDT.deploy(2n ** 256n - 1n, "Tether USD", "USDT", 6);
   // console.log(`usdt: ${usdt.target}`);

@@ -40,6 +40,10 @@ const PairContainer: FC = () => {
   };
   const getIndexPrice = () => {
     if (!virtualTokenContracts?.BTC?.target) return;
+    console.log(
+      accountBalanceContract?.target,
+      virtualTokenContracts?.BTC?.target
+    );
     accountBalanceContract
       ?.getIndexPrice(virtualTokenContracts?.BTC?.target)
       .then((price) => {

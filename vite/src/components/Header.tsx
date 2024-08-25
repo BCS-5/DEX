@@ -97,6 +97,7 @@ const Header: FC = () => {
 
   useEffect(() => {
     if (provider) {
+      console.log(marketRegistryContracat?.target);
       marketRegistryContracat?.getAllBaseTokens().then((data) => {
         data.forEach((address: string) => {
           const tokenContract = new Contract(
