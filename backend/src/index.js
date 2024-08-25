@@ -19,7 +19,7 @@ app.get("/api/history", (req, res) => {
   const { symbol, resolution, from, to } = req.query;
 
   db.all(
-    `SELECT * FROM ${symbol}_PRICE_VOLUME_${resolution} WHERE time BETWEEN ? AND ?`,
+    `SELECT * FROM ${symbol}_PRICE_VOLUME_${resolution} WHERE time BETWEEN ? AND ? ORDER BY id ASC;`,
     [from * 1000, to * 1000],
     (err, rows) => {
       if (err) {
