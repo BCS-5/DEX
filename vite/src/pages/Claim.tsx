@@ -1,11 +1,68 @@
-import { FC } from "react";
+import { FC, useEffect, useState } from "react";
 import claimBanner from "../images/staking/staking_4.png";
 import { useNavigate } from "react-router-dom";
 import Tooltip from "../components/staking/Tooltip";
+import { useSelector } from "react-redux";
+import { RootState } from "../app/store";
+import { Contract } from "ethers";
 
 const Claim: FC = () => {
   const navigate = useNavigate();
+  const {
+    pairContracts,
+    vaultContract,
+    clearingHouseContract,
+    virtualTokenContracts,
+  } = useSelector((state: RootState) => state.contracts);
+  const { signer } = useSelector((state: RootState) => state.providers);
+  const [pairAddr, setPairAddr] = useState<string>("");
+  const [UserLP, setUserLP] = useState<string>("");
+  const [LPValue, setLPValue] = useState<string>("");
+  const [MyPoolBalance, setMyPoolBalance] = useState<string>("");
 
+  useEffect(() => {
+    const fetchgetDetail = async () => {
+      try {
+        const pair = "BTC";
+        const contract: Contract = pairContracts[pair];
+
+        if (contract) {
+          setPairAddr(pairContracts[pair].target.toString());
+        }
+      } catch (error) {
+        console.error("Error: ", error);
+      }
+    };
+
+    fetchgetDetail();
+  }, [pairContracts]);
+
+  useEffect(() => {
+    const fetchUserBalance = async () => {
+      if (!signer) return;
+      if (vaultContract) {
+        try {
+          const myLP = await vaultContract.getUserLP(signer?.address, pairAddr);
+          const LPValue = await vaultContract.getCumulativeTransactionFee(
+            pairAddr
+          );
+          setUserLP(myLP);
+          setLPValue((Number(LPValue) / 2 ** 128).toString());
+          setMyPoolBalance(
+            ((Number(myLP) * Number(LPValue)) / 2 ** 128).toFixed(2).toString()
+          );
+          console.log("user LP:  ", myLP);
+          console.log("LP value:  ", Number(LPValue) / 2 ** 128);
+        } catch (error) {
+          console.error("Error fetching user LP:", error);
+        }
+      } else {
+        console.warn("vaultContract.getUserLP is null or undefined");
+      }
+    };
+
+    fetchUserBalance();
+  }, [vaultContract, signer]);
   return (
     <div className="flex flex-col min-h-screen bg-[#0F172A]">
       <div className="mb-10">
@@ -59,9 +116,9 @@ const Claim: FC = () => {
                       viewBox="0 0 24 24"
                       fill="none"
                       stroke="currentColor"
-                      stroke-width="2"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
                       className="feather feather-info cursor-pointer"
                     >
                       <circle cx="12" cy="12" r="10"></circle>
@@ -81,14 +138,40 @@ const Claim: FC = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  <tr className="hover:bg-[#1e293b]">
-                    <td className="p-6 text-[#94A3B8]">
-                      No LP incentives to claim from staking
-                    </td>
-                    <td className="px-6 py-4"></td>
-                    <td className="px-6 py-4"></td>
-                    <td className="px-6 py-4"></td>
-                  </tr>
+                  {Number(UserLP) > 0 ? (
+                    <tr className="hover:bg-[#1e293b]">
+                      <td className="p-6 text-[#94A3B8]">
+                        <div className="flex h-full gap-2">
+                          <div className="flex content-center gap-2 px-3 bg-[#334155] text-lg rounded-lg">
+                            BTC
+                            <div className="w-auto content-center text-sm text-[#94A3B8]">
+                              50%
+                            </div>
+                          </div>
+                          <div className="flex content-center gap-2 px-3 bg-[#334155] text-lg rounded-lg">
+                            USDT
+                            <div className="w-auto content-center text-sm text-[#94A3B8]">
+                              50%
+                            </div>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4"></td>
+                      <td className="px-6 py-4"></td>
+                      <td className="px-6 py-4">
+                        <button className="rounded-lg"></button>
+                      </td>
+                    </tr>
+                  ) : (
+                    <tr className="hover:bg-[#1e293b]">
+                      <td className="p-6 text-[#94A3B8]">
+                        No LP incentives to claim from staking
+                      </td>
+                      <td className="px-6 py-4"></td>
+                      <td className="px-6 py-4"></td>
+                      <td className="px-6 py-4"></td>
+                    </tr>
+                  )}
                 </tbody>
               </table>
             </div>

@@ -3,25 +3,10 @@ import { Contract } from "ethers";
 import { BrowserProvider, JsonRpcSigner } from "ethers";
 import { contracts } from "../../contracts/addresses";
 
-interface Contracts {
-  [key: string]: Contract;
-}
-
-interface SetPairsParams {
-  name: string;
-  address: string;
-  provider: BrowserProvider | JsonRpcSigner;
-}
-
-export interface ContractState {
-  pairContracts: Contracts;
-  virtualTokenContracts: Contracts;
-  usdtContract: Contract | null;
-  vaultContract: Contract | null;
-  marketRegistryContracat: Contract | null;
-  clearingHouseContract: Contract | null;
-  routerContract: Contract | null;
-  accountBalanceContract: Contract | null;
+export interface PoolData {
+  volume: number;
+  fee: number;
+  apr?: number;
 }
 
 export const contractsSlice = createSlice({

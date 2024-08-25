@@ -231,9 +231,6 @@ const Chart: FC = () => {
   };
 
   useEffect(() => {
-    console.log(filteredData);
-  }, [filteredData]);
-  useEffect(() => {
     document.addEventListener("mousedown", handleClickOutside);
 
     return () => {
@@ -396,9 +393,9 @@ const Chart: FC = () => {
                     viewBox="0 0 24 24"
                     fill="none"
                     stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
                     className={`feather feather-chevron-down text-blue-500 group-hover:text-[#F21BF6] ${
                       isTimePeriodOpen ? "rotate-180" : "rotate-0"
                     }`}
@@ -428,9 +425,9 @@ const Chart: FC = () => {
                         viewBox="0 0 24 24"
                         fill="none"
                         stroke="currentColor"
-                        stroke-width="2"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
                         className="feather feather-check text-blue-500"
                       >
                         <polyline points="20 6 9 17 4 12"></polyline>
@@ -453,9 +450,9 @@ const Chart: FC = () => {
                         viewBox="0 0 24 24"
                         fill="none"
                         stroke="currentColor"
-                        stroke-width="2"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
                         className="feather feather-check text-blue-500"
                       >
                         <polyline points="20 6 9 17 4 12"></polyline>
@@ -478,9 +475,9 @@ const Chart: FC = () => {
                         viewBox="0 0 24 24"
                         fill="none"
                         stroke="currentColor"
-                        stroke-width="2"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
                         className="feather feather-check text-blue-500"
                       >
                         <polyline points="20 6 9 17 4 12"></polyline>
@@ -503,9 +500,9 @@ const Chart: FC = () => {
                         viewBox="0 0 24 24"
                         fill="none"
                         stroke="currentColor"
-                        stroke-width="2"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
                         className="feather feather-check text-blue-500"
                       >
                         <polyline points="20 6 9 17 4 12"></polyline>
