@@ -10,8 +10,15 @@ import logo_WBTC from "../../images/staking/logo_WBTC.png";
 const PoolTable: FC = () => {
   const navigate = useNavigate();
   const [poolData, setPoolData] = useState<PoolData | null>(null);
-  const { pairContracts } = useSelector((state: RootState) => state.contracts);
+  const { pairContracts, accountBalanceContract, virtualTokenContracts } =
+    useSelector((state: RootState) => state.contracts);
   const [pairAddr, setPairAddr] = useState<string>("");
+  const [btcBalance, setBtcBalance] = useState<string>("");
+  const [btcValue, setBtcValue] = useState<string>("");
+  const [usdtBalance, setUsdtBalance] = useState<string>("");
+  const [usdtValue, setUsdtValue] = useState<string>("");
+  const [totalPoolValue, setTotalPoolValue] = useState<string>("");
+  const [markPrice, setMarkPrice] = useState<string>("");
 
   useEffect(() => {
     fetch("http://141.164.38.253:8090/api/getLiquidityPool?token=BTC")
@@ -27,13 +34,82 @@ const PoolTable: FC = () => {
   }, [poolData]);
 
   useEffect(() => {
-    const pair = "BTC";
-    const contract: Contract = pairContracts[pair];
+    const fetchgetReserves = async () => {
+      try {
+        const pair = "BTC";
+        const contract: Contract = pairContracts[pair];
 
-    if (contract) {
-      setPairAddr(pairContracts[pair].target.toString());
-    }
+        if (contract) {
+          const [reserve0, reserve1, blockTimestampLast] =
+            await contract.getReserves();
+          setUsdtBalance((Number(reserve0) / 10 ** 6).toFixed(3).toString());
+          setBtcBalance((Number(reserve1) / 10 ** 8).toFixed(3).toString());
+          console.log(
+            `Reserve 0: ${(Number(reserve0) / 10 ** 6)
+              .toFixed(3)
+              .toString()
+              .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`
+          );
+          console.log(
+            `Reserve 1: ${(Number(reserve1) / 10 ** 8)
+              .toFixed(3)
+              .toString()
+              .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`
+          );
+          console.log(`Block Timestamp Last: ${blockTimestampLast.toString()}`);
+        } else {
+          console.error(`Contract for ${pair} not found.`);
+        }
+      } catch (error) {
+        console.error("Error fetching reserves:", error);
+      }
+    };
+
+    const fetchgetDetail = async () => {
+      try {
+        const pair = "BTC";
+        const contract: Contract = pairContracts[pair];
+
+        if (contract) {
+          setPairAddr(pairContracts[pair].target.toString());
+        }
+      } catch (error) {
+        console.error("Error: ", error);
+      }
+    };
+
+    fetchgetReserves();
+    fetchgetDetail();
   }, [pairContracts]);
+
+  useEffect(() => {
+    const fetchMarkPrice = async () => {
+      if (accountBalanceContract && virtualTokenContracts?.BTC?.target) {
+        try {
+          const mark = await accountBalanceContract.getMarkPrice(
+            virtualTokenContracts.BTC.target
+          );
+          setMarkPrice((Number(mark) / 10 ** 16).toFixed(2).toString());
+          console.log("mark:  ", mark);
+        } catch (error) {
+          console.error("Error fetching Index price:", error);
+        }
+      } else {
+        console.warn("virtualTokenContracts.BTC.target is null or undefined");
+      }
+    };
+
+    fetchMarkPrice();
+  }, [accountBalanceContract, virtualTokenContracts?.BTC?.target]);
+
+  useEffect(() => {
+    setBtcValue((Number(btcBalance) * Number(markPrice)).toFixed(2).toString());
+    setUsdtValue(Number(usdtBalance).toFixed(2).toString());
+  }, [btcBalance, usdtBalance, markPrice]);
+
+  useEffect(() => {
+    setTotalPoolValue((Number(btcValue) + Number(usdtValue)).toString());
+  }, [btcValue, usdtValue]);
 
   return (
     <table className="table-auto my-10 bg-[#162031] text-[#F8FAFC] rounded-xl overflow-hidden">
@@ -81,7 +157,9 @@ const PoolTable: FC = () => {
               </div>
             </div>
           </td>
-          <td className="px-6 py-4">$ {poolData?.fee}</td>
+          <td className="px-6 py-4">
+            $ {Number(totalPoolValue).toLocaleString()}
+          </td>
           <td className="px-6 py-4">$ {poolData?.volume}</td>
           <td className="px-6 py-4">{poolData?.apr} %</td>
         </tr>
