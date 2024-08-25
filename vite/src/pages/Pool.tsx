@@ -1,118 +1,156 @@
-import { FC, useState } from "react";
-import logo_USDT from "../images/staking/logo_USDT.png";
-import logo_WBTC from "../images/staking/logo_WBTC.png";
-import logo_WETH from "../images/staking/logo_WETH.png";
+import { FC, useEffect, useState } from "react";
 import PoolComposition from "../components/staking/PoolComposition";
 import LiquidityProvision from "../components/staking/LiquidityProvision";
 import Swaps from "../components/staking/Swaps";
 import PoolDetails from "../components/staking/PoolDetails";
-import { useMetamask } from "../lib";
-import { setSigner } from "../features/providers/providersSlice";
-import AddLiquidityModal from "../components/staking/AddLiquidityModal";
 import Chart from "../components/staking/Chart";
-import { useDispatch, useSelector } from "react-redux";
-import { JsonRpcSigner } from "ethers";
+import { useSelector } from "react-redux";
 import { RootState } from "../app/store";
+import { Contract } from "ethers";
+import PoolInfo from "../components/staking/PoolInfo";
+import PoolIntro from "../components/staking/PoolIntro";
+import AddLiquidity from "../components/staking/AddLiquidity";
 
 const Pool: FC = () => {
-  const [isStakingIncentivesOpen, setIsStakingIncentivesOpen] = useState(false);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const dispatch = useDispatch();
-  const { provider, signer } = useSelector(
-    (state: RootState) => state.providers
-  );
+  const { pairContracts, accountBalanceContract, virtualTokenContracts } =
+    useSelector((state: RootState) => state.contracts);
+  const [btcBalance, setBtcBalance] = useState<string>("");
+  const [btcValue, setBtcValue] = useState<string>("");
+  const [usdtBalance, setUsdtBalance] = useState<string>("");
+  const [usdtValue, setUsdtValue] = useState<string>("");
+  const [totalPoolValue, setTotalPoolValue] = useState<string>("");
+  const [indexPrice, setIndexPrice] = useState<string>("");
+  const [markPrice, setMarkPrice] = useState<string>("");
+  const [pairAddr, setPairAddr] = useState<string>("");
+  const [pairName, setPairName] = useState<string>("");
+  const [pairSymbol, setPairSymbol] = useState<string>("");
 
-  const openModal = () => {
-    setIsModalOpen(true);
-  };
+  useEffect(() => {
+    const fetchgetReserves = async () => {
+      try {
+        const pair = "BTC";
+        const contract: Contract = pairContracts[pair];
 
-  const closeModal = () => {
-    setIsModalOpen(false);
-  };
+        if (contract) {
+          const [reserve0, reserve1, blockTimestampLast] =
+            await contract.getReserves();
+          setUsdtBalance((Number(reserve0) / 10 ** 6).toFixed(3).toString());
+          setBtcBalance((Number(reserve1) / 10 ** 8).toFixed(3).toString());
+          console.log(
+            `Reserve 0: ${(Number(reserve0) / 10 ** 6)
+              .toFixed(3)
+              .toString()
+              .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`
+          );
+          console.log(
+            `Reserve 1: ${(Number(reserve1) / 10 ** 8)
+              .toFixed(3)
+              .toString()
+              .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`
+          );
+          console.log(`Block Timestamp Last: ${blockTimestampLast.toString()}`);
+        } else {
+          console.error(`Contract for ${pair} not found.`);
+        }
+      } catch (error) {
+        console.error("Error fetching reserves:", error);
+      }
+    };
 
-  const toggleAccordion = () => {
-    setIsStakingIncentivesOpen(!isStakingIncentivesOpen);
-  };
+    const fetchgetDetail = async () => {
+      try {
+        const pair = "BTC";
+        const contract: Contract = pairContracts[pair];
 
-  const onClickConnectWallet = () => {
-    provider
-      ?.getSigner()
-      .then((signer: JsonRpcSigner) => dispatch(setSigner(signer)));
-  };
+        if (contract) {
+          setPairAddr(pairContracts[pair].target.toString());
+          setPairName(await contract.name());
+          setPairSymbol(await contract.symbol());
+        }
+      } catch (error) {
+        console.error("Error: ", error);
+      }
+    };
+
+    fetchgetReserves();
+    fetchgetDetail();
+  }, [pairContracts]);
+
+  useEffect(() => {
+    const fetchIndexPrice = async () => {
+      if (accountBalanceContract && virtualTokenContracts?.BTC?.target) {
+        try {
+          const index = await accountBalanceContract.getIndexPrice(
+            virtualTokenContracts.BTC.target
+          );
+          setIndexPrice((Number(index) / 10 ** 18).toFixed(2).toString());
+          console.log("index: ", index);
+        } catch (error) {
+          console.error("Error fetching Index price:", error);
+        }
+      } else {
+        console.warn("virtualTokenContracts.BTC.target is null or undefined");
+      }
+    };
+
+    fetchIndexPrice();
+  }, [accountBalanceContract, virtualTokenContracts?.BTC?.target]);
+
+  useEffect(() => {
+    const fetchMarkPrice = async () => {
+      if (accountBalanceContract && virtualTokenContracts?.BTC?.target) {
+        try {
+          const mark = await accountBalanceContract.getMarkPrice(
+            virtualTokenContracts.BTC.target
+          );
+          setMarkPrice((Number(mark) / 10 ** 16).toFixed(2).toString());
+          console.log("mark:  ", mark);
+        } catch (error) {
+          console.error("Error fetching Index price:", error);
+        }
+      } else {
+        console.warn("virtualTokenContracts.BTC.target is null or undefined");
+      }
+    };
+
+    fetchMarkPrice();
+  }, [accountBalanceContract, virtualTokenContracts?.BTC?.target]);
+
+  useEffect(() => {
+    setBtcValue((Number(btcBalance) * Number(markPrice)).toFixed(2).toString());
+    setUsdtValue(Number(usdtBalance).toFixed(2).toString());
+  }, [btcBalance, usdtBalance, markPrice]);
+
+  useEffect(() => {
+    setTotalPoolValue((Number(btcValue) + Number(usdtValue)).toString());
+  }, [btcValue, usdtValue]);
 
   return (
     <div className="min-h-screen bg-[#0F172A] text-[#F8FAFC] px-4 pt-8">
       <div className="grid grid-cols-3 gap-4">
-        <div className="col-span-2">
-          <div className="text-2xl font-bold">Oracle Weighted Pool</div>
-          <div className="flex gap-2 pt-2">
-            <div className="flex gap-2 px-3 h-10 bg-[#162031] text-lg rounded-lg">
-              <div className="h-full content-center">
-                <img
-                  src={logo_WBTC}
-                  alt="logo_WBTC"
-                  className="w-6 h-6 rounded-full"
-                />
-              </div>
-              <div className="content-center">BTC</div>
-              <div className="w-auto content-center text-sm text-[#94A3B8]">
-                50%
-              </div>
-            </div>
-            <div className="flex gap-2 px-3 h-10 bg-[#162031] text-lg rounded-lg">
-              <div className="h-full content-center">
-                <img
-                  src={logo_USDT}
-                  alt="logo_USDT"
-                  className="w-6 h-6 rounded-full"
-                />
-              </div>
-              <div className="content-center">USDT</div>
-              <div className="content-center text-sm text-[#94A3B8]">50%</div>
-            </div>
-          </div>
-          <div className="text-[#94A3B8] pt-2">
-            Delegated swap fees; currently fixed: 0.09%
-          </div>
-        </div>
+        <PoolIntro pairAddr={pairAddr} />
         <div className="hidden"></div>
         <div className="col-span-2">
           <div className="grid grid-cols-1 gap-y-8">
             <Chart />
 
-            <div className="grid grid-cols-2 gap-4">
-              <div className="bg-[#162031] rounded-xl p-4">
-                <div className="text-[14px] text-[#94A3B8] font-semibold pb-2">
-                  Pool value
-                </div>
-                <div className="text-xl text-[#F8FAFC]">$120385912</div>
-              </div>
-              <div className="bg-[#162031] rounded-xl p-4">
-                <div className="text-[14px] text-[#94A3B8] font-semibold pb-2">
-                  Volume (24h)
-                </div>
-                <div className="text-xl text-[#F8FAFC]">$2254939</div>
-              </div>
-              <div className="hidden"></div>
-              <div className="bg-[#162031] rounded-xl p-4">
-                <div className="text-[14px] text-[#94A3B8] font-semibold pb-2">
-                  Fees (24h)
-                </div>
-                <div className="text-xl text-[#F8FAFC]">$7102.69</div>
-              </div>
-              <div className="bg-[#162031] rounded-xl p-4">
-                <div className="text-[14px] text-[#94A3B8] font-semibold pb-2">
-                  APR
-                </div>
-                <div className="text-xl text-[#F8FAFC]">1.86%</div>
-              </div>
-              <div className="col-span-2 my-10"></div>
-            </div>
+            <PoolInfo totalPoolValue={totalPoolValue} />
 
-            <PoolComposition />
+            <PoolComposition
+              btcBalance={btcBalance}
+              btcValue={btcValue}
+              usdtBalance={usdtBalance}
+              usdtValue={usdtValue}
+              btcTokenContractsAddress={virtualTokenContracts?.BTC?.target.toString()}
+              usdtTokenContractsAddress={virtualTokenContracts?.USDT?.target.toString()}
+            />
             <LiquidityProvision />
             <Swaps />
-            <PoolDetails />
+            <PoolDetails
+              pairAddr={pairAddr}
+              pairName={pairName}
+              pairSymbol={pairSymbol}
+            />
             <div>
               <div className="text-xl pb-2 font-bold">Pool management</div>
               <div className="text-base">
@@ -123,166 +161,12 @@ const Pool: FC = () => {
           </div>
         </div>
 
-        <div>
-          {signer ? (
-            <>
-              <div className="flex justify-between bg-[#162031] font-bold p-4 rounded-t-xl">
-                <div className="text-lg">My pool balance</div>
-                <div className="text-2xl">$0.00</div>
-              </div>
-              <div className="bg-[#1E293B] p-4 mb-8 rounded-b-xl">
-                <div className="grid grid-cols-2 gap-2">
-                  <button
-                    className="h-12 rounded-lg font-bold bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500"
-                    onClick={openModal}
-                  >
-                    Add liquidity
-                  </button>
-                  <button className="h-12 rounded-lg font-bold bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500">
-                    Withdraw
-                  </button>
-                </div>
-                <div className="pt-4 text-[#94A3B8] text-xs">
-                  Liquidity Providers encounter risks when using DeFi and FutuRX
-                  pools. Before proceeding, view this&nbsp;
-                  <a className="font-medium text-[#60A5FA] hover:text-[#FED553] hover:underline">
-                    pool's risks
-                  </a>
-                  .
-                </div>
-              </div>
-              <div className="mx-auto flex max-w-screen-sm items-center justify-center">
-                <div className="w-full rounded-xl bg-gradient-to-r from-pink-500 via-red-500 to-yellow-500 p-[2px]">
-                  <div
-                    className="flex flex-col rounded-xl h-full w-full items-center justify-center bg-gray-850"
-                    onClick={toggleAccordion}
-                  >
-                    <div
-                      className={`w-full bg-[#162031] ${
-                        isStakingIncentivesOpen ? "rounded-t-xl" : "rounded-xl"
-                      } border-b-2 border-b-[#0F172A]`}
-                    >
-                      <button className="flex justify-between w-full rounded-xl p-4 bg-[#162031] hover:bg-gray-800">
-                        <div className="flex content-center font-bold">
-                          <div className="content-center p-1">
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              width="16"
-                              height="16"
-                              viewBox="0 0 24 24"
-                              fill="none"
-                              stroke="currentColor"
-                              stroke-width="2"
-                              stroke-linecap="round"
-                              stroke-linejoin="round"
-                              className="feather feather-check rounded-full bg-green-500 text-white mr-2"
-                            >
-                              <polyline points="20 6 9 17 4 12"></polyline>
-                            </svg>
-                          </div>
-                          Staking incentives
-                        </div>
-                        <div>
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="20"
-                            height="20"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            stroke-width="2"
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            className={`feather feather-chevron-down text-blue-500 w-5 ${
-                              isStakingIncentivesOpen
-                                ? "rotate-180"
-                                : "rotate-0"
-                            }`}
-                          >
-                            <polyline points="6 9 12 15 18 9"></polyline>
-                          </svg>
-                        </div>
-                      </button>
-                    </div>
-                    {isStakingIncentivesOpen && (
-                      <div className="w-full bg-[#162031] rounded-b-xl">
-                        <div className="w-full p-4">
-                          <div className="flex justify-between mb-2">
-                            <div className="mr-4">Staked LP tokens</div>
-                            <div className="flex">
-                              <div className="mr-2">$0.00</div>
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                width="20"
-                                height="20"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="currentColor"
-                                stroke-width="2"
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                className="feather feather-info text-gray-300"
-                              >
-                                <circle cx="12" cy="12" r="10"></circle>
-                                <line x1="12" y1="16" x2="12" y2="12"></line>
-                                <line x1="12" y1="8" x2="12.01" y2="8"></line>
-                              </svg>
-                            </div>
-                          </div>
-                          <div className="flex justify-between mb-2">
-                            <div className="mr-4">Unstaked LP tokens</div>
-                            <div className="flex">
-                              <div className="mr-2">$0.00</div>
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                width="20"
-                                height="20"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="currentColor"
-                                stroke-width="2"
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                className="feather feather-info text-gray-300"
-                              >
-                                <circle cx="12" cy="12" r="10"></circle>
-                                <line x1="12" y1="16" x2="12" y2="12"></line>
-                                <line x1="12" y1="8" x2="12.01" y2="8"></line>
-                              </svg>
-                            </div>
-                          </div>
-                          <div className="flex my-2">
-                            <button className="h-9 px-3 bg-gray-700 text-gary-500 rounded-lg mr-2">
-                              Stake
-                            </button>
-                            <button className="h-9 px-3 border border-gary-700 text-gray-700 rounded-lg">
-                              Unstake
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </div>
-              <AddLiquidityModal isOpen={isModalOpen} onClose={closeModal} />
-            </>
-          ) : (
-            <>
-              <div className="bg-[#162031] font-bold text-lg p-4 rounded-t-xl">
-                My pool balance
-              </div>
-              <div className="bg-[#1E293B] p-4 rounded-b-xl">
-                <button
-                  className="w-full h-12 rounded-lg font-bold bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500"
-                  onClick={onClickConnectWallet}
-                >
-                  Connect wallet
-                </button>
-              </div>
-            </>
-          )}
-        </div>
+        <AddLiquidity
+          btcBalance={btcBalance}
+          usdtBalance={usdtBalance}
+          markPrice={markPrice}
+          pairAddr={pairAddr}
+        />
       </div>
     </div>
   );

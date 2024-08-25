@@ -1,12 +1,8 @@
 import { FC } from "react";
-import { useNavigate } from "react-router-dom";
 import logo_USDT from "../../images/staking/logo_USDT.png";
 import logo_WBTC from "../../images/staking/logo_WBTC.png";
-import logo_WETH from "../../images/staking/logo_WETH.png";
 
 const Swaps: FC = () => {
-  const navigate = useNavigate();
-
   return (
     <div>
       <div className="text-2xl font-bold mb-5">Swaps</div>
@@ -44,9 +40,9 @@ const Swaps: FC = () => {
                     viewBox="0 0 24 24"
                     fill="none"
                     stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
                     className="feather feather-arrow-right mx-1"
                   >
                     <line x1="5" y1="12" x2="19" y2="12"></line>
@@ -77,9 +73,9 @@ const Swaps: FC = () => {
                     viewBox="0 0 24 24"
                     fill="none"
                     stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
                     className="feather feather-arrow-up-right text-[#94A3B8] hover:text-blue-500 ml-1"
                   >
                     <line x1="7" y1="17" x2="17" y2="7"></line>
@@ -112,9 +108,9 @@ const Swaps: FC = () => {
                     viewBox="0 0 24 24"
                     fill="none"
                     stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
                     className="feather feather-arrow-right mx-1"
                   >
                     <line x1="5" y1="12" x2="19" y2="12"></line>
@@ -145,9 +141,9 @@ const Swaps: FC = () => {
                     viewBox="0 0 24 24"
                     fill="none"
                     stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
                     className="feather feather-arrow-up-right text-[#94A3B8] hover:text-blue-500 ml-1"
                   >
                     <line x1="7" y1="17" x2="17" y2="7"></line>
@@ -169,9 +165,9 @@ const Swaps: FC = () => {
                     viewBox="0 0 24 24"
                     fill="none"
                     stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
                     className="feather feather-chevron-down ml-2"
                   >
                     <polyline points="6 9 12 15 18 9"></polyline>

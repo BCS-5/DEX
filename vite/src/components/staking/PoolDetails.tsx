@@ -1,6 +1,17 @@
 import { FC } from "react";
+import Tooltip from "./Tooltip";
 
-const PoolDetails: FC = () => {
+interface PoolDetailsProps {
+  pairAddr: string;
+  pairName: string;
+  pairSymbol: string;
+}
+
+const PoolDetails: FC<PoolDetailsProps> = ({
+  pairAddr,
+  pairName,
+  pairSymbol,
+}) => {
   return (
     <div>
       <div className="text-2xl font-bold mb-5">Pool details</div>
@@ -18,11 +29,11 @@ const PoolDetails: FC = () => {
         <tbody>
           <tr>
             <td className="border border-[#334155] px-4 py-3">Pool name</td>
-            <td className="border border-[#334155] px-4 py-3">20BTC-80USDT</td>
+            <td className="border border-[#334155] px-4 py-3">{pairName}</td>
           </tr>
           <tr>
             <td className="border border-[#334155] px-4 py-3">Pool symbol</td>
-            <td className="border border-[#334155] px-4 py-3">20BTC-80USDT</td>
+            <td className="border border-[#334155] px-4 py-3">{pairSymbol}</td>
           </tr>
           <tr>
             <td className="border border-[#334155] px-4 py-3">Pool type</td>
@@ -31,7 +42,7 @@ const PoolDetails: FC = () => {
           <tr>
             <td className="border border-[#334155] px-4 py-3">Swap fees</td>
             <td className="border border-[#334155] px-4 py-3">
-              0.5% (this may be edited via Governance)
+              0.03% (this may be edited via Governance)
             </td>
           </tr>
           <tr>
@@ -41,7 +52,27 @@ const PoolDetails: FC = () => {
           <tr>
             <td className="border border-[#334155] px-4 py-3">Pool Owner</td>
             <td className="border border-[#334155] px-4 py-3">
-              Delegate owner
+              <div className="flex">
+                Delegate owner
+                <Tooltip text="Permissioned functions validated by the FutuRX Vault Authorizer.">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className="feather feather-info cursor-pointer ml-2"
+                  >
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="12" y1="16" x2="12" y2="12"></line>
+                    <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                  </svg>
+                </Tooltip>
+              </div>
             </td>
           </tr>
           <tr>
@@ -49,8 +80,11 @@ const PoolDetails: FC = () => {
               Contract address
             </td>
             <td className="border border-[#334155] px-4 py-3">
-              0x8c34D61A48d5bD71C01b8f52a5ef68C1F14a3E26&nbsp;
-              <a href="https://sepolia.etherscan.io/address/0x8c34D61A48d5bD71C01b8f52a5ef68C1F14a3E26">
+              {pairAddr}&nbsp;
+              <a
+                href={`https://sepolia.etherscan.io/address/${pairAddr}`}
+                target="_blank"
+              >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   width="16"
@@ -58,9 +92,9 @@ const PoolDetails: FC = () => {
                   viewBox="0 0 24 24"
                   fill="none"
                   stroke="currentColor"
-                  stroke-width="2"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
                   className="feather feather-arrow-up-right inline hover:text-blue-500"
                 >
                   <line x1="7" y1="17" x2="17" y2="7"></line>
@@ -72,7 +106,7 @@ const PoolDetails: FC = () => {
           <tr>
             <td className="border border-[#334155] px-4 py-3">Creation date</td>
             <td className="border border-[#334155] px-4 py-3">
-              10 August 2024
+              22 August 2024
             </td>
           </tr>
         </tbody>
