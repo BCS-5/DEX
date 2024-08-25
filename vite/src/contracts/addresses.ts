@@ -10,23 +10,23 @@ import FaucetABI from "./abis/FaucetABI.json";
 
 export const contracts = {
   accountBalance: {
-    address: "0xee2256ca9F0Bf3Db0B6D96D6eB10D6d3E72f5DCD",
+    address: "0x882931AcDD87E8A20D7eda00C594cB9b6811eAC7",
     abi: AccountBalanceABI,
   },
   clearingHouse: {
-    address: "0x3Fe4c65CfA4A5E2C2AEFf87552C6BD855F2E28d8",
+    address: "0xA39FBe956E5e28ef652BE0f9061e0cE0Fd10844C",
     abi: ClearingHouseABI,
   },
   marketRegistry: {
-    address: "0xFb9D09E54CBac5a2e019c63691f7ce6D41c92520",
+    address: "0x47D5EE506c1Fbc1f29d355846D1ad5EeD496D70c",
     abi: MarketRegistryABI,
   },
   vault: {
-    address: "0x8498124783C9B9B17F93585d8B13B31096f6B00b",
+    address: "0xabBDc5FDFA7fA501f4D40BAF61a351a5ba4dD44E",
     abi: VaultABI,
   },
   usdt: {
-    address: "0xe5B3548929E1D8C740C357Cc3c05C8b4a34f0FBb",
+    address: "0xFBcfcc01567ABD73EbFBf5F7cbc34f9af46c05a8",
     abi: ERC20ABI,
   },
   virtualToken: {
@@ -34,11 +34,11 @@ export const contracts = {
     abi: ERC20ABI,
   },
   uniswapV2Router: {
-    address: "0xF08aB6c53C04FeeE86ded319103C6d8e5529b2BB",
+    address: "0x33d402939C6f29e3c690EeF38fEE8fDC325cefb0",
     abi: UniswapV2RouterABI,
   },
   uniswapV2Factory: {
-    address: "0xf0cd30b09FcAfc0478a9945088D8a99BF17A8815",
+    address: "0xA257877ebD73E9a4a965633a49185A96A67c2d85",
     abi: UniswapV2FactoryABI,
   },
   uniswapV2Pair: {
@@ -46,7 +46,7 @@ export const contracts = {
     abi: UniswapV2PairABI,
   },
   faucet: {
-    address: "0x6835725af3b8536672Aee4FF72CDAB5a8f68356b",
+    address: "0x5BaA076CECF48FD5d760E80A095B950205AD7855",
     abi: FaucetABI,
   },
 };
