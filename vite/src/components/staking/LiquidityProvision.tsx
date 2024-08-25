@@ -32,9 +32,9 @@ const LiquidityProvision: FC = () => {
                     viewBox="0 0 24 24"
                     fill="none"
                     stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
                     className="feather feather-minus w-4 mr-3 text-red-500"
                   >
                     <line x1="5" y1="12" x2="19" y2="12"></line>
@@ -80,9 +80,9 @@ const LiquidityProvision: FC = () => {
                     viewBox="0 0 24 24"
                     fill="none"
                     stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
                     className="feather feather-arrow-up-right text-[#94A3B8] hover:text-blue-500 ml-1"
                   >
                     <line x1="7" y1="17" x2="17" y2="7"></line>
@@ -103,9 +103,9 @@ const LiquidityProvision: FC = () => {
                     viewBox="0 0 24 24"
                     fill="none"
                     stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
                     className="feather feather-minus w-4 mr-3 text-green-500"
                   >
                     <line x1="12" y1="5" x2="12" y2="19"></line>
@@ -153,9 +153,9 @@ const LiquidityProvision: FC = () => {
                     viewBox="0 0 24 24"
                     fill="none"
                     stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
                     className="feather feather-arrow-up-right text-[#94A3B8] hover:text-blue-500 ml-1"
                   >
                     <line x1="7" y1="17" x2="17" y2="7"></line>
@@ -177,9 +177,9 @@ const LiquidityProvision: FC = () => {
                     viewBox="0 0 24 24"
                     fill="none"
                     stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
                     className="feather feather-chevron-down ml-2"
                   >
                     <polyline points="6 9 12 15 18 9"></polyline>
