@@ -2,9 +2,9 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 export interface HistoryState {
   positions: Position[];
-  orders: Position[];
+  orders: Order[];
   history: History[];
-  liquiditys: History[];
+  liquiditys: Liquidity[];
 }
 
 export const initialState: HistoryState = {
@@ -21,13 +21,13 @@ export const historySlice = createSlice({
     setPositions: (state, action: PayloadAction<Position[]>) => {
       state.positions = action.payload;
     },
-    setOrders: (state, action: PayloadAction<Position[]>) => {
+    setOrders: (state, action: PayloadAction<Order[]>) => {
       state.orders = action.payload;
     },
     setHistory: (state, action: PayloadAction<History[]>) => {
       state.history = action.payload;
     },
-    setLiquiditys: (state, action: PayloadAction<History[]>) => {
+    setLiquiditys: (state, action: PayloadAction<Liquidity[]>) => {
       state.liquiditys = action.payload;
     },
   },

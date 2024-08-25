@@ -28,7 +28,7 @@ const OrderLeverageRange: FC<OrderLeverageRangeParams> = ({
           onChange={(e) => setLeverageValue(e.target.value)}
           onMouseDown={() => setFocusLeverage(true)}
           onMouseUp={() => setFocusLeverage(false)}
-          className="accent-[#584CEA] w-full h-1 rounded-lg  cursor-pointer"
+          className="focus:outline-none accent-[#584CEA] w-full h-1 rounded-lg  cursor-pointer"
         />
         <div className="flex justify-between">
           {leverage.map((v, i) => (

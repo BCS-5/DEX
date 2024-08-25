@@ -196,7 +196,7 @@ function updatePrice(price, timestamp) {
   });
 }
 
-const baseAddress = "0x56f7b6eD57d7Ce8804F6f89Dc38D5dF5Ef1f8499";
+const baseAddress = "0x573a8d46b10a9805d2ab8cfa00eb56f3929c67c0";
 
 async function getDecimals(address) {
   const tokenContract = new web3.eth.Contract(ERC20ABI, address);
@@ -207,7 +207,7 @@ async function getDecimals(address) {
 async function main() {
   const V2PairContract = new web3.eth.Contract(
     V2PairABI,
-    "0xAc4EB76D5eA83Ec19cD88BA2e637415eA0D4428C"
+    "0xbcd1303b714fa157b151457189f2a1fd22b725df"
   );
   const token0 = await V2PairContract.methods.token0().call();
   const token1 = await V2PairContract.methods.token1().call();

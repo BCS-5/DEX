@@ -13,6 +13,17 @@ interface Position {
   time: number;
 }
 
+interface Order {
+  trader: string;
+  baseToken: string;
+  isLong: boolean;
+  margin: bigint;
+  openNotional: bigint;
+  positionHash: string;
+  positionSize: bigint;
+  time: number;
+}
+
 interface History {
   type: string;
   margin: bigint;
@@ -21,4 +32,12 @@ interface History {
   isLong: boolean;
   blockNumber: number;
   transactionHash: string;
+}
+
+interface Liquidity {
+  poolName: string;
+  amount: bigint;
+  locked: bigint;
+  earndFees: bigint;
+  unClaimedFees: bigint;
 }

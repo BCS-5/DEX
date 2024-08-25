@@ -2,17 +2,70 @@ import { FC, useEffect } from "react";
 
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../app/store";
-import { setHistory, setPositions } from "../features/history/historySlice";
+import {
+  setHistory,
+  setLiquiditys,
+  setPositions,
+} from "../features/history/historySlice";
+import { formatEther } from "ethers";
 
 const UpdateOrderHistory: FC = () => {
-  const { clearingHouseContract } = useSelector(
-    (state: RootState) => state.contracts
-  );
+  const {
+    clearingHouseContract,
+    vaultContract,
+    pairContracts,
+    virtualTokenContracts,
+  } = useSelector((state: RootState) => state.contracts);
 
   const dispatch = useDispatch();
 
   const { signer } = useSelector((state: RootState) => state.providers);
   const { blockNumber } = useSelector((state: RootState) => state.events);
+
+  const getLiquidityPositions = async () => {
+    if (!vaultContract) return;
+    // event Claimed(address indexed trader, address indexed poolAddress, uint256 amount);
+    const claimedEventFilter = vaultContract.filters.Claimed(signer?.address);
+
+    const events = await clearingHouseContract?.queryFilter(
+      claimedEventFilter,
+      0,
+      "latest"
+    );
+
+    const liqudity: Liquidity = {
+      poolName: "BTC",
+      amount: 0n,
+      locked: 0n,
+      earndFees: 0n,
+      unClaimedFees: 0n,
+    };
+
+    (events as any[]).forEach((v) => {
+      const amount = v.args[2];
+
+      liqudity.earndFees += amount;
+    });
+
+    liqudity.unClaimedFees = await vaultContract.getUnclaimedRewards(
+      signer?.address,
+      pairContracts?.BTC?.target
+    );
+
+    liqudity.amount = await vaultContract?.getUserLP(
+      signer?.address,
+      pairContracts?.BTC?.target
+    );
+
+    const totalSupply = await pairContracts?.BTC?.totalSupply();
+    const usdtBalance = await virtualTokenContracts?.USDT?.balanceOf(
+      pairContracts?.BTC?.target
+    );
+
+    liqudity.locked = (2n * (liqudity.amount * usdtBalance)) / totalSupply;
+
+    dispatch(setLiquiditys([liqudity]));
+  };
 
   const getHistory = async () => {
     if (!clearingHouseContract) return;
@@ -34,9 +87,10 @@ const UpdateOrderHistory: FC = () => {
       "latest"
     );
 
-    Promise.all([updateEvent, closeEvent]).then((res) =>
-      parseHistory([...res[0], ...res[1]])
-    );
+    Promise.all([updateEvent, closeEvent]).then((res) => {
+      console.log(res);
+      parseHistory([...res[0], ...res[1]]);
+    });
   };
 
   const parseHistory = (events: any[]) => {
@@ -120,10 +174,12 @@ const UpdateOrderHistory: FC = () => {
 
   useEffect(() => {
     getHistory();
+    getLiquidityPositions();
   }, [signer]);
 
   useEffect(() => {
     getHistory();
+    getLiquidityPositions();
   }, [blockNumber]);
 
   return <></>;
