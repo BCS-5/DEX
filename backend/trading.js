@@ -5,7 +5,7 @@ const provider = new WebSocketProvider(
   "wss://ethereum-sepolia-rpc.publicnode.com"
 );
 
-const signer = new ethers.Wallet("0x" + process.env.PRIVATE_KEY, provider);
+const signer = new ethers.Wallet("0x" + process.env.TRADING_PRIVATE_KEY, provider);
 
 const baseAddress = "0x573a8d46b10a9805d2ab8cfa00eb56f3929c67c0";
 const quoteAddress = "0x406f57d7f5e6a147d34bfaa03ec4f773f00d1190";
@@ -63,11 +63,6 @@ const getIndexPrice = async () => {
 const setIndexPrice = async (res) => {
   let indexPrice = BigInt(res.RAW.BTC.USD.PRICE * 10 ** 18);
   console.log(res.RAW.BTC.USD.PRICE);
-  await accountBalanceContract.setIndexPrice(
-    "0x573a8d46b10a9805d2ab8cfa00eb56f3929c67c0",
-    indexPrice,
-    { gasLimit: 100000 }
-  );
 
   openPosition(indexPrice);
 };

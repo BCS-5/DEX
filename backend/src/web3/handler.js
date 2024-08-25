@@ -176,38 +176,38 @@ class TradingVolumeHandler {
         })
         .on("data", (event) => this.updateVolume(event.returnValues.amountOut));
     
-    this.clearingHouseContract.events
-      .AddLiquidity({
-        fromBlock: "lastest",
-      })
-      .on("data", (event) => {
-        this.addLiquidity(event.returnValues);
-      });
+    // this.clearingHouseContract.events
+    //   .AddLiquidity({
+    //     fromBlock: "lastest",
+    //   })
+    //   .on("data", (event) => {
+    //     this.addLiquidity(event.returnValues);
+    //   });
   
-      this.clearingHouseContract.events
-        .UpdatePosition({
-          fromBlock: "lastest",
-        })
-        .on("data", (event) => {
-          this.updatePosition(event.returnValues);
-        });
+    //   this.clearingHouseContract.events
+    //     .UpdatePosition({
+    //       fromBlock: "lastest",
+    //     })
+    //     .on("data", (event) => {
+    //       this.updatePosition(event.returnValues);
+    //     });
 
-      this.clearingHouseContract.events
-        .ClosePosition({
-          fromBlock: "lastest",
-        })
-        .on("data", (event) => {
-          this.closePosition(event.returnValues);
-        });
+    //   this.clearingHouseContract.events
+    //     .ClosePosition({
+    //       fromBlock: "lastest",
+    //     })
+    //     .on("data", (event) => {
+    //       this.closePosition(event.returnValues);
+    //     });
 
-      this.vaultContract.events
-        .Claimed({
-          fromBlock: "lastest",
-        })
+    //   this.vaultContract.events
+    //     .Claimed({
+    //       fromBlock: "lastest",
+    //     })
 
-        .on("data", (event) => {
-          this.claimRewards(event.returnValues);
-        });
+    //     .on("data", (event) => {
+    //       this.claimRewards(event.returnValues);
+    //     });
     };
 
     setSubscriptionCallback(subscribeCallback);

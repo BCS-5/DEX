@@ -142,9 +142,8 @@ const subscribe = async () => {
     subscription.on("data", async (newBlock) => {
       nonce = await web3.eth.getTransactionCount(account.address);
 
-      if (parseInt(newBlock.number) % 2 == 1) {
-        liquidate();
-      }
+      liquidate();
+      
       if (parseInt(newBlock.number) % 2 == 0) {
         getIndexPrice();
       }
