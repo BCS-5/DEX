@@ -24,7 +24,7 @@ const App: FC = () => {
           <Route path="/mint" element={<Mint />} />
           <Route path="/staking" element={<Staking />} />
           <Route path="/claim" element={<Claim />} />
-          <Route path="/pool" element={<Pool />} />
+          <Route path="/pool/:poolAddr" element={<Pool />} />
         </Route>
       </Routes>
     </BrowserRouter>

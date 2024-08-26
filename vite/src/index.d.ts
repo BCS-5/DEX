@@ -41,3 +41,9 @@ interface Liquidity {
   earndFees: bigint;
   unClaimedFees: bigint;
 }
+
+export interface PoolData {
+  volume: number;
+  fee: number;
+  apr?: number;
+}

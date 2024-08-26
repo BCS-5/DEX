@@ -1,11 +1,115 @@
-import { FC } from "react";
+import { FC, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { RootState } from "../../app/store";
+import { Contract } from "ethers";
+import { PoolData } from "../..";
 import logo_USDT from "../../images/staking/logo_USDT.png";
 import logo_WBTC from "../../images/staking/logo_WBTC.png";
-import logo_WETH from "../../images/staking/logo_WETH.png";
 
 const PoolTable: FC = () => {
   const navigate = useNavigate();
+  const [poolData, setPoolData] = useState<PoolData | null>(null);
+  const { pairContracts, accountBalanceContract, virtualTokenContracts } =
+    useSelector((state: RootState) => state.contracts);
+  const [pairAddr, setPairAddr] = useState<string>("");
+  const [btcBalance, setBtcBalance] = useState<string>("");
+  const [btcValue, setBtcValue] = useState<string>("");
+  const [usdtBalance, setUsdtBalance] = useState<string>("");
+  const [usdtValue, setUsdtValue] = useState<string>("");
+  const [totalPoolValue, setTotalPoolValue] = useState<string>("");
+  const [markPrice, setMarkPrice] = useState<string>("");
+
+  useEffect(() => {
+    fetch("http://141.164.38.253:8090/api/getLiquidityPool?token=BTC")
+      .then((response) => response.json())
+      .then((result) => setPoolData(result))
+      .catch((error) => console.error("Error:", error));
+  }, []);
+
+  useEffect(() => {
+    if (!poolData || poolData.apr !== undefined) return;
+    const apr = (poolData.fee * 365 * 100) / poolData.volume;
+    setPoolData({ ...poolData, apr: Number(apr.toFixed(2)) });
+  }, [poolData]);
+
+  useEffect(() => {
+    const fetchgetReserves = async () => {
+      try {
+        const pair = "BTC";
+        const contract: Contract = pairContracts[pair];
+
+        if (contract) {
+          const [reserve0, reserve1, blockTimestampLast] =
+            await contract.getReserves();
+          setUsdtBalance((Number(reserve0) / 10 ** 6).toFixed(3).toString());
+          setBtcBalance((Number(reserve1) / 10 ** 8).toFixed(3).toString());
+          console.log(
+            `Reserve 0: ${(Number(reserve0) / 10 ** 6)
+              .toFixed(3)
+              .toString()
+              .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`
+          );
+          console.log(
+            `Reserve 1: ${(Number(reserve1) / 10 ** 8)
+              .toFixed(3)
+              .toString()
+              .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`
+          );
+          console.log(`Block Timestamp Last: ${blockTimestampLast.toString()}`);
+        } else {
+          console.error(`Contract for ${pair} not found.`);
+        }
+      } catch (error) {
+        console.error("Error fetching reserves:", error);
+      }
+    };
+
+    const fetchgetDetail = async () => {
+      try {
+        const pair = "BTC";
+        const contract: Contract = pairContracts[pair];
+
+        if (contract) {
+          setPairAddr(pairContracts[pair].target.toString());
+        }
+      } catch (error) {
+        console.error("Error: ", error);
+      }
+    };
+
+    fetchgetReserves();
+    fetchgetDetail();
+  }, [pairContracts]);
+
+  useEffect(() => {
+    const fetchMarkPrice = async () => {
+      if (accountBalanceContract && virtualTokenContracts?.BTC?.target) {
+        try {
+          const mark = await accountBalanceContract.getMarkPrice(
+            virtualTokenContracts.BTC.target
+          );
+          setMarkPrice((Number(mark) / 10 ** 16).toFixed(2).toString());
+          console.log("mark:  ", mark);
+        } catch (error) {
+          console.error("Error fetching Index price:", error);
+        }
+      } else {
+        console.warn("virtualTokenContracts.BTC.target is null or undefined");
+      }
+    };
+
+    fetchMarkPrice();
+  }, [accountBalanceContract, virtualTokenContracts?.BTC?.target]);
+
+  useEffect(() => {
+    setBtcValue((Number(btcBalance) * Number(markPrice)).toFixed(2).toString());
+    setUsdtValue(Number(usdtBalance).toFixed(2).toString());
+  }, [btcBalance, usdtBalance, markPrice]);
+
+  useEffect(() => {
+    setTotalPoolValue((Number(btcValue) + Number(usdtValue)).toString());
+  }, [btcValue, usdtValue]);
 
   return (
     <table className="table-auto my-10 bg-[#162031] text-[#F8FAFC] rounded-xl overflow-hidden">
@@ -19,7 +123,10 @@ const PoolTable: FC = () => {
         </tr>
       </thead>
       <tbody>
-        <tr className="hover:bg-[#1e293b]" onClick={() => navigate("/pool")}>
+        <tr
+          className="hover:bg-[#1e293b]"
+          onClick={() => navigate(`/pool/${pairAddr}`)}
+        >
           <td className="px-6 py-4">
             <div className="flex">
               <img
@@ -39,41 +146,6 @@ const PoolTable: FC = () => {
               <div className="flex content-center gap-2 px-3 bg-[#334155] text-lg rounded-lg">
                 BTC
                 <div className="w-auto content-center text-sm text-[#94A3B8]">
-                  80%
-                </div>
-              </div>
-              <div className="flex content-center gap-2 px-3 bg-[#334155] text-lg rounded-lg">
-                USDT
-                <div className="w-auto content-center text-sm text-[#94A3B8]">
-                  20%
-                </div>
-              </div>
-            </div>
-          </td>
-          <td className="px-6 py-4">$ 120385912</td>
-          <td className="px-6 py-4">$ 2254939</td>
-          <td className="px-6 py-4">1.86 %</td>
-        </tr>
-        <tr className="hover:bg-[#1e293b]">
-          <td className="px-6 py-4">
-            <div className="flex">
-              <img
-                src={logo_WETH}
-                alt="logo_WBTC"
-                className="w-7 rounded-full"
-              />
-              <img
-                src={logo_USDT}
-                alt="logo_WBTC"
-                className="w-7 rounded-full"
-              />
-            </div>
-          </td>
-          <td className="px-6 py-4">
-            <div className="flex h-full gap-2">
-              <div className="flex content-center gap-2 px-3 bg-[#334155] text-lg rounded-lg">
-                ETH
-                <div className="w-auto content-center text-sm text-[#94A3B8]">
                   50%
                 </div>
               </div>
@@ -85,9 +157,11 @@ const PoolTable: FC = () => {
               </div>
             </div>
           </td>
-          <td className="px-6 py-4">$ 52339625</td>
-          <td className="px-6 py-4">$ 932750</td>
-          <td className="px-6 py-4">4.04 %</td>
+          <td className="px-6 py-4">
+            $ {Number(totalPoolValue).toLocaleString()}
+          </td>
+          <td className="px-6 py-4">$ {poolData?.volume}</td>
+          <td className="px-6 py-4">{poolData?.apr} %</td>
         </tr>
       </tbody>
     </table>
