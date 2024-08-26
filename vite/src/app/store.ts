@@ -1,12 +1,11 @@
-
 import { configureStore, ThunkAction, Action } from "@reduxjs/toolkit";
 import providersReducer from "../features/providers/providersSlice";
 import contractsReducer from "../features/contracts/contractsSlice";
 import eventsReducer from "../features/events/eventsSlice";
-import marketsReducer from '../features/markets/marketsSlice';
-import portfolioReducer from '../features/portfolio/portfolioSlice';
-import accountReducer from '../features/account/accountSlice';
-import walletReducer from '../features/wallet/walletSlice';
+import marketsReducer from "../features/markets/marketsSlice";
+import portfolioReducer from "../features/portfolio/portfolioSlice";
+import accountReducer from "../features/account/accountSlice";
+import historyReducer from "../features/history/historySlice";
 
 export const store = configureStore({
   reducer: {
@@ -16,8 +15,7 @@ export const store = configureStore({
     markets: marketsReducer,
     portfolio: portfolioReducer,
     account: accountReducer,
-    wallet: walletReducer,
-    
+    history: historyReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

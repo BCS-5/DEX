@@ -10,7 +10,7 @@ import TradingViewChart from "../components/Trade/TradingViewChart";
 const Trade: FC = () => {
   return (
     <div className="flex flex-col w-full ">
-      <div className="flex w-full h-full">
+      <div className="flex w-full">
         <div className="flex-[4] flex flex-col h-[calc(100vh-64px)]">
           <PairInfo />
           <div className="flex-[2]">
@@ -21,7 +21,7 @@ const Trade: FC = () => {
             <OrderHistory />
           </div>
         </div>
-        <div className="flex flex-col flex-1">
+        <div className="flex flex-col flex-1 h-[calc(100vh-64px)]">
           <div className="flex-[2]">
             <Order />
           </div>

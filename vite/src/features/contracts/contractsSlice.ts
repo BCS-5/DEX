@@ -21,6 +21,8 @@ export interface ContractState {
   marketRegistryContracat: Contract | null;
   clearingHouseContract: Contract | null;
   routerContract: Contract | null;
+  accountBalanceContract: Contract | null;
+  faucetContract: Contract | null;
 }
 
 export const contractsSlice = createSlice({
@@ -33,6 +35,8 @@ export const contractsSlice = createSlice({
     marketRegistryContracat: null,
     clearingHouseContract: null,
     routerContract: null,
+    accountBalanceContract: null,
+    faucetContract: null,
   } as ContractState,
   reducers: {
     setContract: (
@@ -49,6 +53,8 @@ export const contractsSlice = createSlice({
           marketRegistryContracat: null,
           clearingHouseContract: null,
           routerContract: null,
+          accountBalanceContract: null,
+          faucetContract: null,
         };
       }
 
@@ -82,6 +88,18 @@ export const contractsSlice = createSlice({
         provider
       ) as Contract;
 
+      const accountBalanceContract = new Contract(
+        contracts.accountBalance.address,
+        contracts.accountBalance.abi,
+        provider
+      ) as Contract;
+
+      const faucetContract = new Contract(
+        contracts.faucet.address,
+        contracts.faucet.abi,
+        provider
+      ) as Contract;
+
       return {
         virtualTokenContracts: state.virtualTokenContracts as any,
         pairContracts: state.pairContracts as any,
@@ -90,6 +108,8 @@ export const contractsSlice = createSlice({
         marketRegistryContracat,
         clearingHouseContract,
         routerContract,
+        accountBalanceContract,
+        faucetContract,
       };
     },
 

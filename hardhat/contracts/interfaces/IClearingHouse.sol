@@ -22,8 +22,9 @@ interface IClearingHouse {
 
     event AddLiquidity(address indexed provider, address indexed baseToken, uint liquidity);
     event RemoveLiquidity(address indexed provider, address indexed baseToken, uint liquidity);
-    event UpdatePosition(address indexed trader, address indexed baseToken, bytes32 positionHash, uint margin, uint positionSize, uint openNotional);
-    event ClosePosition(address indexed trader, address indexed baseToken, bytes32 positionHash, uint margin, uint positionSize, uint openNotional);
+    event UpdatePosition(address indexed trader, address indexed baseToken, bytes32 positionHash, uint margin, uint positionSize, uint openNotional, bool isLong);
+    event ClosePosition(address indexed trader, address indexed baseToken, bytes32 positionHash, uint margin, uint positionSize, uint openNotional, bool isLong);
+    event SettlePNL(address indexed trader, address indexed baseToken, bytes32 positionHash, uint margin, uint positionSize, uint closeNotional, bool isLong);
     event Buy(address indexed trader, address indexed baseToken, uint amountIn, uint amountOut);
     event Sell(address indexed trader, address indexed baseToken, uint amountIn, uint amountOut);
 
@@ -39,6 +40,7 @@ interface IClearingHouse {
     function openPositionForOrderBook(address trader, address baseToken, bool isExactInput, bool isLong, uint margin, uint amountIn, uint amountOut, uint deadline) external;
 
     function closePosition (address baseToken, bytes32 positionHash, uint amountIn, uint amountOut, uint deadline) external;
+    function closePositionBatch (address[] memory baseTokens, bytes32[] memory positionHashs, uint[] memory slippageAdjustedAmounts, uint deadline) external;
     function closePositionForOrderBook (address trader, address baseToken, bytes32 positionHash, uint closePercent, uint slippageAdjustedAmount, uint deadline) external;
 
     function liquidateBatch (address[] memory traders, address[] memory baseTokens, bytes32[] memory positionHashs) external ;

@@ -41,7 +41,8 @@ const TradingViewChart: React.FC = () => {
           height: "100%",
           allow_symbol_change: false,
           symbol_search_enabled: false,
-          enabled_features: ["header_widget", "header_resolutions"],
+          time_frames: [],
+          // enabled_features: ["header_widget", "header_resolutions"],
         });
       };
 

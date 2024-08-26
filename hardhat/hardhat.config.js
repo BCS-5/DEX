@@ -100,6 +100,7 @@ module.exports = {
       "contracts/AccountBalance.sol": PERP_OPTIMIZER,
       "contracts/libraries/UQ112x112.sol": PERP_OPTIMIZER,
       "contracts/ClearingHouse.sol": PERP_OPTIMIZER,
+      "contracts/Faucet.sol": PERP_OPTIMIZER,
       "contracts/MarketRegistry.sol": PERP_OPTIMIZER,
       "contracts/Vault.sol": PERP_OPTIMIZER,
       "contracts/interfaces/IVault.sol": PERP_OPTIMIZER,

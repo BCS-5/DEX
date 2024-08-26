@@ -53,7 +53,7 @@ describe("Perp vault testing 1", () => {
     await vault.setSettlementToken(USDT);
     await vault.setClearingHouse(clearingHouse);
 
-    let tx = await marketRegistry.createPool("vBTC", "vBTC", 8);
+    let tx = await marketRegistry.createPool("BTC", "BTC", 8);
     let txResult = await tx.wait();
 
     const poolAddress = txResult.logs[5].args[0];

@@ -1,14 +1,20 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { ethers } from 'ethers';
+import { RootState, AppDispatch } from '../app/store';
+import { 
+  fetchMarketData, 
+  fetchUserPositions, 
+  fetchUserOrders, 
+  fetchUserLiquidityPositions,
+  fetchTradeHistory
+} from '../features/portfolio/portfolioSlice';
 import PortfolioOverview from '../components/Portfolio/PortfolioOverview';
 import PortfolioPositions from '../components/Portfolio/PortfolioPositions';
 import PortfolioOrders from '../components/Portfolio/PortfolioOrders';
 import PortfolioLiquidity from '../components/Portfolio/PortfolioLiquidity';
 import AccountSection from '../components/Portfolio/AccountSection';
 import PortfolioHistory from '../components/Portfolio/PortfolioHistory';
-import { RootState, AppDispatch } from '../app/store';
-import { fetchPortfolioData } from '../features/portfolio/portfolioSlice';
 import { contracts } from '../contracts/addresses';
 
 const Portfolio: React.FC = () => {
@@ -16,19 +22,25 @@ const Portfolio: React.FC = () => {
   const [depositAmount, setDepositAmount] = useState<string>('');
   const [withdrawAmount, setWithdrawAmount] = useState<string>('');
   const dispatch = useDispatch<AppDispatch>();
-  const { signer, provider } = useSelector((state: RootState) => state.wallet);
+  const { provider, signer } = useSelector((state: RootState) => state.providers);
+  const { totalValue } = useSelector((state: RootState) => state.portfolio);
 
-  useEffect(() => {
+  const fetchData = useCallback(async () => {
+    dispatch(fetchMarketData());
     if (signer) {
-      dispatch(fetchPortfolioData());
-      const intervalId = setInterval(() => dispatch(fetchPortfolioData()), 30000);
-      return () => clearInterval(intervalId);
+      const address = await signer.getAddress();
+      dispatch(fetchUserPositions(address));
+      dispatch(fetchUserOrders(address));
+      dispatch(fetchUserLiquidityPositions(address));
+      dispatch(fetchTradeHistory(address));
     }
   }, [dispatch, signer]);
 
-  const handleDataUpdate = useCallback(() => {
-    dispatch(fetchPortfolioData());
-  }, [dispatch]);
+  useEffect(() => {
+    fetchData();
+    const intervalId = setInterval(fetchData, 30000);
+    return () => clearInterval(intervalId);
+  }, [fetchData]);
 
   const handleDeposit = async () => {
     if (!signer || !provider) return;
@@ -43,7 +55,7 @@ const Portfolio: React.FC = () => {
       const depositTx = await vaultContract.deposit(ethers.parseUnits(depositAmount, 6));
       await depositTx.wait();
 
-      handleDataUpdate();
+      fetchData();
       setDepositAmount('');
     } catch (error) {
       console.error("Deposit failed:", error);
@@ -59,7 +71,7 @@ const Portfolio: React.FC = () => {
       const withdrawTx = await vaultContract.withdraw(ethers.parseUnits(withdrawAmount, 6));
       await withdrawTx.wait();
 
-      handleDataUpdate();
+      fetchData();
       setWithdrawAmount('');
     } catch (error) {
       console.error("Withdraw failed:", error);
@@ -73,15 +85,15 @@ const Portfolio: React.FC = () => {
           <h1 className="text-3xl font-bold mb-8 text-[#f0f0f0]">Portfolio</h1>
           
           <div className="flex gap-6 mb-8">
-            <div className="flex-grow flex flex-col">
-              <div className="flex-grow mb-6 h-[496px]">
-                <PortfolioOverview />
-              </div>
+            <div className="flex-grow bg-[#1E222D] p-4 rounded-lg">
+              <PortfolioOverview />
             </div>
-            <div className="flex-none w-[300px] flex flex-col">
-              <AccountSection />
-              <div className="mt-4 bg-[#1E222D] p-4 rounded-lg flex flex-col gap-4">
-                <div>
+            <div className="w-[300px] flex flex-col gap-4 ">
+              <div className="bg-[#1E222D] p-4 rounded-lg">
+                <AccountSection totalValue={totalValue} />
+              </div>
+              <div className="bg-[#1E222D] p-4 rounded-lg">
+                <div className="mb-4">
                   <h2 className="text-xl font-semibold mb-4 text-[#f0f0f0]">Deposit</h2>
                   <input
                     type="number"
@@ -108,7 +120,7 @@ const Portfolio: React.FC = () => {
                   />
                   <button
                     onClick={handleWithdraw}
-                    className="mt-2 w-full bg-[#363A45] text-white p-2 rounded hover:bg-[#2A2E3E] transition-colors"
+                    className="mt-2 w-full bg-[#1DB1A8] text-white p-2 rounded hover:bg-[#19998F] transition-colors"
                   >
                     Withdraw
                   </button>
@@ -132,22 +144,23 @@ const Portfolio: React.FC = () => {
             </button>
           </div>
           
-          
-          <div className="space-y-6"> {/* Add space between boxes */}
+          <div className="space-y-6">
             {activeTab === 'portfolio' ? (
               <>
-                <div className="bg-[#1E222D] p-4 rounded-lg shadow-lg">
-                  <PortfolioPositions onUpdateData={handleDataUpdate} />
+                <div className="bg-[#1E222D] p-4 rounded-lg">
+                  <PortfolioPositions onDataUpdate={fetchData} />
                 </div>
-                <div className="bg-[#1E222D] p-4 rounded-lg shadow-lg">
-                  <PortfolioOrders onUpdateData={handleDataUpdate} />
+                <div className="bg-[#1E222D] p-4 rounded-lg">
+                  <PortfolioOrders onDataUpdate={fetchData} />
                 </div>
-                <div className="bg-[#1E222D] p-4 rounded-lg shadow-lg">
-                  <PortfolioLiquidity onUpdateData={handleDataUpdate} />
+                <div className="bg-[#1E222D] p-4 rounded-lg">
+                  <PortfolioLiquidity onDataUpdate={fetchData} />
                 </div>
               </>
             ) : (
-              <PortfolioHistory />
+              <div className="bg-[#1E222D] p-4 rounded-lg">
+                <PortfolioHistory />
+              </div>
             )}
           </div>
         </div>

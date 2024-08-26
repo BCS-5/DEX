@@ -1,11 +1,39 @@
-import { FC } from "react";
-import { useNavigate } from "react-router-dom";
+import { FC, useEffect, useState } from "react";
 import logo_USDT from "../../images/staking/logo_USDT.png";
 import logo_WBTC from "../../images/staking/logo_WBTC.png";
-import logo_WETH from "../../images/staking/logo_WETH.png";
 
-const PoolComposition: FC = () => {
-  const navigate = useNavigate();
+interface PoolCompositionProps {
+  btcBalance: string;
+  btcValue: string;
+  usdtBalance: string;
+  usdtValue: string;
+  btcTokenContractsAddress: string;
+  usdtTokenContractsAddress: string;
+}
+
+const PoolComposition: FC<PoolCompositionProps> = ({
+  btcBalance,
+  btcValue,
+  usdtBalance,
+  usdtValue,
+  btcTokenContractsAddress,
+  usdtTokenContractsAddress,
+}) => {
+  const [btcPercent, setBtcPercent] = useState<string | null>(null);
+  const [usdtPercent, setUsdtPercent] = useState<string | null>(null);
+
+  useEffect(() => {
+    setBtcPercent(
+      ((Number(btcValue) * 100) / (Number(btcValue) + Number(usdtValue)))
+        .toFixed(2)
+        .toString()
+    );
+    setUsdtPercent(
+      ((Number(usdtValue) * 100) / (Number(btcValue) + Number(usdtValue)))
+        .toFixed(2)
+        .toString()
+    );
+  }, [btcValue, usdtValue]);
 
   return (
     <div>
@@ -24,11 +52,12 @@ const PoolComposition: FC = () => {
           </tr>
         </thead>
         <tbody>
-          <tr className="hover:bg-[#1e293b]" onClick={() => navigate("/pool")}>
+          <tr className="hover:bg-[#1e293b]">
             <td className="px-6 py-4">
               <div className="flex">
                 <a
-                  href="https://etherscan.io/address/0x7fc66500c84a76ad7e9c93437bfc5ac33e2ddae9"
+                  href={`https://sepolia.etherscan.io/address/${btcTokenContractsAddress}`}
+                  target="_blank"
                   className="flex hover:text-yellow-500 group"
                 >
                   <img
@@ -44,9 +73,9 @@ const PoolComposition: FC = () => {
                     viewBox="0 0 24 24"
                     fill="none"
                     stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
                     className="feather feather-arrow-up-right text-[#94A3B8] group-hover:text-yellow-500 h-full ml-1"
                   >
                     <line x1="7" y1="17" x2="17" y2="7"></line>
@@ -55,16 +84,21 @@ const PoolComposition: FC = () => {
                 </a>
               </div>
             </td>
-            <td className="px-6 py-4">80.00%</td>
-            <td className="px-6 py-4 text-right">989439</td>
-            <td className="px-6 py-4 text-right">$96767105</td>
-            <td className="px-6 py-4 text-right">79.90%</td>
+            <td className="px-6 py-4">50.00%</td>
+            <td className="px-6 py-4 text-right">
+              {btcBalance?.replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
+            </td>
+            <td className="px-6 py-4 text-right">
+              ${btcValue?.replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
+            </td>
+            <td className="px-6 py-4 text-right">{btcPercent}%</td>
           </tr>
           <tr className="hover:bg-[#1e293b]">
             <td className="px-6 py-4">
               <div className="flex">
                 <a
-                  href="https://sepolia.etherscan.io/address/0x8c34D61A48d5bD71C01b8f52a5ef68C1F14a3E26"
+                  href={`https://sepolia.etherscan.io/address/${usdtTokenContractsAddress}`}
+                  target="_blank"
                   className="flex hover:text-yellow-500 group"
                 >
                   <img
@@ -80,9 +114,9 @@ const PoolComposition: FC = () => {
                     viewBox="0 0 24 24"
                     fill="none"
                     stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
                     className="feather feather-arrow-up-right text-[#94A3B8] group-hover:text-yellow-500 h-full ml-1"
                   >
                     <line x1="7" y1="17" x2="17" y2="7"></line>
@@ -91,10 +125,14 @@ const PoolComposition: FC = () => {
                 </a>
               </div>
             </td>
-            <td className="px-6 py-4">20.00%</td>
-            <td className="px-6 py-4 text-right">7592.196</td>
-            <td className="px-6 py-4 text-right">$24346350</td>
-            <td className="px-6 py-4 text-right">20.10%</td>
+            <td className="px-6 py-4">50.00%</td>
+            <td className="px-6 py-4 text-right">
+              {usdtBalance?.replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
+            </td>
+            <td className="px-6 py-4 text-right">
+              ${usdtValue?.replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
+            </td>
+            <td className="px-6 py-4 text-right">{usdtPercent}%</td>
           </tr>
         </tbody>
       </table>

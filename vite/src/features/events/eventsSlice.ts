@@ -3,6 +3,9 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 export interface eventState {
   onClickOutside: boolean;
   blockNumber: number;
+  markPrice: string;
+  slippage: string;
+  deadline: string;
 }
 
 export const eventsSlice = createSlice({
@@ -10,6 +13,9 @@ export const eventsSlice = createSlice({
   initialState: {
     onClickOutside: false,
     blockNumber: 0,
+    markPrice: "0.0",
+    slippage: "0.5",
+    deadline: "10",
   } as eventState,
   reducers: {
     onClickOutside: (state) => {
@@ -24,10 +30,26 @@ export const eventsSlice = createSlice({
         params: [{ chainId: "0x" + action.payload.toString(16) }],
       });
     },
+    setMarkPrice: (state, action: PayloadAction<string>) => {
+      state.markPrice = action.payload;
+    },
+    setSlippage: (state, action: PayloadAction<string>) => {
+      console.log(action.payload);
+      state.slippage = action.payload;
+    },
+    setDeadline: (state, action: PayloadAction<string>) => {
+      state.deadline = action.payload;
+    },
   },
 });
 
-export const { onClickOutside, newBlockHeads, switchNetwork } =
-  eventsSlice.actions;
+export const {
+  onClickOutside,
+  newBlockHeads,
+  switchNetwork,
+  setMarkPrice,
+  setSlippage,
+  setDeadline,
+} = eventsSlice.actions;
 
 export default eventsSlice.reducer;

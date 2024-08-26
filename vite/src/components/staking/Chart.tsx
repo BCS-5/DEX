@@ -231,9 +231,6 @@ const Chart: FC = () => {
   };
 
   useEffect(() => {
-    console.log(filteredData);
-  }, [filteredData]);
-  useEffect(() => {
     document.addEventListener("mousedown", handleClickOutside);
 
     return () => {
@@ -304,16 +301,18 @@ const Chart: FC = () => {
           itemStyle: {
             color:
               graphTab === "Volume"
-                ? "#4ADE80"
+                ? "#B0E371"
                 : graphTab === "TVL"
-                ? "#3B82F6"
-                : "#FBBF24",
+                ? "#F68BE9"
+                : "#FFFC7D",
             borderRadius: 10,
             emphasis: {
               color: "#ED3AF5",
             },
           },
           barWidth: "60%",
+          symbolSize: 4, // 포인트의 크기 설정
+          symbolBorderWidth: 0, // 포인트의 테두리 두께 설정 (0으로 설정하여 테두리 없음)
         },
       ],
       grid: {
@@ -350,8 +349,8 @@ const Chart: FC = () => {
               <div
                 className={`h-full content-center ${
                   graphTab === "Volume"
-                    ? "text-[#60A5FA] border-b-2 border-b-[#60A5FA]"
-                    : "hover:text-yellow-500"
+                    ? "text-[#AB71E2] border-b-2 border-b-[#AB71E2]"
+                    : "hover:text-[#FFFC7D]"
                 }`}
                 onClick={() => setGraphTab("Volume")}
               >
@@ -360,8 +359,8 @@ const Chart: FC = () => {
               <div
                 className={`h-full content-center ${
                   graphTab === "TVL"
-                    ? "text-[#60A5FA] border-b-2 border-b-[#60A5FA]"
-                    : "hover:text-yellow-500"
+                    ? "text-[#AB71E2] border-b-2 border-b-[#AB71E2]"
+                    : "hover:text-[#FFFC7D]"
                 }`}
                 onClick={() => setGraphTab("TVL")}
               >
@@ -370,8 +369,8 @@ const Chart: FC = () => {
               <div
                 className={`h-full content-center ${
                   graphTab === "Fees"
-                    ? "text-[#60A5FA] border-b-2 border-b-[#60A5FA]"
-                    : "hover:text-yellow-500"
+                    ? "text-[#AB71E2] border-b-2 border-b-[#AB71E2]"
+                    : "hover:text-[#FFFC7D]"
                 }`}
                 onClick={() => setGraphTab("Fees")}
               >
@@ -394,9 +393,9 @@ const Chart: FC = () => {
                     viewBox="0 0 24 24"
                     fill="none"
                     stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
                     className={`feather feather-chevron-down text-blue-500 group-hover:text-[#F21BF6] ${
                       isTimePeriodOpen ? "rotate-180" : "rotate-0"
                     }`}
@@ -426,9 +425,9 @@ const Chart: FC = () => {
                         viewBox="0 0 24 24"
                         fill="none"
                         stroke="currentColor"
-                        stroke-width="2"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
                         className="feather feather-check text-blue-500"
                       >
                         <polyline points="20 6 9 17 4 12"></polyline>
@@ -451,9 +450,9 @@ const Chart: FC = () => {
                         viewBox="0 0 24 24"
                         fill="none"
                         stroke="currentColor"
-                        stroke-width="2"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
                         className="feather feather-check text-blue-500"
                       >
                         <polyline points="20 6 9 17 4 12"></polyline>
@@ -476,9 +475,9 @@ const Chart: FC = () => {
                         viewBox="0 0 24 24"
                         fill="none"
                         stroke="currentColor"
-                        stroke-width="2"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
                         className="feather feather-check text-blue-500"
                       >
                         <polyline points="20 6 9 17 4 12"></polyline>
@@ -501,9 +500,9 @@ const Chart: FC = () => {
                         viewBox="0 0 24 24"
                         fill="none"
                         stroke="currentColor"
-                        stroke-width="2"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
                         className="feather feather-check text-blue-500"
                       >
                         <polyline points="20 6 9 17 4 12"></polyline>

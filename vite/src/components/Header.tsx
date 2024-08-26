@@ -77,6 +77,12 @@ const Header: FC = () => {
       if (!signer) {
         dispatch(setContract(provider));
       }
+
+      const isLogin = localStorage.getItem("login");
+      if (isLogin) {
+        onClickConnectWallet();
+      }
+
       provider
         .getNetwork()
         .then((network) => dispatch(setChainId(Number(network.chainId))));
@@ -91,6 +97,7 @@ const Header: FC = () => {
 
   useEffect(() => {
     if (provider) {
+      console.log(marketRegistryContracat?.target);
       marketRegistryContracat?.getAllBaseTokens().then((data) => {
         data.forEach((address: string) => {
           const tokenContract = new Contract(
@@ -124,6 +131,7 @@ const Header: FC = () => {
   }, [marketRegistryContracat]);
 
   const onClickConnectWallet = () => {
+    localStorage.setItem("login", "true");
     provider?.getSigner().then((signer) => dispatch(setSigner(signer)));
   };
 

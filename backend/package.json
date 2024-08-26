@@ -11,7 +11,9 @@
   "dependencies": {
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
+    "ethers": "^6.13.2",
     "express": "^4.19.2",
+    "js-priority-queue": "^0.1.5",
     "sqlite3": "^5.1.7",
     "web3": "^4.11.1"
   }

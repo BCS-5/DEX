@@ -7,6 +7,8 @@ import OrderLeverageRange from "./OrderLeverageRange";
 import OrderInfo from "./OrderInfo";
 import OrderButton from "./OrderButton";
 import OrderSettingMenu from "./OrderSettingMenu";
+import { formatEther, formatUnits } from "ethers";
+import Deposit from "./Deposit";
 
 const Order: FC = () => {
   const {
@@ -15,7 +17,12 @@ const Order: FC = () => {
     virtualTokenContracts,
     pairContracts,
     clearingHouseContract,
+    accountBalanceContract,
+    vaultContract,
   } = useSelector((state: RootState) => state.contracts);
+  const { blockNumber } = useSelector((state: RootState) => state.events);
+
+  const { signer } = useSelector((state: RootState) => state.providers);
 
   const [isLong, setIsLong] = useState<boolean>(true);
   const [isMarket, setIsMarket] = useState<boolean>(true);
@@ -30,13 +37,12 @@ const Order: FC = () => {
   const [focusLeverage, setFocusLeverage] = useState<boolean>(false);
 
   const BASE = virtualTokenContracts["BTC"];
-  const QUOTE = virtualTokenContracts["vUSDT"];
+  const QUOTE = virtualTokenContracts["USDT"];
 
   const [baseDecimals, setBaseDecimals] = useState(8n);
   const [quoteDecimals, setQuoteDecimals] = useState(6n);
 
-  const [slippage, setSlippage] = useState<string>("0.5");
-  const [deadline, setDeadline] = useState<string>("10");
+  const [collateral, setCollateral] = useState<string>("0.0");
 
   useEffect(() => {
     BASE?.decimals().then(setBaseDecimals);
@@ -45,6 +51,19 @@ const Order: FC = () => {
   useEffect(() => {
     QUOTE?.decimals().then(setQuoteDecimals);
   }, [QUOTE]);
+
+  useEffect(() => {
+    if (!accountBalanceContract || !virtualTokenContracts) return;
+    accountBalanceContract
+      .getIndexPrice(virtualTokenContracts?.BTC?.target)
+      .then((price) => setLimitPrice(Number(formatEther(price)).toFixed(1)));
+  }, [accountBalanceContract, virtualTokenContracts]);
+
+  useEffect(() => {
+    vaultContract
+      ?.getTotalCollateral(signer?.address)
+      .then((data) => setCollateral(Number(formatUnits(data, 6)).toFixed(2)));
+  }, [vaultContract, signer, blockNumber]);
 
   useEffect(() => {
     if (quoteValue === "" || baseValue === "" || focusLeverage) return;
@@ -72,6 +91,9 @@ const Order: FC = () => {
   };
 
   const setQuoteValue = (value: string) => {
+    if (Number(value) > Number(collateral)) {
+      value = collateral;
+    }
     setIsExactInput(true);
     _setQuoteValue(value);
     if (!isMarket) {
@@ -160,9 +182,9 @@ const Order: FC = () => {
   };
 
   return (
-    <div className="flex flex-col justify-between h-full bg-[#131722] text-[#72768f] p-4 pt-7 border-l-[0.6px] border-[#363A45] w-full">
+    <div className="flex flex-col justify-between h-full bg-[#131722] text-[#72768f] p-4 pt-7 border-l-[0.6px] border-[#363A45] w-full overflow-x-hidden">
       <div className="flex flex-col">
-        <div className="flex w-full items-center h-10 justify-between rounded-[4px] bg-[#242534]">
+        <div className="flex w-full items-center h-10 justify-between rounded-[4px] bg-[#242534] ">
           <button
             className={`flex justify-center items-center w-full h-10 rounded-[4px]
               ${isLong ? "bg-[#1DB1A8] text-white" : ""}`}
@@ -197,12 +219,7 @@ const Order: FC = () => {
               Limit
             </button>
           </div>
-          <OrderSettingMenu
-            slippage={slippage}
-            setSlippage={setSlippage}
-            deadline={deadline}
-            setDeadline={setDeadline}
-          />
+          <OrderSettingMenu />
         </div>
         <div className="flex flex-col w-full gap-2">
           {!isMarket && (
@@ -213,6 +230,13 @@ const Order: FC = () => {
               placeholder="Limit Price"
             />
           )}
+          <button
+            className="self-end text-[12px] font-semibold tracking-tighter mt-2"
+            onClick={() => setQuoteValue(collateral)}
+          >
+            Available: {collateral} USDT
+            {/* Available: 22.17 USDT */}
+          </button>
           <OrderInput
             value={quoteValue}
             setValue={setQuoteValue}
@@ -243,7 +267,13 @@ const Order: FC = () => {
           baseValue={baseValue}
           leverageValue={leverageValue}
           isLong={isLong}
+          isMarket={isMarket}
+          isExactInput={isExactInput}
         />
+      </div>
+
+      <div className="h-fit">
+        <Deposit />
       </div>
     </div>
   );

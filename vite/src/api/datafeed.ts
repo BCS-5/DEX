@@ -27,7 +27,6 @@ export class Datafeed {
     onSymbolResolvedCallback: (data: any) => void,
     onResolveErrorCallback: (error: any) => void
   ) {
-    console.log("resolveSymbol called with:", symbolName);
     // 심볼 정보를 반환합니다.
     const symbolInfo = {
       ticker: "BTC",
@@ -113,7 +112,6 @@ export class Datafeed {
       .then((data) => {
         // 새로운 데이터를 차트에 반영
         if (this.onRealtimeCallback !== null) {
-          console.log(data, this.symbol, this.resolution);
           this.onRealtimeCallback(data);
         }
       })
