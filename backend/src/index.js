@@ -148,8 +148,8 @@ app.get("/api/getLiquidityPositions", (req, res) => {
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
   const handler = new TradingVolumeHandler(
-    "0xAEaC6716b6E7F94c2A8Ec176fde1e68f1b5bC798",
-    "0x80d7c7205142CBf369f628DA4547191f9bE40A03",
+    "0xedCEDE92285fbD2f1379E059896116600850Ba25",
+    "0x60aB00c8e53AC83E5773DBea4E65cf990B93E1Eb",
     "BTC"
   );
   setTimeout(() => {

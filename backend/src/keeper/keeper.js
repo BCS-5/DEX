@@ -26,7 +26,7 @@ const marketRegistryContract = new web3.eth.Contract(
 let poolAddress = "";
 
 marketRegistryContract.methods
-  .getPool("0x80d7c7205142CBf369f628DA4547191f9bE40A03")
+  .getPool("0x60aB00c8e53AC83E5773DBea4E65cf990B93E1Eb")
   .call()
   .then((addr) => (poolAddress = addr));
 
@@ -129,7 +129,7 @@ const setIndexPrice = async (res) => {
   let indexPrice = BigInt(res.RAW.BTC.USD.PRICE * 10 ** 18);
   console.log(indexPrice);
   accountBalanceContract.methods
-    .setIndexPrice("0x80d7c7205142CBf369f628DA4547191f9bE40A03", indexPrice)
+    .setIndexPrice("0x60aB00c8e53AC83E5773DBea4E65cf990B93E1Eb", indexPrice)
     .send({
       from: account.address,
       gas: "300000",

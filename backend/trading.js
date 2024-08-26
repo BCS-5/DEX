@@ -10,9 +10,9 @@ const signer = new ethers.Wallet(
   provider
 );
 
-const baseAddress = "0x80d7c7205142CBf369f628DA4547191f9bE40A03";
-const quoteAddress = "0xe05CDD30272f2D6Fa590Aa0f1dA18C80da807F0F";
-const poolAddress = "0xAEaC6716b6E7F94c2A8Ec176fde1e68f1b5bC798";
+const baseAddress = "0x60aB00c8e53AC83E5773DBea4E65cf990B93E1Eb";
+const quoteAddress = "0xa80091Ac67Db543368c272120ca3D0161fa8e69F";
+const poolAddress = "0xedCEDE92285fbD2f1379E059896116600850Ba25";
 
 const accountBalanceContract = new ethers.Contract(
   contracts.accountBalance.address,
