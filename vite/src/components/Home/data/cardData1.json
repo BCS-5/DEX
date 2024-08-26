@@ -1,0 +1,12 @@
+[
+  {
+    "name": "Trustless",
+    "description": "No third-party intermediaries. No sign-up required. Simply connect your wallet and start trading.",
+    "image": "3"
+  },
+  {
+    "name": "Self-custody",
+    "description": "You always maintain control of your funds, your keys, your crypto throughout the entire trading process.",
+    "image": "4"
+  }
+]
