@@ -21,7 +21,7 @@ const PoolTable: FC = () => {
   const [markPrice, setMarkPrice] = useState<string>("");
 
   useEffect(() => {
-    fetch("http://141.164.38.253:8090/api/getLiquidityPool?token=BTC")
+    fetch("http://141.164.38.253:8090/api/getRecentVolume")
       .then((response) => response.json())
       .then((result) => setPoolData(result))
       .catch((error) => console.error("Error:", error));
@@ -29,9 +29,11 @@ const PoolTable: FC = () => {
 
   useEffect(() => {
     if (!poolData || poolData.apr !== undefined) return;
-    const apr = (poolData.fee * 365 * 100) / poolData.volume;
+
+    const apr = (poolData.volume * 0.0003 * 365 * 100) / Number(totalPoolValue);
+
     setPoolData({ ...poolData, apr: Number(apr.toFixed(2)) });
-  }, [poolData]);
+  }, [poolData, totalPoolValue]);
 
   useEffect(() => {
     const fetchgetReserves = async () => {
@@ -42,8 +44,8 @@ const PoolTable: FC = () => {
         if (contract) {
           const [reserve0, reserve1, blockTimestampLast] =
             await contract.getReserves();
-          setUsdtBalance((Number(reserve0) / 10 ** 6).toFixed(3).toString());
-          setBtcBalance((Number(reserve1) / 10 ** 8).toFixed(3).toString());
+          setUsdtBalance((Number(reserve1) / 10 ** 6).toFixed(3).toString());
+          setBtcBalance((Number(reserve0) / 10 ** 8).toFixed(3).toString());
           console.log(
             `Reserve 0: ${(Number(reserve0) / 10 ** 6)
               .toFixed(3)
@@ -160,8 +162,16 @@ const PoolTable: FC = () => {
           <td className="px-6 py-4">
             $ {Number(totalPoolValue).toLocaleString()}
           </td>
-          <td className="px-6 py-4">$ {poolData?.volume}</td>
-          <td className="px-6 py-4">{poolData?.apr} %</td>
+          <td className="px-6 py-4">$ {poolData?.volume.toLocaleString()}</td>
+          <td className="px-6 py-4">
+            {(
+              (Number(poolData?.volume) * 0.0003 * 365 * 100) /
+              Number(totalPoolValue)
+            )
+              .toFixed(2)
+              .toLocaleString()}
+            %
+          </td>
         </tr>
       </tbody>
     </table>

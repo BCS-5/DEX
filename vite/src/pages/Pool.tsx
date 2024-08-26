@@ -19,7 +19,6 @@ const Pool: FC = () => {
   const [usdtBalance, setUsdtBalance] = useState<string>("");
   const [usdtValue, setUsdtValue] = useState<string>("");
   const [totalPoolValue, setTotalPoolValue] = useState<string>("");
-  const [indexPrice, setIndexPrice] = useState<string>("");
   const [markPrice, setMarkPrice] = useState<string>("");
   const [pairAddr, setPairAddr] = useState<string>("");
   const [pairName, setPairName] = useState<string>("");
@@ -34,8 +33,8 @@ const Pool: FC = () => {
         if (contract) {
           const [reserve0, reserve1, blockTimestampLast] =
             await contract.getReserves();
-          setUsdtBalance((Number(reserve0) / 10 ** 6).toFixed(3).toString());
-          setBtcBalance((Number(reserve1) / 10 ** 8).toFixed(3).toString());
+          setUsdtBalance((Number(reserve1) / 10 ** 6).toFixed(3).toString());
+          setBtcBalance((Number(reserve0) / 10 ** 8).toFixed(3).toString());
           console.log(
             `Reserve 0: ${(Number(reserve0) / 10 ** 6)
               .toFixed(3)
@@ -75,26 +74,6 @@ const Pool: FC = () => {
     fetchgetReserves();
     fetchgetDetail();
   }, [pairContracts]);
-
-  useEffect(() => {
-    const fetchIndexPrice = async () => {
-      if (accountBalanceContract && virtualTokenContracts?.BTC?.target) {
-        try {
-          const index = await accountBalanceContract.getIndexPrice(
-            virtualTokenContracts.BTC.target
-          );
-          setIndexPrice((Number(index) / 10 ** 18).toFixed(2).toString());
-          console.log("index: ", index);
-        } catch (error) {
-          console.error("Error fetching Index price:", error);
-        }
-      } else {
-        console.warn("virtualTokenContracts.BTC.target is null or undefined");
-      }
-    };
-
-    fetchIndexPrice();
-  }, [accountBalanceContract, virtualTokenContracts?.BTC?.target]);
 
   useEffect(() => {
     const fetchMarkPrice = async () => {
