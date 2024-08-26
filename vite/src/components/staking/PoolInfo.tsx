@@ -16,7 +16,7 @@ const PoolInfo: FC<PoolInfoProps> = ({ totalPoolValue }) => {
   }, [poolData, totalPoolValue]);
 
   useEffect(() => {
-    fetch("https://141.164.38.253:8090/api/getRecentVolume")
+    fetch("https://fix-dex.duckdns.org:8090/api/getRecentVolume")
       .then((response) => response.json())
       .then((result) => setPoolData(result))
       .catch((error) => console.error("Error:", error));

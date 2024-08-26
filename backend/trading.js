@@ -178,7 +178,7 @@ const claimRewards = () => {
 
 setInterval(() => {
   getIndexPrice();
-}, 45 * 1000);
+}, 300 * 1000);
 
 // setTimeout(() => {
 //   getIndexPrice();

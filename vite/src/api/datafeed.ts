@@ -52,7 +52,7 @@ export class Datafeed {
     onErrorCallback: any
   ) {
     // API를 호출하여 데이터를 가져옵니다.
-    const url = `https://141.164.38.253:8090/api/history?symbol=${symbolInfo.name}&resolution=${resolution}&from=${periodParams.from}&to=${periodParams.to}`;
+    const url = `https://fix-dex.duckdns.org:8090/api/history?symbol=${symbolInfo.name}&resolution=${resolution}&from=${periodParams.from}&to=${periodParams.to}`;
     fetch(url)
       .then((response) => response.json())
       .then((data) => {
@@ -75,7 +75,7 @@ export class Datafeed {
 
     // const interval = setInterval(() => {
     //   // 예: 서버에 HTTP 요청을 보내서 최신 데이터를 가져옴
-    //   const url = `https://141.164.38.253:8090/api/latest?symbol=${symbolInfo.name}&resolution=${resolution}`;
+    //   const url = `https://fix-dex.duckdns.org:8090/api/latest?symbol=${symbolInfo.name}&resolution=${resolution}`;
     //   fetch(url)
     //     .then((response) => response.json())
     //     .then((data) => {
@@ -102,7 +102,7 @@ export class Datafeed {
 
   updateData() {
     // 서버로부터 새 데이터를 요청
-    const url = `https://141.164.38.253:8090/api/latest?symbol=${this.symbol}&resolution=${this.resolution}`;
+    const url = `https://fix-dex.duckdns.org:8090/api/latest?symbol=${this.symbol}&resolution=${this.resolution}`;
     fetch(url)
       .then((response) => response.json())
       .then((data) => {

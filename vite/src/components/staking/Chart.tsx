@@ -59,7 +59,7 @@ const generateData = ({ timePeriod }: GenerateDataProps) => {
         const To = Math.floor(Date.now() / 1000);
 
         const response = await fetch(
-          `https://141.164.38.253:8090/api/history?symbol=BTC&resolution=1D&from=${From}&to=${To}`
+          `https://fix-dex.duckdns.org:8090/api/history?symbol=BTC&resolution=1D&from=${From}&to=${To}`
         );
         const result: ApiResponse[] = await response.json();
 

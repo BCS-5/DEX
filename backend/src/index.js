@@ -15,8 +15,10 @@ const port = 8090;
 console.log(path.join(__dirname, 'server.key'))
 
 const sslOptions = {
-  key: fs.readFileSync(path.join(__dirname, 'server.key')),
-  cert: fs.readFileSync(path.join(__dirname, 'server.cert'))
+  // key: fs.readFileSync(path.join(__dirname, 'server.key')),
+  // cert: fs.readFileSync(path.join(__dirname, 'server.cert'))
+  key: fs.readFileSync('/etc/letsencrypt/live/fix-dex.duckdns.org/privkey.pem'),
+  cert: fs.readFileSync('/etc/letsencrypt/live/fix-dex.duckdns.org/fullchain.pem')
 };
 
 // JSON 형식의 요청 본문을 파싱하기 위한 미들웨어 설정
