@@ -9,21 +9,15 @@ interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
   userLP: string;
-  LPValue: string;
 }
 
-const RemoveLiquidityModal: FC<ModalProps> = ({
-  isOpen,
-  onClose,
-  userLP,
-  LPValue,
-}) => {
+const RemoveLiquidityModal: FC<ModalProps> = ({ isOpen, onClose, userLP }) => {
   if (!isOpen) return null;
   const { clearingHouseContract, virtualTokenContracts } = useSelector(
     (state: RootState) => state.contracts
   );
   const { signer } = useSelector((state: RootState) => state.providers);
-  const [deadline, setDeadline] = useState<string>("10");
+  // const [deadline, setDeadline] = useState<string>("10");
   const [canRemoveLiquidity, setCanRemoveLiquidity] = useState<boolean>(false);
   const [removeLiquidityLoading, setRemoveLiquidityLoading] =
     useState<boolean>(false);
@@ -91,25 +85,6 @@ const RemoveLiquidityModal: FC<ModalProps> = ({
       // const maxUint256 = (BigInt(1) << BigInt(256)) - BigInt(1);
       const deadline = Math.floor(Date.now() / 1000) + 5 * 60;
 
-      // if (
-      //   Number(inputLP) > ethers.MaxUint256 ||
-      //   calculateQuoteMinimum > ethers.MaxUint256 ||
-      //   calculateBaseTokenMinimum > ethers.MaxUint256
-      // ) {
-      //   throw new Error("Input value exceeds uint256 limit.");
-      // }
-
-      // console.log(ethers.parseUnits(Number(inputLP).toString(), 18));
-      // console.log(ethers.parseUnits(calculateQuoteMinimum.toString(), 18));
-      // console.log(ethers.parseUnits(calculateBaseTokenMinimum.toString(), 18));
-      // LP 24개 얻는 코드
-      // const tx = await contractWithSigner.addLiquidity(
-      //   virtualTokenContracts.BTC.target,
-      //   610n,
-      //   0n,
-      //   0n,
-      //   deadline
-      // );
       const tx = await contractWithSigner.removeLiquidity(
         virtualTokenContracts.BTC.target,
         BigNumber.from(Number(inputLP)).toString(),

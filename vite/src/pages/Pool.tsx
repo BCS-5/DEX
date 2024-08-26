@@ -19,7 +19,6 @@ const Pool: FC = () => {
   const [usdtBalance, setUsdtBalance] = useState<string>("");
   const [usdtValue, setUsdtValue] = useState<string>("");
   const [totalPoolValue, setTotalPoolValue] = useState<string>("");
-  const [indexPrice, setIndexPrice] = useState<string>("");
   const [markPrice, setMarkPrice] = useState<string>("");
   const [pairAddr, setPairAddr] = useState<string>("");
   const [pairName, setPairName] = useState<string>("");
@@ -75,26 +74,6 @@ const Pool: FC = () => {
     fetchgetReserves();
     fetchgetDetail();
   }, [pairContracts]);
-
-  useEffect(() => {
-    const fetchIndexPrice = async () => {
-      if (accountBalanceContract && virtualTokenContracts?.BTC?.target) {
-        try {
-          const index = await accountBalanceContract.getIndexPrice(
-            virtualTokenContracts.BTC.target
-          );
-          setIndexPrice((Number(index) / 10 ** 18).toFixed(2).toString());
-          console.log("index: ", index);
-        } catch (error) {
-          console.error("Error fetching Index price:", error);
-        }
-      } else {
-        console.warn("virtualTokenContracts.BTC.target is null or undefined");
-      }
-    };
-
-    fetchIndexPrice();
-  }, [accountBalanceContract, virtualTokenContracts?.BTC?.target]);
 
   useEffect(() => {
     const fetchMarkPrice = async () => {

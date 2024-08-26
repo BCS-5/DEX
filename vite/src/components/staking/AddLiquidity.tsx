@@ -33,7 +33,6 @@ const AddLiquidity: FC<AddLiquidityProps> = ({
   const [LPValue, setLPValue] = useState<string>("");
   const [myPoolBalance, setMyPoolBalance] = useState<string>("");
   const [lockedLiquidity, setLockedLiquidity] = useState<string>("");
-  const [unclaimedLiquidity, setUnclaimedLiquidity] = useState<string>("");
   const dispatch = useDispatch();
 
   const openAddLiquidityModal = () => {
@@ -94,9 +93,6 @@ const AddLiquidity: FC<AddLiquidityProps> = ({
     setLockedLiquidity(
       (Number(liquiditys[0]?.locked) / 10 ** 6).toLocaleString()
     );
-    setUnclaimedLiquidity(
-      (Number(liquiditys[0]?.unClaimedFees) / 10 ** 6).toLocaleString()
-    );
   }, [liquiditys]);
 
   return (
@@ -136,13 +132,11 @@ const AddLiquidity: FC<AddLiquidityProps> = ({
             onClose={closeModal}
             poolRatio={poolRatio}
             markPrice={markPrice}
-            pairAddr={pairAddr}
           />
           <RemoveLiquidityModal
             isOpen={isRemoveLiquidityModalOpen}
             onClose={closeModal}
             userLP={userLP}
-            LPValue={LPValue}
           />
         </>
       ) : (
