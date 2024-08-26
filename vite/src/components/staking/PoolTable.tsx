@@ -29,12 +29,11 @@ const PoolTable: FC = () => {
 
   useEffect(() => {
     if (!poolData || poolData.apr !== undefined) return;
-    console.log(usdtBalance);
-    const apr =
-      (poolData.volume * 0.0003 * 365 * 100) / (Number(usdtBalance) * 2);
+
+    const apr = (poolData.volume * 0.0003 * 365 * 100) / Number(totalPoolValue);
 
     setPoolData({ ...poolData, apr: Number(apr.toFixed(2)) });
-  }, [poolData, usdtBalance]);
+  }, [poolData, totalPoolValue]);
 
   useEffect(() => {
     const fetchgetReserves = async () => {
