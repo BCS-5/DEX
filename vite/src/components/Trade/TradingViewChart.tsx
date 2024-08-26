@@ -24,7 +24,6 @@ const TradingViewChart: React.FC = () => {
         new (window as any).TradingView.widget({
           container_id: chartContainerRef.current,
           library_path: "/charting_library/",
-          // datafeed: new CustomDatafeed(),
           datafeed: datafeed,
 
           symbol: "BTC", // 심볼 값이 올바르게 설정되어 있는지 확인

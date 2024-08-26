@@ -1,12 +1,10 @@
 // src/datafeed.ts
 
 export class Datafeed {
-  private _intervals: { [key: string]: NodeJS.Timer };
   private onRealtimeCallback: Function | null = null;
   private resolution: string;
   private symbol: string;
   constructor() {
-    this._intervals = {};
     this.onRealtimeCallback = null;
     this.resolution = "1D";
     this.symbol = "BTC";
@@ -23,9 +21,9 @@ export class Datafeed {
   }
 
   resolveSymbol(
-    symbolName: string,
+    _: string,
     onSymbolResolvedCallback: (data: any) => void,
-    onResolveErrorCallback: (error: any) => void
+    __: (error: any) => void
   ) {
     // 심볼 정보를 반환합니다.
     const symbolInfo = {
@@ -69,8 +67,6 @@ export class Datafeed {
     symbolInfo: any,
     resolution: string,
     onRealtimeCallback: (bar: any) => void,
-    subscriberUID: string,
-    onResetCacheNeededCallback: () => void
   ) {
     // 실시간 데이터 업데이트를 처리합니다. WebSocket을 연결하는 경우에 사용됩니다.
     this.onRealtimeCallback = onRealtimeCallback;
@@ -97,7 +93,7 @@ export class Datafeed {
     // this._intervals[subscriberUID] = interval;
   }
 
-  unsubscribeBars(subscriberUID: string) {
+  unsubscribeBars() {
     // 실시간 데이터 구독을 해제합니다.
     // console.log("unsubscribe");
     // clearInterval(this._intervals[subscriberUID]);
