@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from "react";
+import { FC, useState } from "react";
 import OrderHistoryCard from "./OrderHistoryCard";
 import { RootState } from "../../app/store";
 import { useSelector } from "react-redux";

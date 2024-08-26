@@ -1,14 +1,11 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Datafeed } from "../../api/datafeed";
-import CustomDatafeed from "../../api/CustomDatafeed";
 import { useSelector } from "react-redux";
 import { RootState } from "../../app/store";
 
-interface TradingViewChartParams {}
-
 const TradingViewChart: React.FC = () => {
   const chartContainerRef = useRef<HTMLDivElement | null>(null);
-  const [datafeed, setDatafeed] = useState(new Datafeed());
+  const [datafeed] = useState(new Datafeed());
   const { blockNumber } = useSelector((state: RootState) => state.events);
 
   useEffect(() => {
@@ -24,7 +21,7 @@ const TradingViewChart: React.FC = () => {
       script.onload = () => {
         // const datafeed = new Datafeed();
 
-        const widget = new (window as any).TradingView.widget({
+        new (window as any).TradingView.widget({
           container_id: chartContainerRef.current,
           library_path: "/charting_library/",
           // datafeed: new CustomDatafeed(),

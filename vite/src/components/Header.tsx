@@ -17,7 +17,6 @@ import WalletMenu from "./Header/WalletMenu";
 import NetworkMenu from "./Header/NetworkMenu";
 import { contracts } from "../contracts/addresses";
 import { Contract } from "ethers";
-import { BrowserProvider } from "ethers";
 import { newBlockHeads } from "../features/events/eventsSlice";
 
 const navLinks = [
@@ -44,7 +43,7 @@ const Header: FC = () => {
   const { provider, signer, chainId } = useSelector(
     (state: RootState) => state.providers
   );
-  const { marketRegistryContracat, pairContracts, virtualTokenContracts } =
+  const { marketRegistryContracat } =
     useSelector((state: RootState) => state.contracts);
   // const { liquiditys } =
   //   useSelector((state: RootState) => state.history);

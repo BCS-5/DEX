@@ -1,6 +1,4 @@
 import { FC, useEffect, useState } from "react";
-import logo_USDT from "../../images/staking/logo_USDT.png";
-import logo_WBTC from "../../images/staking/logo_WBTC.png";
 import { useSelector } from "react-redux";
 import { RootState } from "../../app/store";
 import { formatUnits, parseUnits } from "ethers";

@@ -7,8 +7,6 @@ import { formatPrice, formatVolume } from "../../lib";
 
 const PairContainer: FC = () => {
   const {
-    marketRegistryContracat,
-    pairContracts,
     virtualTokenContracts,
     accountBalanceContract,
   } = useSelector((state: RootState) => state.contracts);
