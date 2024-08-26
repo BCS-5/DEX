@@ -9,7 +9,6 @@ import Top from "../components/Home/Top";
 
 const App: FC = () => {
   const fadeInFromUp = useScrollFadeIn("up", 2, 0);
-  const fadeInFromLeft = useScrollFadeIn("left", 2, 0);
 
   return (
     <>
@@ -19,9 +18,7 @@ const App: FC = () => {
         <div {...fadeInFromUp}>
           <Explain />
         </div>
-        <div {...fadeInFromLeft}>
-          <CardSection />
-        </div>
+        <CardSection />
         <FAQList />
       </div>
       <Footer />
