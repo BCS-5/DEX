@@ -25,7 +25,7 @@ const OrderButton: FC<OrderButtonParams> = ({
   isMarket,
   isExactInput,
 }) => {
-  const { provider, signer, chainId } = useSelector(
+  const { provider, signer } = useSelector(
     (state: RootState) => state.providers
   );
   const { clearingHouseContract, virtualTokenContracts, routerContract, orderContract } =

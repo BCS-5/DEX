@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from "react";
+import { FC  } from "react";
 
 interface OrderLeverageRangeParams {
   leverageValue: number;

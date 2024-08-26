@@ -1,6 +1,4 @@
 import { FC, useState } from "react";
-import logo_USDT from "../../images/staking/logo_USDT.png";
-import logo_WBTC from "../../images/staking/logo_WBTC.png";
 
 interface ModalProps {
   isOpen: boolean;

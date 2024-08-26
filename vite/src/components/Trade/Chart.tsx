@@ -1,10 +1,7 @@
-import { FC, useEffect, useRef, useState } from "react";
+import { FC, useEffect, useRef } from "react";
 
-interface ChartProps {
-  pair?: string;
-}
 
-const Chart: FC<ChartProps> = ({ pair }) => {
+const Chart: FC = () => {
   const container = useRef<HTMLDivElement>(null);
   useEffect(() => {
     const script = document.createElement("script");

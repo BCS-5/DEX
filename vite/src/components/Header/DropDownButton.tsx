@@ -2,7 +2,6 @@ import {
   ComponentType,
   FC,
   MouseEvent,
-  MouseEventHandler,
   useEffect,
   useState,
 } from "react";

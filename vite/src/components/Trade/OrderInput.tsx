@@ -1,6 +1,4 @@
-import { Provider } from "ethers";
 import { FC, useEffect } from "react";
-import { JsonRpcSigner } from "ethers";
 
 interface OrderInputParams {
   value: string;

@@ -1,10 +1,10 @@
-import { FC, SetStateAction, useEffect, useState } from "react";
+import { FC} from "react";
 import { Outlet } from "react-router-dom";
 import Header from "./Header";
 import { useDispatch } from "react-redux";
 import { onClickOutside } from "../features/events/eventsSlice";
 import UpdateOrderHistory from "./UpdateOrderHistory";
-import { ToastContainer, toast } from "react-toastify";
+import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 const Layout: FC = () => {

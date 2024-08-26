@@ -1,5 +1,4 @@
 import { FC, useEffect, useState } from "react";
-import { MdSettings } from "react-icons/md";
 import OrderInput from "./OrderInput";
 import { useSelector } from "react-redux";
 import { RootState } from "../../app/store";
@@ -13,10 +12,7 @@ import Deposit from "./Deposit";
 const Order: FC = () => {
   const {
     routerContract,
-    marketRegistryContracat,
     virtualTokenContracts,
-    pairContracts,
-    clearingHouseContract,
     accountBalanceContract,
     vaultContract,
   } = useSelector((state: RootState) => state.contracts);
