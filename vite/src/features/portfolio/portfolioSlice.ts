@@ -3,27 +3,27 @@ import axios from 'axios';
 
 // API 호출 함수들
 export const fetchMarketData = createAsyncThunk('portfolio/fetchMarketData', async () => {
-  const response = await axios.get('http://141.164.38.253:8090/api/getMarket');
+  const response = await axios.get('https://141.164.38.253:8090/api/getMarket');
   return response.data;
 });
 
 export const fetchUserPositions = createAsyncThunk('portfolio/fetchUserPositions', async (address: string) => {
-  const response = await axios.get(`http://141.164.38.253:8090/api/getPositions?address=${address}`);
+  const response = await axios.get(`https://141.164.38.253:8090/api/getPositions?address=${address}`);
   return response.data;
 });
 
 export const fetchUserOrders = createAsyncThunk('portfolio/fetchUserOrders', async (address: string) => {
-  const response = await axios.get(`http://141.164.38.253:8090/api/getOrders?address=${address}`);
+  const response = await axios.get(`https://141.164.38.253:8090/api/getOrders?address=${address}`);
   return response.data;
 });
 
 export const fetchUserLiquidityPositions = createAsyncThunk('portfolio/fetchUserLiquidityPositions', async (address: string) => {
-  const response = await axios.get(`http://141.164.38.253:8090/api/getLiquidityPositions?address=${address}`);
+  const response = await axios.get(`https://141.164.38.253:8090/api/getLiquidityPositions?address=${address}`);
   return response.data;
 });
 
 export const fetchTradeHistory = createAsyncThunk('portfolio/fetchTradeHistory', async (address: string) => {
-  const response = await axios.get(`http://141.164.38.253:8090/api/getTradeHistory?address=${address}`);
+  const response = await axios.get(`https://141.164.38.253:8090/api/getTradeHistory?address=${address}`);
   return response.data;
 });
 

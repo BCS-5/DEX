@@ -5,8 +5,19 @@ const db = require("./db/database");
 const { contracts } = require("../contracts/addresses");
 const FundingRate = require("./db/funding");
 
+const https = require('https');
+const fs = require('fs');
+const path = require('path');
+
 const app = express();
 const port = 8090;
+
+console.log(path.join(__dirname, 'server.key'))
+
+const sslOptions = {
+  key: fs.readFileSync(path.join(__dirname, 'server.key')),
+  cert: fs.readFileSync(path.join(__dirname, 'server.cert'))
+};
 
 // JSON 형식의 요청 본문을 파싱하기 위한 미들웨어 설정
 app.use(express.json());
@@ -144,9 +155,8 @@ app.get("/api/getLiquidityPositions", (req, res) => {
   );
 });
 
-// 서버 시작
-app.listen(port, () => {
-  console.log(`Server is running on http://localhost:${port}`);
+https.createServer(sslOptions, app).listen(port, () => {
+  console.log('HTTPS Server running on https://localhost:8090');
   const handler = new TradingVolumeHandler(
     "0xedCEDE92285fbD2f1379E059896116600850Ba25",
     "0x60aB00c8e53AC83E5773DBea4E65cf990B93E1Eb",
@@ -155,7 +165,21 @@ app.listen(port, () => {
   setTimeout(() => {
     handler.subscribe();
   }, 15000);
+
 });
+
+// 서버 시작
+// app.listen(port, () => {
+//   console.log(`Server is running on http://localhost:${port}`);
+//   const handler = new TradingVolumeHandler(
+//     "0xedCEDE92285fbD2f1379E059896116600850Ba25",
+//     "0x60aB00c8e53AC83E5773DBea4E65cf990B93E1Eb",
+//     "BTC"
+//   );
+//   setTimeout(() => {
+//     handler.subscribe();
+//   }, 15000);
+// });
 
 // nohup node src/index.js > index.out 2>&1 &
 
