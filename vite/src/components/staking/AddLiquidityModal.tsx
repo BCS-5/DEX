@@ -7,6 +7,7 @@ import Tooltip from "./Tooltip";
 import { ethers } from "ethers";
 import { BigNumber } from "@ethersproject/bignumber";
 import { notify } from "../../lib";
+import { Contract } from "ethers";
 
 interface ModalProps {
   isOpen: boolean;
@@ -91,7 +92,7 @@ const AddLiquidityModal: FC<ModalProps> = ({
 
       const deadline = Math.floor(Date.now() / 1000) + 5 * 60;
 
-      const tx = await contractWithSigner.addLiquidity(
+      const tx = await (contractWithSigner as Contract).addLiquidity(
         virtualTokenContracts.BTC.target,
         BigNumber.from(
           ethers.parseUnits(Number(inputUsdt).toString(), 6)

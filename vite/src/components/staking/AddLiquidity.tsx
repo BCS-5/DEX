@@ -30,7 +30,7 @@ const AddLiquidity: FC<AddLiquidityProps> = ({
     useState<boolean>(false);
   const [poolRatio, setPoolRatio] = useState<string>("");
   const [userLP, setUserLP] = useState<string>("");
-  const [LPValue, setLPValue] = useState<string>("");
+  const [, setLPValue] = useState<string>("");
   const [myPoolBalance, setMyPoolBalance] = useState<string>("");
   const [lockedLiquidity, setLockedLiquidity] = useState<string>("");
   const dispatch = useDispatch();

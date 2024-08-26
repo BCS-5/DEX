@@ -4,6 +4,7 @@ import { useSelector } from "react-redux";
 import { RootState } from "../../app/store";
 import Tooltip from "./Tooltip";
 import { BigNumber } from "@ethersproject/bignumber";
+import { Contract } from "ethers";
 
 interface ModalProps {
   isOpen: boolean;
@@ -85,7 +86,7 @@ const RemoveLiquidityModal: FC<ModalProps> = ({ isOpen, onClose, userLP }) => {
       // const maxUint256 = (BigInt(1) << BigInt(256)) - BigInt(1);
       const deadline = Math.floor(Date.now() / 1000) + 5 * 60;
 
-      const tx = await contractWithSigner.removeLiquidity(
+      const tx = await (contractWithSigner as Contract).removeLiquidity(
         virtualTokenContracts.BTC.target,
         BigNumber.from(Number(inputLP)).toString(),
         0n,

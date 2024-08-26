@@ -15,7 +15,7 @@ const PortfolioOrders: React.FC<PortfolioOrdersProps> = ({ onDataUpdate }) => {
   const orders = useSelector((state: RootState) => state.history.orders);
   const { signer } = useSelector((state: RootState) => state.providers);
 
-  const cancelOrder = async (orderId: string) => {
+  async (orderId: string) => {
     if (!signer) return;
     try {
       const clearingHouseContract = new ethers.Contract(

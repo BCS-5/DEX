@@ -1,6 +1,6 @@
 import { FC } from "react";
 
-import Chart from "../components/Trade/Chart";
+// import Chart from "../components/Trade/Chart";
 import Order from "../components/Trade/Order";
 import OrderHistory from "../components/Trade/OrderHistory";
 

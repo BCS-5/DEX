@@ -52,7 +52,7 @@ const PortfolioOverview: React.FC = () => {
                 paddingAngle={5}
                 dataKey="value"
               >
-                {portfolioComposition.map((entry, index) => (
+                {portfolioComposition.map((_, index) => (
                   <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                 ))}
               </Pie>

@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { RootState } from "../../app/store";
 import { Contract } from "ethers";
-import { PoolData } from "../..";
 import logo_USDT from "../../images/staking/logo_USDT.png";
 import logo_WBTC from "../../images/staking/logo_WBTC.png";
 

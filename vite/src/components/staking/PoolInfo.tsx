@@ -1,5 +1,4 @@
 import { FC, useEffect, useState } from "react";
-import { PoolData } from "../..";
 
 interface PoolInfoProps {
   totalPoolValue: string;

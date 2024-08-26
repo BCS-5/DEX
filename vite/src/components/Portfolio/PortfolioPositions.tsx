@@ -17,7 +17,7 @@ const PortfolioPositions: React.FC<PortfolioPositionsProps> = ({
   const positions = useSelector((state: RootState) => state.history.positions);
   const { signer } = useSelector((state: RootState) => state.providers);
 
-  const closePosition = async (positionId: string) => {
+  async (positionId: string) => {
     if (!signer) return;
     try {
       const clearingHouseContract = new ethers.Contract(

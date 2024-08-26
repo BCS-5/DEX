@@ -1,6 +1,5 @@
 import { useNavigate } from "react-router-dom";
 import { PiArrowUpRight } from "react-icons/pi";
-import Logo from "./img/logo/logo_2.png";
 
 const Header2 = () => {
   const navigate = useNavigate();

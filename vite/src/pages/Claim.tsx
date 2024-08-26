@@ -16,8 +16,8 @@ const Claim: FC = () => {
   const { signer } = useSelector((state: RootState) => state.providers);
   const [pairAddr, setPairAddr] = useState<string>("");
   const [UserLP, setUserLP] = useState<string>("");
-  const [LPValue, setLPValue] = useState<string>("");
-  const [MyPoolBalance, setMyPoolBalance] = useState<string>("");
+  const [_, setLPValue] = useState<string>("");
+  const [__, setMyPoolBalance] = useState<string>("");
   const { liquiditys } = useSelector((state: RootState) => state.history);
   const [lockedLiquidity, setLockedLiquidity] = useState<string>("");
   const [unclaimedLiquidity, setUnclaimedLiquidity] = useState<string>("");
