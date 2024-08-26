@@ -34,6 +34,8 @@ const RemoveLiquidityModal: FC<ModalProps> = ({
   );
   const [isSlippageOpen, setIsSlippageOpen] = useState<boolean>(false);
   const divSlippageRef = useRef<HTMLDivElement>(null);
+  const { liquiditys } = useSelector((state: RootState) => state.history);
+  const [lockedLiquidity, setLockedLiquidity] = useState<string>("");
 
   // div 바깥을 클릭했을 때 호출되는 함수
   const handleClickOutside = (event: MouseEvent) => {
@@ -66,6 +68,13 @@ const RemoveLiquidityModal: FC<ModalProps> = ({
       setinputLP(null);
     }
   };
+
+  useEffect(() => {
+    console.log("liquiditys.locked: ", liquiditys[0]?.locked);
+    setLockedLiquidity(
+      (Number(liquiditys[0]?.locked) / 10 ** 6).toFixed(6).toLocaleString()
+    );
+  }, [liquiditys]);
 
   const onClickRemoveLiquidity = async () => {
     if (!clearingHouseContract) return;
@@ -131,8 +140,12 @@ const RemoveLiquidityModal: FC<ModalProps> = ({
   };
 
   useEffect(() => {
-    setInputLPValue((Number(inputLP) * Number(LPValue)).toFixed(2).toString());
-  }, [inputLP, LPValue]);
+    setInputLPValue(
+      ((Number(lockedLiquidity) * Number(inputLP)) / Number(userLP))
+        .toFixed(6)
+        .toString()
+    );
+  }, [inputLP, userLP, lockedLiquidity]);
 
   useEffect(() => {
     console.log(userLP);
@@ -253,7 +266,7 @@ const RemoveLiquidityModal: FC<ModalProps> = ({
             </div>
             <div className="flex justify-between p-1 pt-2 text-sm text-[#94A3B8]">
               <div>Balance: {userLP}</div>
-              {inputLPValue && <div>${Number(inputLPValue).toFixed(2)}</div>}
+              {inputLPValue && <div>${Number(inputLPValue).toFixed(6)}</div>}
             </div>
             {Number(userLP) < Number(inputLP) && (
               <div className="text-sm text-red-500 font-semibold px-1">
@@ -270,7 +283,7 @@ const RemoveLiquidityModal: FC<ModalProps> = ({
                   </td>
                   <td className="p-2 content-center border border-[#0F172A]">
                     {inputLPValue
-                      ? "$" + Number(inputLPValue).toFixed(2)
+                      ? "$" + Number(inputLPValue).toFixed(6)
                       : "$0.00"}
                   </td>
                 </tr>

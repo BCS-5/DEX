@@ -23,6 +23,7 @@ const AddLiquidity: FC<AddLiquidityProps> = ({
     (state: RootState) => state.providers
   );
   const { vaultContract } = useSelector((state: RootState) => state.contracts);
+  const { liquiditys } = useSelector((state: RootState) => state.history);
   const [isAddLiquidityModalOpen, setIsAddLiquidityModalOpen] =
     useState<boolean>(false);
   const [isRemoveLiquidityModalOpen, setIsRemoveLiquidityModalOpen] =
@@ -31,6 +32,8 @@ const AddLiquidity: FC<AddLiquidityProps> = ({
   const [userLP, setUserLP] = useState<string>("");
   const [LPValue, setLPValue] = useState<string>("");
   const [myPoolBalance, setMyPoolBalance] = useState<string>("");
+  const [lockedLiquidity, setLockedLiquidity] = useState<string>("");
+  const [unclaimedLiquidity, setUnclaimedLiquidity] = useState<string>("");
   const dispatch = useDispatch();
 
   const openAddLiquidityModal = () => {
@@ -80,8 +83,21 @@ const AddLiquidity: FC<AddLiquidityProps> = ({
       }
     };
 
-    fetchUserBalance();
-  }, [vaultContract, signer]);
+    if (pairAddr) {
+      fetchUserBalance();
+    }
+  }, [vaultContract, signer, pairAddr]);
+
+  useEffect(() => {
+    console.log("liquiditys.locked: ", liquiditys[0]?.locked);
+    console.log("liquiditys.unClaimedFees: ", liquiditys[0]?.unClaimedFees);
+    setLockedLiquidity(
+      (Number(liquiditys[0]?.locked) / 10 ** 6).toLocaleString()
+    );
+    setUnclaimedLiquidity(
+      (Number(liquiditys[0]?.unClaimedFees) / 10 ** 6).toLocaleString()
+    );
+  }, [liquiditys]);
 
   return (
     <div>
@@ -89,7 +105,7 @@ const AddLiquidity: FC<AddLiquidityProps> = ({
         <>
           <div className="flex justify-between bg-[#162031] font-bold p-4 rounded-t-xl">
             <div className="text-lg">My pool balance</div>
-            <div className="text-2xl">${myPoolBalance}</div>
+            <div className="text-2xl">${lockedLiquidity}</div>
           </div>
           <div className="bg-[#1E293B] p-4 mb-8 rounded-b-xl">
             <div className="grid grid-cols-2 gap-2">

@@ -6,6 +6,7 @@ import { RootState } from "../../app/store";
 import Tooltip from "./Tooltip";
 import { ethers } from "ethers";
 import { BigNumber } from "@ethersproject/bignumber";
+import { notify } from "../../lib";
 
 interface ModalProps {
   isOpen: boolean;
@@ -133,12 +134,15 @@ const AddLiquidityModal: FC<ModalProps> = ({
       //   deadline
       // );
 
-      await tx.wait();
+      await tx
+        .wait()
+        .then(() => notify("Transaction confirmed successfully !", true));
       console.log("Liquidity added successfully");
     } catch (error) {
       console.error("Error adding liquidity: ", error);
     } finally {
       setAddLiquidityLoading(false);
+      onClose;
     }
   };
 
