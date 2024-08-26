@@ -18,6 +18,9 @@ const Claim: FC = () => {
   const [UserLP, setUserLP] = useState<string>("");
   const [LPValue, setLPValue] = useState<string>("");
   const [MyPoolBalance, setMyPoolBalance] = useState<string>("");
+  const { liquiditys } = useSelector((state: RootState) => state.history);
+  const [lockedLiquidity, setLockedLiquidity] = useState<string>("");
+  const [unclaimedLiquidity, setUnclaimedLiquidity] = useState<string>("");
 
   useEffect(() => {
     const fetchgetDetail = async () => {
@@ -62,6 +65,19 @@ const Claim: FC = () => {
 
     fetchUserBalance();
   }, [vaultContract, signer, pairAddr]);
+
+  useEffect(() => {
+    console.log("liquiditys.locked: ", liquiditys[0]?.locked);
+    console.log("liquiditys.unClaimedFees: ", liquiditys[0]?.unClaimedFees);
+    setLockedLiquidity(
+      (Number(liquiditys[0]?.locked) / 10 ** 6).toFixed(6).toLocaleString()
+    );
+    setUnclaimedLiquidity(
+      (Number(liquiditys[0]?.unClaimedFees) / 10 ** 6)
+        .toFixed(6)
+        .toLocaleString()
+    );
+  }, [liquiditys]);
 
   const onClickClaim = async () => {
     if (!signer) return;
@@ -193,6 +209,7 @@ const Claim: FC = () => {
                     <th className="p-6 text-left"></th>
                     <th className="p-6 text-left">Amount</th>
                     <th className="p-6 text-left">Value</th>
+                    <th className="p-6 text-left">Unclaimed Fee</th>
                     <th className="p-6 text-left"></th>
                   </tr>
                 </thead>
@@ -233,7 +250,11 @@ const Claim: FC = () => {
                         {Number(UserLP).toLocaleString()}
                       </td>
                       <td className="px-6 py-4">
-                        ${Number(MyPoolBalance).toLocaleString()}
+                        ${Number(lockedLiquidity).toFixed(6).toLocaleString()}
+                      </td>
+                      <td className="px-6 py-4">
+                        $
+                        {Number(unclaimedLiquidity).toFixed(6).toLocaleString()}
                       </td>
                       <td className="pr-10 py-4 text-right">
                         <button

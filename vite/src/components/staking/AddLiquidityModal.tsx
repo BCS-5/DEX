@@ -6,13 +6,13 @@ import { RootState } from "../../app/store";
 import Tooltip from "./Tooltip";
 import { ethers } from "ethers";
 import { BigNumber } from "@ethersproject/bignumber";
+import { notify } from "../../lib";
 
 interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
   poolRatio: string;
   markPrice: string;
-  pairAddr: string;
 }
 
 const AddLiquidityModal: FC<ModalProps> = ({
@@ -20,13 +20,12 @@ const AddLiquidityModal: FC<ModalProps> = ({
   onClose,
   poolRatio,
   markPrice,
-  pairAddr,
 }) => {
   if (!isOpen) return null;
   const { vaultContract, clearingHouseContract, virtualTokenContracts } =
     useSelector((state: RootState) => state.contracts);
   const { signer } = useSelector((state: RootState) => state.providers);
-  const [deadline, setDeadline] = useState<string>("10");
+  // const [deadline, setDeadline] = useState<string>("10");
   const [canAddLiquidity, setCanAddLiquidity] = useState<boolean>(false);
   const [addLiquidityLoading, setAddLiquidityLoading] =
     useState<boolean>(false);
@@ -85,32 +84,13 @@ const AddLiquidityModal: FC<ModalProps> = ({
 
       setAddLiquidityLoading(true);
 
-      const calculateQuoteMinimum =
-        Number(inputUsdt) * (1 - slippageTolerance / 100);
-      const calculateBaseTokenMinimum =
-        Number(inputBtcValue) * (1 - slippageTolerance / 100);
-      // const maxUint256 = (BigInt(1) << BigInt(256)) - BigInt(1);
+      // const calculateQuoteMinimum =
+      //   Number(inputUsdt) * (1 - slippageTolerance / 100);
+      // const calculateBaseTokenMinimum =
+      //   Number(inputBtcValue) * (1 - slippageTolerance / 100);
+
       const deadline = Math.floor(Date.now() / 1000) + 5 * 60;
 
-      // if (
-      //   Number(inputUsdt) > ethers.MaxUint256 ||
-      //   calculateQuoteMinimum > ethers.MaxUint256 ||
-      //   calculateBaseTokenMinimum > ethers.MaxUint256
-      // ) {
-      //   throw new Error("Input value exceeds uint256 limit.");
-      // }
-
-      // console.log(ethers.parseUnits(Number(inputUsdt).toString(), 18));
-      // console.log(ethers.parseUnits(calculateQuoteMinimum.toString(), 18));
-      // console.log(ethers.parseUnits(calculateBaseTokenMinimum.toString(), 18));
-      // LP 24개 얻는 코드
-      // const tx = await contractWithSigner.addLiquidity(
-      //   virtualTokenContracts.BTC.target,
-      //   610n,
-      //   0n,
-      //   0n,
-      //   deadline
-      // );
       const tx = await contractWithSigner.addLiquidity(
         virtualTokenContracts.BTC.target,
         BigNumber.from(
@@ -133,12 +113,15 @@ const AddLiquidityModal: FC<ModalProps> = ({
       //   deadline
       // );
 
-      await tx.wait();
+      await tx
+        .wait()
+        .then(() => notify("Transaction confirmed successfully !", true));
       console.log("Liquidity added successfully");
     } catch (error) {
       console.error("Error adding liquidity: ", error);
     } finally {
       setAddLiquidityLoading(false);
+      onClose;
     }
   };
 

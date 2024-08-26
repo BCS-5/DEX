@@ -1,14 +1,83 @@
 import { FC, useEffect, useMemo, useRef, useState } from "react";
 import ReactEcharts from "echarts-for-react";
 
+interface GenerateDataProps {
+  timePeriod: string;
+}
+
+interface ApiResponse {
+  id: number;
+  time: number;
+  open: number;
+  high: number;
+  low: number;
+  close: number;
+  volume: number;
+}
+
+interface TimeVolumeFee {
+  time: number;
+  volume: number;
+  fee: number;
+}
+
 // 날짜와 데이터 설정
-const generateData = () => {
-  const startDate = new Date("2023-01-01");
-  const endDate = new Date("2024-08-18");
+const generateData = ({ timePeriod }: GenerateDataProps) => {
+  let tp = 0;
+  switch (timePeriod) {
+    case "90 days":
+      tp = 90;
+      break;
+    case "180 days":
+      tp = 180;
+      break;
+    case "365 days":
+      tp = 365;
+      break;
+    case "All time":
+    default:
+      tp = 0;
+  }
+
+  const startDateUnix = Math.floor(Date.now() / 1000) - tp * 24 * 60 * 60;
+  const startDate = new Date(startDateUnix * 1000);
+  const endDate = new Date(); // 현재 날짜
+
   const dateArray: string[] = [];
   const volumeData: number[] = [];
-  const tvlData: number[] = [];
   const feesData: number[] = [];
+
+  // 실제 데이터
+  const [timeVolumeFeeData, setTimeVolumeFeeData] = useState<TimeVolumeFee[]>(
+    []
+  );
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const From = Math.floor(Date.now() / 1000) - 90 * 24 * 60 * 60;
+        const To = Math.floor(Date.now() / 1000);
+
+        const response = await fetch(
+          `http://141.164.38.253:8090/api/history?symbol=BTC&resolution=1D&from=${From}&to=${To}`
+        );
+        const result: ApiResponse[] = await response.json();
+
+        // time과 volume만 추출하여 새로운 배열 생성
+        const filteredData = result.map((item) => ({
+          time: item.time,
+          volume: item.volume,
+          fee: item.volume * 0.0003,
+        }));
+
+        setTimeVolumeFeeData(filteredData);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   // 예시 데이터
   const exampleData = [
@@ -169,25 +238,30 @@ const generateData = () => {
 
     dateArray.push(dateString);
     volumeData.push(exampleData.shift() || 0);
-    tvlData.push(exampleData.shift() || 0);
     feesData.push(exampleData.shift() || 0);
     currentDate.setDate(currentDate.getDate() + 1);
   }
 
-  return { dateArray, volumeData, tvlData, feesData };
+  return { dateArray, volumeData, feesData, timeVolumeFeeData };
 };
 
 const Chart: FC = () => {
-  const { dateArray, volumeData, tvlData, feesData } = generateData();
   const [timePeriod, setTimePeriod] = useState<
     "90 days" | "180 days" | "365 days" | "All time"
   >("90 days");
+  const { dateArray, volumeData, feesData, timeVolumeFeeData } = generateData({
+    timePeriod,
+  });
   const [isTimePeriodOpen, setIsTimePeriodOpen] = useState(false);
   const [graphTab, setGraphTab] = useState<"Volume" | "TVL" | "Fees">("Volume");
   const [graphData, setGraphData] = useState<{ x: string; y: number } | null>({
     x: "90 days volume",
     y: 6158,
   });
+
+  useEffect(() => {
+    console.log(timeVolumeFeeData);
+  }, [timeVolumeFeeData]);
 
   // 필터링된 데이터 계산
   const filteredData = useMemo(() => {
@@ -212,11 +286,9 @@ const Chart: FC = () => {
       data:
         graphTab === "Volume"
           ? volumeData.slice(dateArray.length - endIndex, dateArray.length)
-          : graphTab === "TVL"
-          ? tvlData.slice(dateArray.length - endIndex, dateArray.length)
           : feesData.slice(dateArray.length - endIndex, dateArray.length),
     };
-  }, [graphTab, timePeriod, dateArray, volumeData, tvlData, feesData]);
+  }, [graphTab, timePeriod, dateArray, volumeData, feesData]);
 
   const divTimePeriodRef = useRef<HTMLDivElement>(null);
 
@@ -255,14 +327,6 @@ const Chart: FC = () => {
           formatter: (value: string) => {
             const date = new Date(value);
             const month = date.toLocaleDateString("en-GB", { month: "short" });
-            const currentIndex = filteredData.date.indexOf(value);
-            const previousDate =
-              currentIndex > 0
-                ? new Date(filteredData.date[currentIndex - 1])
-                : null;
-            const previousMonth = previousDate
-              ? previousDate.toLocaleDateString("en-GB", { month: "short" })
-              : "";
 
             return month;
           },
