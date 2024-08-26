@@ -1,5 +1,5 @@
 import { FC } from "react";
-
+import useScrollFadeIn from "../components/Home/ScrollEvent";
 import CardSection from "../components/Home/CardSection";
 import FAQList from "../components/Home/FAQList";
 import Footer from "../components/Home/Footer";
@@ -8,17 +8,20 @@ import Explain from "../components/Home/Explain";
 import Top from "../components/Home/Top";
 
 const App: FC = () => {
+  const fadeInFromUp = useScrollFadeIn("up", 2, 0);
+  const fadeInFromLeft = useScrollFadeIn("left", 2, 0);
+
   return (
     <>
-      <div className="bg-red-100">
-        {/* <ProviderSetup />
-        <UseProvider /> */}
-      </div>
       <Header2 />
       <Top />
       <div className=" justify-center px-80 pt-14">
-        <Explain />
-        <CardSection />
+        <div {...fadeInFromUp}>
+          <Explain />
+        </div>
+        <div {...fadeInFromLeft}>
+          <CardSection />
+        </div>
         <FAQList />
       </div>
       <Footer />

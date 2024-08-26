@@ -10,11 +10,10 @@ const Top = () => {
 
   return (
     <section
-      className="relative flex items-center justify-left bg-cover bg-center h-screen"
+      className="relative flex items-center justify-left bg-cover bg-center h-screen z-20"
       style={{ backgroundImage: `url(${bg_img})` }}
     >
       <>
-        {/* <img src={image_1} className="absolute right-20 w-[500px]" /> */}
         <div className="absolute text-left">
           <p className="text-white font-semibold text-[16px] ml-16 mb-5">
             Own yourself, for everything
