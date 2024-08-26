@@ -44,74 +44,80 @@ async function main() {
   // const faucet = Faucet.attach("0xCD298eb44046e3007DE3F6851F2e2a4cfDcc2942");
 
 
-  // await usdt.transfer(faucet, 20000n * 10n ** 6n);
-  // await usdt.transfer(
-  //   "0x000000c2028C057617891ECB15B8159F4249F0E3",
-  //   1000000000n * 10n ** 6n
-  // );
-
-  // const usdt = await USDT.deploy(2n ** 256n - 1n, "Tether USD", "USDT", 6);
-  // console.log(`usdt: ${usdt.target}`);
-  // const factory = await UniswapV2Factory.deploy(deployer);
-  // console.log(`factory: ${factory.target}`);
-  // const router = await UniswapV2Router.deploy(factory.target, WETH);
-  // console.log(`router: ${router.target}`);
-  // const vault = await Vault.deploy();
-  // console.log(`vault: ${vault.target}`);
-  // const clearingHouse = await ClearingHouse.deploy();
-  // console.log(`clearingHouse: ${clearingHouse.target}`);
-  // const marketRegistry = await MarketRegistry.deploy(factory.target);
-  // console.log(`marketRegistry: ${marketRegistry.target}`);
-  // const accountBalance = await AccountBalance.deploy(
-  //   clearingHouse.target,
-  //   marketRegistry.target,
-  //   vault.target
-  // );
-  // console.log(`accountBalance: ${accountBalance.target}`);
-  // const faucet = await Faucet.deploy();
-  // console.log(`faucet: ${faucet.target}`);
+  const usdt = await USDT.deploy(2n ** 256n - 1n, "Tether USD", "USDT", 6);
+  console.log(`usdt: ${usdt.target}`);
+  const factory = await UniswapV2Factory.deploy(deployer);
+  console.log(`factory: ${factory.target}`);
+  const router = await UniswapV2Router.deploy(factory.target, WETH);
+  console.log(`router: ${router.target}`);
+  const vault = await Vault.deploy();
+  console.log(`vault: ${vault.target}`);
+  const clearingHouse = await ClearingHouse.deploy();
+  console.log(`clearingHouse: ${clearingHouse.target}`);
+  const marketRegistry = await MarketRegistry.deploy(factory.target);
+  console.log(`marketRegistry: ${marketRegistry.target}`);
+  const accountBalance = await AccountBalance.deploy(
+    clearingHouse.target,
+    marketRegistry.target,
+    vault.target
+  );
+  console.log(`accountBalance: ${accountBalance.target}`);
+  const faucet = await Faucet.deploy();
+  console.log(`faucet: ${faucet.target}`);
 
   const openOrder = await OpenOrder.deploy();
   console.log(`order: ${openOrder.target}`);
 
-  // await faucet.setUSDTAddress(usdt, { gasLimit: "300000" });
-  // await clearingHouse.setMarketRegistry(marketRegistry, { gasLimit: "300000" });
+  await openOrder.setClearingHouse(clearingHouse);
+  await openOrder.setMarketRegistry(marketRegistry);
+  await openOrder.setAccountBalance(accountBalance);
+  await openOrder.setUniswapRouter(router);
 
-  // await clearingHouse.setRouter(router, { gasLimit: "300000" });
-  // await clearingHouse.setAccountBalance(accountBalance, { gasLimit: "300000" });
-  // await clearingHouse.setVault(vault, { gasLimit: "300000" });
-  // await marketRegistry.setClearingHouse(clearingHouse, { gasLimit: "300000" });
+  await usdt.transfer(faucet, 20000n * 10n ** 6n);
 
-  // let tx = await marketRegistry.createPool("Bitcoin", "BTC", 8, {
-  //   gasLimit: "5000000",
-  // });
-  // let txResult = await tx.wait();
+  await faucet.setUSDTAddress(usdt, { gasLimit: "300000" });
+  await clearingHouse.setMarketRegistry(marketRegistry, { gasLimit: "300000" });
 
-  // const poolAddress = txResult.logs[5].args[0];
-  // const baseTokenAddress = txResult.logs[5].args[1];
-  // const queteTokenAddress = txResult.logs[5].args[2];
+  await clearingHouse.setRouter(router, { gasLimit: "300000" });
+  await clearingHouse.setAccountBalance(accountBalance, { gasLimit: "300000" });
+  await clearingHouse.setVault(vault, { gasLimit: "300000" });
+  await marketRegistry.setClearingHouse(clearingHouse, { gasLimit: "300000" });
 
-  // await vault.setSettlementToken(usdt, { gasLimit: "300000" });
-  // await vault.setClearingHouse(clearingHouse, { gasLimit: "300000" });
+  let tx = await marketRegistry.createPool("Bitcoin", "BTC", 8, {
+    gasLimit: "5000000",
+  });
+  let txResult = await tx.wait();
 
-  // await clearingHouse.setQuoteToken(queteTokenAddress, { gasLimit: "300000" });
-  // await clearingHouse.approve(queteTokenAddress, { gasLimit: "300000" });
-  // await clearingHouse.approve(baseTokenAddress, { gasLimit: "300000" });
-  // await clearingHouse.approve(poolAddress, { gasLimit: "300000" });
+  const poolAddress = txResult.logs[5].args[0];
+  const baseTokenAddress = txResult.logs[5].args[1];
+  const quoteTokenAddress = txResult.logs[5].args[2];
 
-  // await accountBalance.setKeeper(deployer, { gasLimit: "300000" });
+  console.log(`poolAddress: ${poolAddress}`);
+  console.log(`baseTokenAddress: ${baseTokenAddress}`);
+  console.log(`quoteTokenAddress: ${quoteTokenAddress}`);
 
-  // await clearingHouse.initializePool(
-  //   baseTokenAddress,
-  //   1000n * 10n ** 8n,
-  //   64100000n * 10n ** 6n,
-  //   { gasLimit: "3000000" }
-  // );
+  await vault.setSettlementToken(usdt, { gasLimit: "300000" });
+  await vault.setClearingHouse(clearingHouse, { gasLimit: "300000" });
 
-  // const balance = await usdt.balanceOf(deployer);
-  // await usdt.approve(vault, balance, { gasLimit: "300000" });
+  await clearingHouse.setQuoteToken(quoteTokenAddress, { gasLimit: "300000" });
+  await clearingHouse.approve(quoteTokenAddress, { gasLimit: "300000" });
+  await clearingHouse.approve(baseTokenAddress, { gasLimit: "300000" });
+  await clearingHouse.approve(poolAddress, { gasLimit: "300000" });
 
-  // await vault.deposit(100000000n * 10n ** 6n, { gasLimit: "3000000" });
+  await accountBalance.setKeeper(deployer, { gasLimit: "300000" });
+
+  await clearingHouse.initializePool(
+    baseTokenAddress,
+    1000n * 10n ** 8n,
+    63715000n * 10n ** 6n,
+    { gasLimit: "3000000" }
+  );
+
+  let balance = await usdt.balanceOf(deployer);
+  await usdt.approve(vault, balance, { gasLimit: "300000" });
+  await vault.deposit(100000000n * 10n ** 6n, { gasLimit: "3000000" });
+  await vault.deposit(100000000n * 10n ** 6n, { gasLimit: "3000000" });
+  await vault.depositFor("0x000000c2028C057617891ECB15B8159F4249F0E3", 1000000000n * 10n ** 6n, { gasLimit: "3000000" });
 }
 
 main();

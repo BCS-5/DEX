@@ -55,8 +55,8 @@ const PairContainer: FC = () => {
           const _shortFundingRate =
             BigInt(data[0].short) - BigInt(data[1].short);
 
-          const _long = (Number(_longFundingRate) / 10 ** 18).toFixed(4);
-          const _short = (Number(_shortFundingRate) / 10 ** 18).toFixed(4);
+          const _long = (Number(_longFundingRate) / 10 ** 18).toFixed(5);
+          const _short = (Number(_shortFundingRate) / 10 ** 18).toFixed(5);
 
           setLongFundingRate(Number(_long) == 0 ? "0.0000" : _long);
           setShortFundingRate(Number(_short) == 0 ? "0.0000" : _short);

@@ -272,7 +272,7 @@ contract ClearingHouse is IClearingHouse, Ownable{
         
         IVault(vault).updateCollateral(trader, PNL > 0 ? uint(PNL) : uint(-PNL), PNL > 0);
         
-        emit SettlePNL(trader, baseToken, positionHash, refundMargin, closePositionSize, closeNotional, isLong);
+        emit SettlePNL(trader, baseToken, positionHash, refundMargin, closePositionSize, closeNotional, isLong, PNL);
     }
 
     // base => quote, quote => base 모두 quote로 지불

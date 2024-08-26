@@ -160,7 +160,7 @@ contract Vault is IVault, SafeOwnable {
     ) internal {
         _settleAndDecreaseBalance(to, amount);
         // 토큰 전송
-        bool success = IERC20(token).transfer(to, amount);
+        (bool success, ) = token.call(abi.encodeWithSelector(IERC20.transfer.selector, to, amount));
         require(success, "Transfer failed");
 
         emit Withdrawn(token, to, amount);
