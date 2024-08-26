@@ -1,30 +1,60 @@
 import React, { useEffect, useState } from "react";
-import { PoolData } from "../..";
+
+interface ApiResponse {
+  id: number;
+  time: number;
+  open: number;
+  high: number;
+  low: number;
+  close: number;
+  volume: number;
+}
+
+interface TimeVolume {
+  time: number;
+  volume: number;
+}
 
 const Test: React.FC = () => {
-  const [poolData, setPoolData] = useState<PoolData | null>(null);
+  const [timeVolumeData, setTimeVolumeData] = useState<TimeVolume[]>([]);
 
   useEffect(() => {
-    fetch(
-      "http://141.164.38.253:8090/api/history?symbol=BTC&resolution=1D&from=1716531147&to=1724307147"
-    )
-      .then((response) => response.json())
-      .then((result) => setPoolData(result))
-      .catch((error) => console.error("Error:", error));
+    const fetchData = async () => {
+      try {
+        const From = Math.floor(Date.now() / 1000) - 90 * 24 * 60 * 60;
+        const To = Math.floor(Date.now() / 1000);
+
+        const response = await fetch(
+          `http://141.164.38.253:8090/api/history?symbol=BTC&resolution=1D&from=${From}&to=${To}`
+        );
+        const result: ApiResponse[] = await response.json();
+
+        // time과 volume만 추출하여 새로운 배열 생성
+        const filteredData = result.map((item) => ({
+          time: item.time,
+          volume: item.volume,
+        }));
+
+        setTimeVolumeData(filteredData);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    fetchData();
   }, []);
-
-  useEffect(() => {
-    if (!poolData || poolData.apr !== undefined) return;
-    const apr = (poolData.fee * 365 * 100) / poolData.volume;
-    setPoolData({ ...poolData, apr: Number(apr.toFixed(2)) });
-  }, [poolData]);
 
   return (
     <div className="flex justify-center items-center h-screen bg-gray-100">
       <div className="bg-white p-6 rounded-lg shadow-lg">
-        <h1 className="text-2xl font-bold text-gray-800">Contract Name:</h1>
-        <p className="text-lg text-gray-600">{poolData?.fee}</p>
-        <p className="text-lg text-gray-600">{poolData?.volume}</p>
+        <h1>Time and Volume Data</h1>
+        <ul>
+          {timeVolumeData.map((item, index) => (
+            <li key={index}>
+              Time: {item.time}, Volume: {item.volume}
+            </li>
+          ))}
+        </ul>
       </div>
     </div>
   );
