@@ -34,19 +34,11 @@ export const contracts = {
     abi: ERC20ABI,
   },
   uniswapV2Router: {
-<<<<<<< HEAD
     address: "0x921C79fa5E725a8851501540fD0F73FD303173b3",
     abi: UniswapV2RouterABI,
   },
   uniswapV2Factory: {
     address: "0x246EC513dFB505977161eBE4e81b025aF47A96DE",
-=======
-    address: "0x67c284d74131Ff5EBFBcE5bbCd3C923e55C6F738",
-    abi: UniswapV2RouterABI,
-  },
-  uniswapV2Factory: {
-    address: "0x70aFa16650dEC132e8AeBAab7Cf281fD2e58b684",
->>>>>>> origin/develop-frontend-staking2
     abi: UniswapV2FactoryABI,
   },
   uniswapV2Pair: {
