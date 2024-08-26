@@ -112,6 +112,8 @@ module.exports = {
       "contracts/VirtualToken.sol": PERP_OPTIMIZER,
       "contracts/base/SafeOwnable.sol": PERP_OPTIMIZER,
       "contracts/USDT.sol": PERP_OPTIMIZER,
+      "contracts/interfaces/IOpenOrder.sol": PERP_OPTIMIZER,
+      "contracts/OpenOrder.sol": PERP_OPTIMIZER,
       "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol":
         OPENZEPPELIN_OPTIMIZER,
       "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol":

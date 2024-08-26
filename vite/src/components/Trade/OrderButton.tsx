@@ -28,7 +28,7 @@ const OrderButton: FC<OrderButtonParams> = ({
   const { provider, signer, chainId } = useSelector(
     (state: RootState) => state.providers
   );
-  const { clearingHouseContract, virtualTokenContracts, routerContract } =
+  const { clearingHouseContract, virtualTokenContracts, routerContract, orderContract } =
     useSelector((state: RootState) => state.contracts);
 
   const { slippage, deadline } = useSelector(
@@ -43,6 +43,33 @@ const OrderButton: FC<OrderButtonParams> = ({
     provider?.getSigner().then((signer) => dispatch(setSigner(signer)));
     dispatch(switchNetwork(11155111));
   };
+
+  const onClickOpenOrder = async () => {
+    if (!quoteValue || !baseValue) return;
+    console.log("dd")
+    // function createOrder(address baseToken, uint256 margin, uint256 amountIn, uint256 amountOut, bool isLong) external 
+    if(isLong) {
+      const margin = parseUnits(quoteValue, 18) / 10n ** 12n;
+      let amountIn = margin * BigInt(leverageValue);
+      let amountOut = parseUnits(baseValue, 18) / 10n ** 10n;
+      orderContract?.createOrder(virtualTokenContracts?.BTC?.target, margin, amountIn, amountOut, true).then((tx) => {
+        notify("Pending Transaction ...", true);
+        tx.wait().then(() =>
+          notify("Transaction confirmed successfully !", true)
+        );
+      })
+    } else {
+      const margin = parseUnits(quoteValue, 18) / 10n ** 12n;
+      let amountIn = parseUnits(baseValue, 18) / 10n ** 10n;
+      let amountOut = margin * BigInt(leverageValue);
+      orderContract?.createOrder(virtualTokenContracts?.BTC?.target, margin, amountIn, amountOut, false).then((tx) => {
+        notify("Pending Transaction ...", true);
+        tx.wait().then(() =>
+          notify("Transaction confirmed successfully !", true)
+        );
+      })  
+    }
+  }
 
   const onClickOpenPosition = async () => {
     if (!quoteValue || !baseValue) return;
@@ -141,10 +168,10 @@ const OrderButton: FC<OrderButtonParams> = ({
           className={`flex justify-center items-center rounded-[4px]  w-full  h-12 text-white mt-4 ${
             isLong ? "bg-[#1db1a8]" : "bg-[#ef3e9e]"
           }`}
-          onClick={onClickOpenPosition}
+          onClick={() => isMarket ? onClickOpenPosition() : onClickOpenOrder()}
           disabled={!quoteValue || !baseValue}
         >
-          {isLong ? "Open Long" : "Open Short"}
+          {isMarket ? (isLong ? "Open Long" : "Open Short") : (isLong ? "Order Long" : "Order Short") }
         </button>
       ) : (
         <button

@@ -136,7 +136,7 @@ const PairContainer: FC = () => {
             <span className="flex-1">{indexPrice}</span>
             <span className="flex-1">{longOI} BTC</span>
             <span className="flex-1">{shortOI} BTC</span>
-            <span className="flex-1">$ {volume} </span>
+            <span className="flex-1">${volume} </span>
             <span
               className={`flex-1 ${
                 Number(longFundingRate) >= 0

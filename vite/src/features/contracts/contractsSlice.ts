@@ -23,6 +23,7 @@ export interface ContractState {
   routerContract: Contract | null;
   accountBalanceContract: Contract | null;
   faucetContract: Contract | null;
+  orderContract: Contract | null;
 }
 
 export const contractsSlice = createSlice({
@@ -37,6 +38,7 @@ export const contractsSlice = createSlice({
     routerContract: null,
     accountBalanceContract: null,
     faucetContract: null,
+    orderContract: null
   } as ContractState,
   reducers: {
     setContract: (
@@ -55,6 +57,7 @@ export const contractsSlice = createSlice({
           routerContract: null,
           accountBalanceContract: null,
           faucetContract: null,
+          orderContract: null
         };
       }
 
@@ -100,6 +103,12 @@ export const contractsSlice = createSlice({
         provider
       ) as Contract;
 
+      const orderContract = new Contract(
+        contracts.order.address,
+        contracts.order.abi,
+        provider
+      ) as Contract;
+
       return {
         virtualTokenContracts: state.virtualTokenContracts as any,
         pairContracts: state.pairContracts as any,
@@ -110,6 +119,7 @@ export const contractsSlice = createSlice({
         routerContract,
         accountBalanceContract,
         faucetContract,
+        orderContract
       };
     },
 

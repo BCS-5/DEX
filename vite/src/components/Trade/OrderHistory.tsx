@@ -1,4 +1,4 @@
-import { FC, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import OrderHistoryCard from "./OrderHistoryCard";
 import { RootState } from "../../app/store";
 import { useSelector } from "react-redux";
@@ -6,14 +6,9 @@ import EmptyData from "./EmptyData";
 import ResizeHandler from "./ResizeHandler";
 import { notify } from "../../lib";
 
-const cards = [
-  [1, 2, 3, 4, 5, 6, 7, 8],
-  [1, 2],
-  [1, 2, 3, 4],
-];
 
 const OrderHistory: FC = () => {
-  const { clearingHouseContract, virtualTokenContracts, routerContract } =
+  const { clearingHouseContract, virtualTokenContracts, routerContract, orderContract } =
     useSelector((state: RootState) => state.contracts);
 
   const { slippage, deadline } = useSelector(
@@ -25,6 +20,22 @@ const OrderHistory: FC = () => {
   );
 
   const [selectedMenu, setSelectedMenu] = useState<number>(0);
+
+
+  const onClickCancelAll = () => {
+    const orderIds:bigint[] = [] ;
+    orders.forEach((v) => {
+      orderIds.push(v.orderId)
+    })
+
+    orderContract?.cancelOrderBatch(orderIds).then((tx) => {
+      notify("Pending Transaction ...", true);
+      tx.wait().then(() =>
+        notify("Transaction confirmed successfully !", true)
+      );
+    })
+    .catch((error) => notify(error.shortMessage, false));
+  }
 
   const onClickCloseAll = () => {
     const positionHashs = [] as string[];
@@ -109,7 +120,7 @@ const OrderHistory: FC = () => {
             className={`${selectedMenu === 1 ? "text-[#729aff]" : ""}`}
             onClick={() => setSelectedMenu(1)}
           >
-            Order (2)
+            Order ({orders.length})
           </button>
           <button
             className={`${selectedMenu === 2 ? "text-[#729aff]" : ""}`}
@@ -120,7 +131,7 @@ const OrderHistory: FC = () => {
         </div>
         <div className="flex">
           {selectedMenu != 2 && (
-            <button className="text-[#729aff]" onClick={onClickCloseAll}>
+            <button className="text-[#729aff]" onClick={() => selectedMenu == 0 ? onClickCloseAll() : onClickCancelAll()}>
               Close All
             </button>
           )}
@@ -143,8 +154,12 @@ const OrderHistory: FC = () => {
           ))}
 
         {selectedMenu == 1 &&
-          cards[selectedMenu].map((v, i) => (
-            <OrderHistoryCard key={i} type={selectedMenu} position={v} />
+          (orders.length ? (
+            orders.map((v, i) => (
+              <OrderHistoryCard key={i} type={selectedMenu} position={v} />
+            ))
+          ) : (
+            <EmptyData menu="Orders" />
           ))}
 
         {selectedMenu == 2 &&

@@ -16,12 +16,11 @@ interface Position {
 interface Order {
   trader: string;
   baseToken: string;
-  isLong: boolean;
+  orderId: bigint;
   margin: bigint;
-  openNotional: bigint;
-  positionHash: string;
-  positionSize: bigint;
-  time: number;
+  amountIn: bigint;
+  amountOut: bigint;
+  isLong: boolean;
 }
 
 interface History {
@@ -42,7 +41,7 @@ interface Liquidity {
   unClaimedFees: bigint;
 }
 
-export interface PoolData {
+interface PoolData {
   volume: number;
   fee: number;
   apr?: number;

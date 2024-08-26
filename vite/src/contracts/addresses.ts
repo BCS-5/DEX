@@ -7,6 +7,7 @@ import UniswapV2PairABI from "./abis/UniswapV2PairABI.json";
 import UniswapV2RouterABI from "./abis/UniswapV2RouterABI.json";
 import VaultABI from "./abis/VaultABI.json";
 import FaucetABI from "./abis/FaucetABI.json";
+import OrderABI from "./abis/OrderABI.json";
 
 export const contracts = {
   accountBalance: {
@@ -48,5 +49,9 @@ export const contracts = {
   faucet: {
     address: "0xCD298eb44046e3007DE3F6851F2e2a4cfDcc2942",
     abi: FaucetABI,
+  },
+  order: {
+    address: "0x2E0fE78dfC725ECeeD2258318Fd81d851c2475f1",
+    abi: OrderABI,
   },
 };

@@ -7,7 +7,7 @@ import AddMarginModal from "./AddMarginModal";
 
 interface OrderHistoryCardParams {
   type: number;
-  position: Position | History | number;
+  position: Position | History | Order;
 }
 
 const menuType = [0b10011110, 0b10101100, 0b01001101];
@@ -42,6 +42,7 @@ const OrderHistoryCard: FC<OrderHistoryCardParams> = ({ type, position }) => {
     accountBalanceContract,
     pairContracts,
     clearingHouseContract,
+    orderContract
   } = useSelector((state: RootState) => state.contracts);
   const { slippage, deadline } = useSelector(
     (state: RootState) => state.events
@@ -108,10 +109,22 @@ const OrderHistoryCard: FC<OrderHistoryCardParams> = ({ type, position }) => {
   };
 
   const getLeverageRatio = () => {
-    const _position = position as Position;
-    setLeverage(
-      (Number(_position.openNotional) / Number(_position.margin)).toFixed(1)
-    );
+
+    if(type == 1) {
+      const order = position as Order;
+      const size = order.isLong ? order.amountIn : order.amountOut; 
+      
+      setLeverage(
+        (Number(size) / Number(order.margin)).toFixed(1)
+      );
+      
+    }
+    else {
+      const _position = position as Position;
+      setLeverage(
+        (Number(_position.openNotional) / Number(_position.margin)).toFixed(1)
+      );
+    }
   };
 
   const getEntryPrice = () => {
@@ -161,6 +174,43 @@ const OrderHistoryCard: FC<OrderHistoryCardParams> = ({ type, position }) => {
 
     return Number((_history.openNotional * 3n) / 10000n) / 10 ** 6;
   };
+
+  const getOpenNotional = () => {
+    if(type == 1) {
+      if(position.isLong) {
+        return (position as Order).amountIn;
+      } else {
+        return (position as Order).amountOut;
+      }
+    } else {
+      return (position as Position).openNotional;
+    }
+  }
+
+  const getTriggerPrice = () => {
+    const order = (position as Order);
+    let price = 0;
+    if(order.isLong) {
+      price = Number(order.amountIn) / Number(order.amountOut) * 10**2
+    } else {
+      price = Number(order.amountOut) / Number(order.amountIn) * 10**2
+    }
+    
+    return formatPrice(price)
+  }
+
+  const onClickCancelOrder = () => {
+    if(!orderContract) return;
+
+    const order = (position as Order);
+    orderContract.cancelOrder(order.orderId).then((tx) => {
+      notify("Pending Transaction ...", true);
+      tx.wait().then(() =>
+        notify("Transaction confirmed successfully !", true)
+      );
+    })
+    .catch((error) => notify(error.shortMessage, false));
+  }
 
   const onClickClose = async (closePercent: string) => {
     const _position = position as Position;
@@ -308,10 +358,10 @@ const OrderHistoryCard: FC<OrderHistoryCardParams> = ({ type, position }) => {
           {checkType(3) && (
             <div className="flex flex-col w-[100px] flex-1">
               <div className="text-sm">
-                {(
-                  Number((position as Position).openNotional) /
-                  10 ** 6
-                ).toFixed(1)}{" "}
+                {
+                  (Number(getOpenNotional()) / 10 ** 6).toFixed(1)
+                } 
+              
               </div>
               <div className="text-xs text-[#72768f] font-normal">
                 Size (USD)
@@ -343,19 +393,13 @@ const OrderHistoryCard: FC<OrderHistoryCardParams> = ({ type, position }) => {
           {checkType(5) && (
             <>
               <div className="flex flex-col w-[100px] flex-1">
-                <div className="text-sm">58,496.6</div>
-                <div className="text-xs text-[#72768f] font-normal">
-                  Open Price
-                </div>
-              </div>
-              <div className="flex flex-col w-[100px] flex-1">
-                <div className="text-sm">58,396.2</div>
+                <div className="text-sm">{getTriggerPrice()}</div>
                 <div className="text-xs text-[#72768f] font-normal">
                   Trigger Price
                 </div>
               </div>
               <div className="flex flex-col w-[100px] flex-1">
-                <div className="text-sm">55,862.6</div>
+                <div className="text-sm">{markPrice}</div>
                 <div className="text-xs text-[#72768f] font-normal">
                   Mark Price
                 </div>
@@ -403,7 +447,7 @@ const OrderHistoryCard: FC<OrderHistoryCardParams> = ({ type, position }) => {
           <div className="flex min-w-[147px] items-center justify-end flex-grow">
             <button
               className="w-[55px] h-[28px] rounded-[4px]  text-xs bg-[#2C2D43] py-[6px] px-3"
-              onClick={openCloseModal}
+              onClick={() => type == 0 ? openCloseModal() : onClickCancelOrder()}
             >
               Close
             </button>

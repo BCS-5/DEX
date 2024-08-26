@@ -1,4 +1,4 @@
-import { FC, useEffect } from "react";
+import { FC, Fragment, useEffect } from "react";
 
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../app/store";
@@ -6,8 +6,8 @@ import {
   setHistory,
   setLiquiditys,
   setPositions,
+  setOrders
 } from "../features/history/historySlice";
-import { formatEther } from "ethers";
 
 const UpdateOrderHistory: FC = () => {
   const {
@@ -15,12 +15,86 @@ const UpdateOrderHistory: FC = () => {
     vaultContract,
     pairContracts,
     virtualTokenContracts,
+    orderContract
   } = useSelector((state: RootState) => state.contracts);
 
   const dispatch = useDispatch();
 
   const { signer } = useSelector((state: RootState) => state.providers);
   const { blockNumber } = useSelector((state: RootState) => state.events);
+
+  const getOrders = async () => {
+    if(!orderContract) return;
+    
+    const createdEventFilter = orderContract.filters.OrderCreated(signer?.address);
+    const executedEventFilter = orderContract.filters.OrderExecuted(signer?.address);
+    const cancelledEventFilter = orderContract.filters.OrderCancelled(signer?.address);
+
+    const createdEvent = orderContract?.queryFilter(
+      createdEventFilter,
+      0,
+      "latest"
+    );
+    const executedEvent = orderContract?.queryFilter(
+      executedEventFilter,
+      0,
+      "latest"
+    );
+    const cancelledEvent = orderContract?.queryFilter(
+      cancelledEventFilter,
+      0,
+      "latest"
+    );
+
+    Promise.all([createdEvent, executedEvent, cancelledEvent]).then((res) => {
+      parseOrders([...res[0], ...res[1], ...res[2]]);
+    });
+  }
+
+  const parseOrders = (events: any[]) => {
+    events.sort((a, b) => a.blockNumber - b.blockNumber);
+    const ordersMap: { [key: string]: any } = {};
+    const orders: Order[] = [];
+
+    events.forEach((e) => {
+      if(e.eventName == "OrderCreated") {
+        const [
+          trader,
+          baseToken,
+          orderId,
+          margin,
+          amountIn,
+          amountOut,
+          isLong,
+        ] = e.args;
+
+        ordersMap[orderId] = {
+          trader,
+          baseToken,
+          orderId,
+          margin,
+          amountIn,
+          amountOut,
+          isLong
+        }
+      } else if(e.eventName == "OrderExecuted" || e.eventName == "OrderCancelled") {
+        const [
+          ,
+          ,
+          orderId,
+        ] = e.args;
+
+        delete ordersMap[orderId];
+      } 
+    })
+
+    Object.keys(ordersMap).forEach((v) => {
+      orders.push(ordersMap[v]);
+    });
+
+    dispatch(setOrders(orders));
+  }
+
 
   const getLiquidityPositions = async () => {
     if (!vaultContract) return;
@@ -75,6 +149,9 @@ const UpdateOrderHistory: FC = () => {
     const closeEventFilter = clearingHouseContract.filters.ClosePosition(
       signer?.address
     );
+    const settlePnlEventFilter = clearingHouseContract.filters.SettlePNL(
+      signer?.address
+    );
 
     const updateEvent = clearingHouseContract?.queryFilter(
       updateEventFilter,
@@ -87,8 +164,14 @@ const UpdateOrderHistory: FC = () => {
       "latest"
     );
 
-    Promise.all([updateEvent, closeEvent]).then((res) => {
-      parseHistory([...res[0], ...res[1]]);
+    const settlePnlEvent = clearingHouseContract?.queryFilter(
+      settlePnlEventFilter,
+      0,
+      "latest"
+    );
+
+    Promise.all([updateEvent, closeEvent, settlePnlEvent]).then((res) => {
+      parseHistory([...res[0], ...res[1], ...res[2]]);
     });
   };
 
@@ -148,7 +231,7 @@ const UpdateOrderHistory: FC = () => {
             transactionHash: v.transactionHash,
           });
         }
-      } else {
+      } else if(v.eventName == "SettlePNL"){
         history.push({
           type: "CLOSE",
           margin,
@@ -158,7 +241,7 @@ const UpdateOrderHistory: FC = () => {
           blockNumber: v.blockNumber,
           transactionHash: v.transactionHash,
         });
-
+      } else if(v.eventName == "ClosePosition"){
         delete historyMap[positionHash];
       }
     });
@@ -174,11 +257,13 @@ const UpdateOrderHistory: FC = () => {
   useEffect(() => {
     getHistory();
     getLiquidityPositions();
+    getOrders();
   }, [signer]);
 
   useEffect(() => {
     getHistory();
     getLiquidityPositions();
+    getOrders();
   }, [blockNumber]);
 
   return <></>;

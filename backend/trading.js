@@ -2,7 +2,7 @@ var { ethers, WebSocketProvider } = require("ethers");
 require("dotenv").config();
 const { contracts } = require("./contracts/addresses.js");
 const provider = new WebSocketProvider(
-  "wss://ethereum-sepolia-rpc.publicnode.com"
+  `wss://sepolia.infura.io/ws/v3/${process.env.TRADING_INFURA_API_KEY}`
 );
 
 const signer = new ethers.Wallet(

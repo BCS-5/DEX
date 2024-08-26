@@ -17,7 +17,10 @@ const OrderLeverageRange: FC<OrderLeverageRangeParams> = ({
   //   const [focusLeverage, setFocusLeverage] = useState<boolean>(false);
   return (
     <div className="flex flex-col w-full mt-4">
-      <div>Leverage </div>
+      <div className="flex justify-between">
+        <div className="font-semibold">Leverage</div> 
+        <div className="test-[14px] bg-[#2C2D43] rounded-[4px] text-[#f0f0f0] px-2">{leverageValue}x </div>
+        </div>
       <div className="relative mb-6">
         <input
           type="range"

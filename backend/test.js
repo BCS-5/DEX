@@ -1,5 +1,5 @@
 const a = [1, 2, 3, 4, 5];
 
-const [, x, y, z, zz] = a;
+const [aa,bb,cc,dd,ee,ff] = a;
 
-console.log(x, y, z, zz);
+console.log(aa,bb,cc,dd,ee,ff);

@@ -46,11 +46,16 @@ const Header: FC = () => {
   );
   const { marketRegistryContracat, pairContracts, virtualTokenContracts } =
     useSelector((state: RootState) => state.contracts);
+  // const { liquiditys } =
+  //   useSelector((state: RootState) => state.history);
   const dispatch = useDispatch();
 
   const subscribeNewblockHeads = (blockNumber: number) => {
     dispatch(newBlockHeads(blockNumber));
   };
+
+
+  // useEffect(() => console.log("ff", liquiditys[0].unClaimedFees), [liquiditys])
 
   useEffect(() => {
     // console.log(provider?._network?.chainId, !provider);
