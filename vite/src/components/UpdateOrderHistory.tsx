@@ -6,7 +6,7 @@ import {
   setHistory,
   setLiquiditys,
   setPositions,
-  setOrders
+  setOrders,
 } from "../features/history/historySlice";
 
 const UpdateOrderHistory: FC = () => {
@@ -15,7 +15,7 @@ const UpdateOrderHistory: FC = () => {
     vaultContract,
     pairContracts,
     virtualTokenContracts,
-    orderContract
+    orderContract,
   } = useSelector((state: RootState) => state.contracts);
 
   const dispatch = useDispatch();
@@ -24,11 +24,17 @@ const UpdateOrderHistory: FC = () => {
   const { blockNumber } = useSelector((state: RootState) => state.events);
 
   const getOrders = async () => {
-    if(!orderContract) return;
-    
-    const createdEventFilter = orderContract.filters.OrderCreated(signer?.address);
-    const executedEventFilter = orderContract.filters.OrderExecuted(signer?.address);
-    const cancelledEventFilter = orderContract.filters.OrderCancelled(signer?.address);
+    if (!orderContract) return;
+
+    const createdEventFilter = orderContract.filters.OrderCreated(
+      signer?.address
+    );
+    const executedEventFilter = orderContract.filters.OrderExecuted(
+      signer?.address
+    );
+    const cancelledEventFilter = orderContract.filters.OrderCancelled(
+      signer?.address
+    );
 
     const createdEvent = orderContract?.queryFilter(
       createdEventFilter,
@@ -49,7 +55,7 @@ const UpdateOrderHistory: FC = () => {
     Promise.all([createdEvent, executedEvent, cancelledEvent]).then((res) => {
       parseOrders([...res[0], ...res[1], ...res[2]]);
     });
-  }
+  };
 
   const parseOrders = (events: any[]) => {
     events.sort((a, b) => a.blockNumber - b.blockNumber);
@@ -57,7 +63,7 @@ const UpdateOrderHistory: FC = () => {
     const orders: Order[] = [];
 
     events.forEach((e) => {
-      if(e.eventName == "OrderCreated") {
+      if (e.eventName == "OrderCreated") {
         const [
           trader,
           baseToken,
@@ -75,26 +81,24 @@ const UpdateOrderHistory: FC = () => {
           margin,
           amountIn,
           amountOut,
-          isLong
-        }
-      } else if(e.eventName == "OrderExecuted" || e.eventName == "OrderCancelled") {
-        const [
-          ,
-          ,
-          orderId,
-        ] = e.args;
+          isLong,
+        };
+      } else if (
+        e.eventName == "OrderExecuted" ||
+        e.eventName == "OrderCancelled"
+      ) {
+        const [, , orderId] = e.args;
 
         delete ordersMap[orderId];
-      } 
-    })
+      }
+    });
 
     Object.keys(ordersMap).forEach((v) => {
       orders.push(ordersMap[v]);
     });
 
     dispatch(setOrders(orders));
-  }
-
+  };
 
   const getLiquidityPositions = async () => {
     if (!vaultContract) return;
@@ -190,6 +194,7 @@ const UpdateOrderHistory: FC = () => {
         positionSize,
         openNotional,
         isLong,
+        pnl,
       ] = v.args;
       if (v.eventName == "UpdatePosition") {
         if (positionHash in historyMap) {
@@ -231,7 +236,7 @@ const UpdateOrderHistory: FC = () => {
             transactionHash: v.transactionHash,
           });
         }
-      } else if(v.eventName == "SettlePNL"){
+      } else if (v.eventName == "SettlePNL") {
         history.push({
           type: "CLOSE",
           margin,
@@ -240,8 +245,9 @@ const UpdateOrderHistory: FC = () => {
           isLong,
           blockNumber: v.blockNumber,
           transactionHash: v.transactionHash,
+          pnl,
         });
-      } else if(v.eventName == "ClosePosition"){
+      } else if (v.eventName == "ClosePosition") {
         delete historyMap[positionHash];
       }
     });
