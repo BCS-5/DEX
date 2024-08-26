@@ -163,7 +163,15 @@ const PoolTable: FC = () => {
             $ {Number(totalPoolValue).toLocaleString()}
           </td>
           <td className="px-6 py-4">$ {poolData?.volume.toLocaleString()}</td>
-          <td className="px-6 py-4">{poolData?.apr} %</td>
+          <td className="px-6 py-4">
+            {(
+              (Number(poolData?.volume) * 0.0003 * 365 * 100) /
+              Number(totalPoolValue)
+            )
+              .toFixed(2)
+              .toLocaleString()}
+            %
+          </td>
         </tr>
       </tbody>
     </table>

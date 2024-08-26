@@ -52,7 +52,15 @@ const PoolInfo: FC<PoolInfoProps> = ({ totalPoolValue }) => {
       </div>
       <div className="bg-[#162031] rounded-xl p-4">
         <div className="text-[14px] text-[#94A3B8] font-semibold pb-2">APR</div>
-        <div className="text-xl text-[#F8FAFC]">{poolData?.apr}%</div>
+        <div className="text-xl text-[#F8FAFC]">
+          {(
+            (Number(poolData?.volume) * 0.0003 * 365 * 100) /
+            Number(totalPoolValue)
+          )
+            .toFixed(2)
+            .toLocaleString()}
+          %
+        </div>
       </div>
       <div className="col-span-2 my-10"></div>
     </div>
