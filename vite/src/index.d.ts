@@ -31,6 +31,7 @@ interface History {
   isLong: boolean;
   blockNumber: number;
   transactionHash: string;
+  pnl: bigint;
 }
 
 interface Liquidity {

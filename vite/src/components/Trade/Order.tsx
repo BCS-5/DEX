@@ -66,12 +66,6 @@ const Order: FC = () => {
   }, [vaultContract, signer, blockNumber]);
 
   useEffect(() => {
-    if(!vaultContract) return;
-
-    vaultContract.withdraw(100);
-  }, [vaultContract])
-
-  useEffect(() => {
     if (quoteValue === "" || baseValue === "" || focusLeverage) return;
     if (!isMarket) {
       preOrder(isExactInput ? quoteValue : baseValue, isExactInput);

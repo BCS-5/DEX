@@ -190,6 +190,7 @@ const UpdateOrderHistory: FC = () => {
         positionSize,
         openNotional,
         isLong,
+        pnl,
       ] = v.args;
       if (v.eventName == "UpdatePosition") {
         if (positionHash in historyMap) {
@@ -240,6 +241,7 @@ const UpdateOrderHistory: FC = () => {
           isLong,
           blockNumber: v.blockNumber,
           transactionHash: v.transactionHash,
+          pnl,
         });
       } else if(v.eventName == "ClosePosition"){
         delete historyMap[positionHash];

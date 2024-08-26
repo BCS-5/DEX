@@ -10,7 +10,7 @@ interface OrderHistoryCardParams {
   position: Position | History | Order;
 }
 
-const menuType = [0b10011110, 0b10101100, 0b01001101];
+const menuType = [0b10011110, 0b10101100, 0b01001111];
 
 const OrderHistoryCard: FC<OrderHistoryCardParams> = ({ type, position }) => {
   const checkType = (bit: number) => {
@@ -107,6 +107,17 @@ const OrderHistoryCard: FC<OrderHistoryCardParams> = ({ type, position }) => {
     setPnl((Number(pnl) / 10 ** 6).toFixed(2));
     setPnlPercent(((Number(pnl) / Number(_position.margin)) * 100).toFixed(2));
   };
+
+  const getRealizedPnl = () => {
+    const history = (position as History);
+    
+    if(history.type != "CLOSE") return;
+
+    const pnl = history.pnl - history.margin;
+    
+    setPnl((Number(pnl) / 10 ** 6).toFixed(2));
+    setPnlPercent(((Number(pnl) / Number(history.margin)) * 100).toFixed(2));
+  }
 
   const getLeverageRatio = () => {
 
@@ -266,7 +277,12 @@ const OrderHistoryCard: FC<OrderHistoryCardParams> = ({ type, position }) => {
   };
 
   useEffect(() => {
-    getUnrealizedPnl();
+    if(type == 0){
+      getUnrealizedPnl();
+    }
+    else if(type == 2) {
+      getRealizedPnl();
+    }
     getLeverageRatio();
     getEntryPrice();
     getLiquidPrice();
@@ -307,7 +323,7 @@ const OrderHistoryCard: FC<OrderHistoryCardParams> = ({ type, position }) => {
             <div className="flex flex-col w-[120px] flex-1">
               <div
                 className={`text-sm ${
-                  Number(pnl) > 0 ? "text-[#2BBDB5]" : "text-[#FF5AB5]"
+                  Number(pnl) > 0 ? "text-[#2BBDB5]" : Number(pnl) == 0 ? "text-[#f0f0f0]": "text-[#FF5AB5]"
                 }`}
               >
                 {Number(pnl) > 0 && "+"}
@@ -317,10 +333,10 @@ const OrderHistoryCard: FC<OrderHistoryCardParams> = ({ type, position }) => {
                 PNL
                 <span
                   className={`${
-                    Number(pnlPercent) > 0 ? "text-[#2BBDB5]" : "text-[#FF5AB5]"
+                    Number(pnlPercent) > 0 ? "text-[#2BBDB5]" : Number(pnlPercent) == 0 ? "text-[#f0f0f0]" : "text-[#FF5AB5]"
                   }`}
                 >
-                  {Number(pnlPercent) > 0 && "+"} {pnlPercent}%
+                  {Number(pnlPercent) > 0 ? ` +${pnlPercent}` : ` ${pnlPercent}`}%
                 </span>
               </div>
             </div>
