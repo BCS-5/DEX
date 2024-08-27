@@ -8,6 +8,7 @@ import { parseUnits } from "ethers";
 import { Contract } from "ethers";
 
 interface OrderButtonParams {
+  collateral: string;
   quoteValue: string;
   baseValue: string;
   leverageValue: number;
@@ -17,6 +18,7 @@ interface OrderButtonParams {
 }
 
 const OrderButton: FC<OrderButtonParams> = ({
+  collateral,
   quoteValue,
   baseValue,
   leverageValue,
@@ -194,15 +196,27 @@ const OrderButton: FC<OrderButtonParams> = ({
     <>
       {signer ? (
         <button
-          className={`flex justify-center items-center rounded-[4px]  w-full  h-12 text-white mt-4 ${
-            isLong ? "bg-[#1db1a8]" : "bg-[#ef3e9e]"
-          }`}
+          className={`${
+            !quoteValue || !baseValue || Number(quoteValue) > Number(collateral)
+              ? "cursor-not-allowed"
+              : "cursor-pointer"
+          } flex justify-center items-center rounded-[4px]  w-full  h-12 text-white mt-4 ${
+            Number(quoteValue) > Number(collateral)
+              ? "bg-[#242534]"
+              : isLong
+              ? "bg-[#1db1a8]"
+              : "bg-[#ef3e9e]"
+          } `}
           onClick={() =>
             isMarket ? onClickOpenPosition() : onClickOpenOrder()
           }
-          disabled={!quoteValue || !baseValue}
+          disabled={
+            !quoteValue || !baseValue || Number(quoteValue) > Number(collateral)
+          }
         >
-          {isMarket
+          {Number(quoteValue) > Number(collateral)
+            ? "insufficient balance"
+            : isMarket
             ? isLong
               ? "Open Long"
               : "Open Short"

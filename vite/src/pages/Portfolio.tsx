@@ -30,7 +30,6 @@ const Portfolio: React.FC = () => {
   const { provider, signer } = useSelector(
     (state: RootState) => state.providers
   );
-  const { totalValue } = useSelector((state: RootState) => state.portfolio);
 
   const fetchData = useCallback(async () => {
     dispatch(fetchMarketData());
@@ -253,7 +252,7 @@ const Portfolio: React.FC = () => {
             </div>
             <div className="w-[300px] flex flex-col gap-4 ">
               <div className="bg-[#1E222D] p-4 rounded-lg">
-                <AccountSection totalValue={totalValue} />
+                <AccountSection />
               </div>
               <div className="bg-[#1E222D] p-4 rounded-lg">
                 <div className="mb-4">
@@ -321,23 +320,37 @@ const Portfolio: React.FC = () => {
             </button>
           </div>
 
-          <div className="space-y-6">
+          <div className="">
             {activeTab === "portfolio" ? (
               <>
+                <h2 className="text-lg font-semibold text-[#f0f0f0] my-4">
+                  Positions
+                </h2>
                 <div className="bg-[#1E222D] p-4 rounded-lg">
                   <PortfolioPositions onDataUpdate={fetchData} />
                 </div>
+                <h2 className="text-lg font-semibold text-[#f0f0f0] mb-4 mt-8">
+                  Open Orders
+                </h2>
                 <div className="bg-[#1E222D] p-4 rounded-lg">
                   <PortfolioOrders onDataUpdate={fetchData} />
                 </div>
+                <h2 className="text-lg font-semibold text-[#f0f0f0] mb-4 mt-8">
+                  Liquiditys
+                </h2>
                 <div className="bg-[#1E222D] p-4 rounded-lg">
                   <PortfolioLiquidity onDataUpdate={fetchData} />
                 </div>
               </>
             ) : (
-              <div className="bg-[#1E222D] p-4 rounded-lg">
-                <PortfolioHistory />
-              </div>
+              <>
+                <h2 className="text-lg font-semibold text-[#f0f0f0] mb-4 mt-8">
+                  Trade History
+                </h2>
+                <div className="bg-[#1E222D] p-4 rounded-lg">
+                  <PortfolioHistory />
+                </div>
+              </>
             )}
           </div>
         </div>

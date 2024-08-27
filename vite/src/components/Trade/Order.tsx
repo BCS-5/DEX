@@ -87,9 +87,9 @@ const Order: FC = () => {
   };
 
   const setQuoteValue = (value: string) => {
-    if (Number(value) > Number(collateral)) {
-      value = collateral;
-    }
+    // if (Number(value) > Number(collateral)) {
+    //   value = collateral;
+    // }
     setIsExactInput(true);
     _setQuoteValue(value);
     if (!isMarket) {
@@ -227,7 +227,9 @@ const Order: FC = () => {
             />
           )}
           <button
-            className="self-end text-[12px] font-semibold tracking-tighter mt-2"
+            className={`self-end text-[12px] font-semibold tracking-tighter mt-2 ${
+              Number(quoteValue) > Number(collateral) && "text-red-500"
+            }`}
             onClick={() => setQuoteValue(collateral)}
           >
             Available: {collateral} USDT
@@ -259,6 +261,7 @@ const Order: FC = () => {
           isLong={isLong}
         />
         <OrderButton
+          collateral={collateral}
           quoteValue={quoteValue}
           baseValue={baseValue}
           leverageValue={leverageValue}

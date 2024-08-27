@@ -42,9 +42,6 @@ const PortfolioLiquidity: React.FC<PortfolioLiquidityProps> = ({
 
   return (
     <div className="p-4 bg-[#1E222D] rounded-lg shadow-lg">
-      <h2 className="text-lg font-semibold mb-4 text-[#f0f0f0]">
-        Liquidity Positions
-      </h2>
       <div className="overflow-x-auto">
         <table className="w-full text-sm text-left text-[#f0f0f0]">
           <thead className="text-xs uppercase bg-[#131722]">
@@ -57,7 +54,7 @@ const PortfolioLiquidity: React.FC<PortfolioLiquidityProps> = ({
             </tr>
           </thead>
           <tbody>
-            {liquidityPositions.length > 0 ? (
+            {liquidityPositions?.[0]?.amount > 0 ? (
               liquidityPositions.map((position, index) => (
                 <tr
                   key={index}

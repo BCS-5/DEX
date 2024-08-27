@@ -36,17 +36,7 @@ const PortfolioPositions: React.FC<PortfolioPositionsProps> = ({
   };
 
   return (
-    <div className="p-4 bg-[#1E222D] rounded-lg shadow-lg">
-      <h2 className="text-lg font-semibold mb-2 text-[#f0f0f0]">Positions</h2>
-      <div className="grid grid-cols-7 gap-2 text-xs uppercase text-[#72768f] mb-2 bg-[#131722] ">
-        <div>Pair</div>
-        <div>Size</div>
-        <div>Entry Price</div>
-        <div>Mark Price</div>
-        <div>PNL</div>
-        <div>Liquidation Price</div>
-        <div>Action</div>
-      </div>
+    <div className="bg-[#1E222D] rounded-lg shadow-lg">
       <div className="overflow-y-auto max-h-[calc(100vh-200px)]">
         {positions.length ? (
           positions.map((position, index) => (

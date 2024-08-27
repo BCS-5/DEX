@@ -261,15 +261,24 @@ const UpdateOrderHistory: FC = () => {
   };
 
   useEffect(() => {
-    getHistory();
-    getLiquidityPositions();
-    getOrders();
+    if (signer) {
+      getHistory();
+      getLiquidityPositions();
+      getOrders();
+    } else {
+      dispatch(setHistory([]));
+      dispatch(setPositions([]));
+      dispatch(setOrders([]));
+      dispatch(setLiquiditys([]));
+    }
   }, [signer]);
 
   useEffect(() => {
-    getHistory();
-    getLiquidityPositions();
-    getOrders();
+    if (signer) {
+      getHistory();
+      getLiquidityPositions();
+      getOrders();
+    }
   }, [blockNumber]);
 
   return <></>;

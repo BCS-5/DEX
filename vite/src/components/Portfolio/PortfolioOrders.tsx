@@ -34,15 +34,7 @@ const PortfolioOrders: React.FC<PortfolioOrdersProps> = ({ onDataUpdate }) => {
   };
 
   return (
-    <div className="p-4 bg-[#1E222D] rounded-lg shadow-lg">
-      <h2 className="text-lg font-semibold mb-2 text-[#f0f0f0]">Open Orders</h2>
-      <div className="grid grid-cols-5 gap-2 text-xs uppercase text-[#72768f] mb-2 bg-[#131722]">
-        <div>Pair</div>
-        <div>Type</div>
-        <div>Size</div>
-        <div>Price</div>
-        <div>Action</div>
-      </div>
+    <div className="bg-[#1E222D] rounded-lg shadow-lg">
       <div className="overflow-y-auto max-h-[calc(100vh-200px)]">
         {orders.length ? (
           orders.map((order, index) => (
