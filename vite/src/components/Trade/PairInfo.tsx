@@ -28,7 +28,7 @@ const PairContainer: FC = () => {
   const [volume, setVolume] = useState<string>("0.0");
 
   const getMarkPrice = () => {
-    const url = `http://141.164.38.253:8090/api/latest?symbol=BTC&resolution=1D`;
+    const url = `https://141.164.38.253:8090/api/latest?symbol=BTC&resolution=1D`;
     fetch(url)
       .then((response) => response.json())
       .then((data) => {
@@ -48,7 +48,7 @@ const PairContainer: FC = () => {
   };
 
   const getFundingRate = () => {
-    fetch("http://141.164.38.253:8090/api/getPerpetualPool?token=BTC").then(
+    fetch("https://141.164.38.253:8090/api/getPerpetualPool?token=BTC").then(
       (res) =>
         res.json().then((data) => {
           const _longFundingRate = BigInt(data[0].long) - BigInt(data[1].long);
@@ -76,7 +76,7 @@ const PairContainer: FC = () => {
   };
 
   const getVolume = () => {
-    fetch("http://141.164.38.253:8090/api/getRecentVolume").then((res) =>
+    fetch("https://141.164.38.253:8090/api/getRecentVolume").then((res) =>
       res.json().then((data) => {
         setVolume(formatVolume(data.volume));
       })

@@ -4,6 +4,7 @@ import { useSelector } from "react-redux";
 import { RootState } from "../../app/store";
 import Tooltip from "./Tooltip";
 import { BigNumber } from "@ethersproject/bignumber";
+import { notify } from "../../lib";
 
 interface ModalProps {
   isOpen: boolean;
@@ -85,13 +86,23 @@ const RemoveLiquidityModal: FC<ModalProps> = ({ isOpen, onClose, userLP }) => {
       // const maxUint256 = (BigInt(1) << BigInt(256)) - BigInt(1);
       const deadline = Math.floor(Date.now() / 1000) + 5 * 60;
 
-      const tx = await contractWithSigner.removeLiquidity(
-        virtualTokenContracts.BTC.target,
-        BigNumber.from(Number(inputLP)).toString(),
-        0n,
-        0n,
-        deadline
-      );
+      contractWithSigner
+        .removeLiquidity(
+          virtualTokenContracts.BTC.target,
+          BigNumber.from(Number(inputLP)).toString(),
+          0n,
+          0n,
+          deadline
+        )
+        .then((tx) => {
+          notify("Pending Transaction ...", true);
+          tx.wait().then(() => {
+            notify("Transaction confirmed successfully !", true);
+            onClose();
+          });
+        })
+        .catch((error) => notify(error.shortMessage, false));
+
       // console.log(BigNumber.from(inputLP).toString());
       // console.log(calculateQuoteMinimum);
       // console.log(calculateBaseTokenMinimum);
@@ -105,7 +116,6 @@ const RemoveLiquidityModal: FC<ModalProps> = ({ isOpen, onClose, userLP }) => {
       //   deadline
       // );
 
-      await tx.wait();
       console.log("Liquidity removed successfully");
     } catch (error) {
       console.error("Error removing liquidity: ", error);

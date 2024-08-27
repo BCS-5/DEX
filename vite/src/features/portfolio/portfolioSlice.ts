@@ -1,31 +1,56 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import axios from 'axios';
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import axios from "axios";
 
 // API 호출 함수들
-export const fetchMarketData = createAsyncThunk('portfolio/fetchMarketData', async () => {
-  const response = await axios.get('http://141.164.38.253:8090/api/getMarket');
-  return response.data;
-});
+export const fetchMarketData = createAsyncThunk(
+  "portfolio/fetchMarketData",
+  async () => {
+    const response = await axios.get(
+      "https://141.164.38.253:8090/api/getMarket"
+    );
+    return response.data;
+  }
+);
 
-export const fetchUserPositions = createAsyncThunk('portfolio/fetchUserPositions', async (address: string) => {
-  const response = await axios.get(`http://141.164.38.253:8090/api/getPositions?address=${address}`);
-  return response.data;
-});
+export const fetchUserPositions = createAsyncThunk(
+  "portfolio/fetchUserPositions",
+  async (address: string) => {
+    const response = await axios.get(
+      `https://141.164.38.253:8090/api/getPositions?address=${address}`
+    );
+    return response.data;
+  }
+);
 
-export const fetchUserOrders = createAsyncThunk('portfolio/fetchUserOrders', async (address: string) => {
-  const response = await axios.get(`http://141.164.38.253:8090/api/getOrders?address=${address}`);
-  return response.data;
-});
+export const fetchUserOrders = createAsyncThunk(
+  "portfolio/fetchUserOrders",
+  async (address: string) => {
+    const response = await axios.get(
+      `https://141.164.38.253:8090/api/getOrders?address=${address}`
+    );
+    return response.data;
+  }
+);
 
-export const fetchUserLiquidityPositions = createAsyncThunk('portfolio/fetchUserLiquidityPositions', async (address: string) => {
-  const response = await axios.get(`http://141.164.38.253:8090/api/getLiquidityPositions?address=${address}`);
-  return response.data;
-});
+export const fetchUserLiquidityPositions = createAsyncThunk(
+  "portfolio/fetchUserLiquidityPositions",
+  async (address: string) => {
+    const response = await axios.get(
+      `https://141.164.38.253:8090/api/getLiquidityPositions?address=${address}`
+    );
+    return response.data;
+  }
+);
 
-export const fetchTradeHistory = createAsyncThunk('portfolio/fetchTradeHistory', async (address: string) => {
-  const response = await axios.get(`http://141.164.38.253:8090/api/getTradeHistory?address=${address}`);
-  return response.data;
-});
+export const fetchTradeHistory = createAsyncThunk(
+  "portfolio/fetchTradeHistory",
+  async (address: string) => {
+    const response = await axios.get(
+      `https://141.164.38.253:8090/api/getTradeHistory?address=${address}`
+    );
+    return response.data;
+  }
+);
 
 export interface PortfolioState {
   totalValue: string;
@@ -40,9 +65,9 @@ export interface PortfolioState {
 }
 
 export const initialState: PortfolioState = {
-  totalValue: '0',
-  freeCollateral: '0',
-  totalVolume: '0',
+  totalValue: "0",
+  freeCollateral: "0",
+  totalVolume: "0",
   positions: [],
   orders: [],
   liquidityPositions: [],
@@ -52,7 +77,7 @@ export const initialState: PortfolioState = {
 };
 
 export const portfolioSlice = createSlice({
-  name: 'portfolio',
+  name: "portfolio",
   initialState,
   reducers: {},
   extraReducers: (builder) => {
@@ -65,7 +90,9 @@ export const portfolioSlice = createSlice({
         state.totalVolume = action.payload.tradingVolume24h;
         state.totalValue = action.payload.openInterestCurrent;
         // freeCollateral 계산: totalValue - 사용 중인 담보
-        state.freeCollateral = (parseFloat(state.totalValue) - parseFloat(state.totalVolume)).toString();
+        state.freeCollateral = (
+          parseFloat(state.totalValue) - parseFloat(state.totalVolume)
+        ).toString();
       })
       .addCase(fetchMarketData.rejected, (state, action) => {
         state.isLoading = false;

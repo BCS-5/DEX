@@ -1,7 +1,5 @@
 import { FC, useEffect, useState } from "react";
 import PoolComposition from "../components/staking/PoolComposition";
-import LiquidityProvision from "../components/staking/LiquidityProvision";
-import Swaps from "../components/staking/Swaps";
 import PoolDetails from "../components/staking/PoolDetails";
 import Chart from "../components/staking/Chart";
 import { useSelector } from "react-redux";
@@ -123,8 +121,6 @@ const Pool: FC = () => {
               btcTokenContractsAddress={virtualTokenContracts?.BTC?.target.toString()}
               usdtTokenContractsAddress={virtualTokenContracts?.USDT?.target.toString()}
             />
-            <LiquidityProvision />
-            <Swaps />
             <PoolDetails
               pairAddr={pairAddr}
               pairName={pairName}

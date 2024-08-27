@@ -21,7 +21,7 @@ const PoolTable: FC = () => {
   const [markPrice, setMarkPrice] = useState<string>("");
 
   useEffect(() => {
-    fetch("http://141.164.38.253:8090/api/getRecentVolume")
+    fetch("https://141.164.38.253:8090/api/getRecentVolume")
       .then((response) => response.json())
       .then((result) => setPoolData(result))
       .catch((error) => console.error("Error:", error));
