@@ -96,8 +96,9 @@ const executeOrder = () => {
   });
 
   Promise.all(asyncReqs).then((res) => {
+    let flag = true;
     res.forEach((v, idx) => {
-      if (v) {
+      if (v && flag) {
         const orderId = orderArray[idx];
         console.log(
           `execute order trader: ${orderMap.get(orderId).trader}, orderId: ${orderId}`
@@ -107,6 +108,7 @@ const executeOrder = () => {
           gas: "1000000",
           nonce: nonce++,
         });
+        flag = true;
         return;
       }
     });
