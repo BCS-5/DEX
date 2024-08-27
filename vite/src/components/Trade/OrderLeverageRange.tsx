@@ -1,4 +1,4 @@
-import { FC  } from "react";
+import { FC } from "react";
 
 interface OrderLeverageRangeParams {
   leverageValue: number;
@@ -7,7 +7,7 @@ interface OrderLeverageRangeParams {
   setFocusLeverage: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const leverage = ["1x", "100x"];
+const leverage = ["1x", "99x"];
 const OrderLeverageRange: FC<OrderLeverageRangeParams> = ({
   leverageValue,
   setLeverageValue,
@@ -18,14 +18,16 @@ const OrderLeverageRange: FC<OrderLeverageRangeParams> = ({
   return (
     <div className="flex flex-col w-full mt-4">
       <div className="flex justify-between">
-        <div className="font-semibold">Leverage</div> 
-        <div className="test-[14px] bg-[#2C2D43] rounded-[4px] text-[#f0f0f0] px-2">{leverageValue}x </div>
+        <div className="font-semibold">Leverage</div>
+        <div className="test-[14px] bg-[#2C2D43] rounded-[4px] text-[#f0f0f0] px-2">
+          {leverageValue}x{" "}
         </div>
+      </div>
       <div className="relative mb-6">
         <input
           type="range"
           min="1"
-          max="100"
+          max="99"
           step="1"
           value={leverageValue}
           onChange={(e) => setLeverageValue(e.target.value)}
