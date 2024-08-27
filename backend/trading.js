@@ -180,9 +180,9 @@ setInterval(() => {
   getIndexPrice();
 }, 300 * 1000);
 
-// setTimeout(() => {
-//   getIndexPrice();
-// }, 100);
+setTimeout(() => {
+  getIndexPrice();
+}, 100);
 // closePosition(
 //   "0x3F8F6796FC06C5400B70D62A274A93A3CAB09C4E2583AC7F162E59FF1F603B0C",
 //   true
