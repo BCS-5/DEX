@@ -11,7 +11,7 @@ const App: FC = () => {
   const fadeInFromUp = useScrollFadeIn("up", 2, 0);
 
   return (
-    <>
+    <div className="bg-[#1b1636]">
       <Header2 />
       <Top />
       <div className=" justify-center px-80 pt-14">
@@ -22,7 +22,7 @@ const App: FC = () => {
         <FAQList />
       </div>
       <Footer />
-    </>
+    </div>
   );
 };
 

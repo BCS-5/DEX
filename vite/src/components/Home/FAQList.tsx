@@ -4,7 +4,7 @@ const FAQList: React.FC = () => {
   const faqData = [
     {
       question: "What is the fiX?",
-      answer: "ㅇㅇㅇㅇ ",
+      answer: `The reason we chose the name fiX is that it encapsulates the core values of our platform: speed, low fees, and the essence of a decentralized futures exchange. The name "fiX" reflects our commitment to fixing the inefficiencies and high fee issues that can arise during the trading process. Moreover, fiX is designed as a decentralized futures exchange, enabling anyone to access the platform without restrictions. It offers fast transaction speeds and low fees, allowing more traders to trade efficiently without the burden of high costs. Users can trade directly without intermediaries, maintaining full control over their assets throughout the process. fiX aims to provide an unparalleled trading experience that cannot be found in traditional exchanges, leveraging these advantages.`,
     },
     {
       question: "What is Futures Trading??",
@@ -40,7 +40,18 @@ const FAQList: React.FC = () => {
 
   return (
     <div className=" mx-auto my-8 pt-[60px] pb-[60px]">
-      <div className="text-[25px] mb-4 font-bold text-center">FAQ</div>
+      <div className="border-b-2  pb-3">
+        <div
+          className="text-[25px]  font-bold text-center text-white mx-[350px]"
+          style={{
+            background: "linear-gradient(to right, #FFB2D9, #A566FF)",
+            WebkitBackgroundClip: "text",
+            WebkitTextFillColor: "transparent",
+          }}
+        >
+          - FAQ -
+        </div>{" "}
+      </div>
       {faqData.map((item, index) => (
         <FAQItem key={index} question={item.question} answer={item.answer} />
       ))}
