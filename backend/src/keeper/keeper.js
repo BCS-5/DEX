@@ -100,7 +100,7 @@ const executeOrder = () => {
       if (v) {
         const orderId = orderArray[idx];
         console.log(
-          `execute order trader: ${orderMap[orderId].trader}, orderId: ${orderId}`
+          `execute order trader: ${orderMap.get(orderId).trader}, orderId: ${orderId}`
         );
         orderContract.methods.executeOrder(orderId).send({
           from: account.address,
