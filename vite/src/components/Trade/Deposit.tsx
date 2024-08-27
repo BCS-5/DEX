@@ -14,14 +14,15 @@ const Deposit: FC = () => {
   const { signer } = useSelector((state: RootState) => state.providers);
   const { positions } = useSelector((state: RootState) => state.history);
 
+  const [total, setTotal] = useState<string>("0.00");
   const [used, setUsed] = useState<string>("0.00");
   const [available, setAvailable] = useState<string>("0.00");
 
   const navigate = useNavigate();
 
-  const getTotal = () => {
-    return (Number(used) + Number(available)).toFixed(2);
-  };
+  useEffect(() => {
+    setTotal((Number(used) + Number(available)).toFixed(2));
+  }, [used, available]);
 
   const onClickFaucet = () => {
     faucetContract
@@ -60,7 +61,7 @@ const Deposit: FC = () => {
       </div>
       <div className="flex justify-between w-full text-[12px] text-[#f0f0f0]/[0.6] font-semibold">
         <span>Total Collateral</span>
-        <span>{getTotal()} USDT</span>
+        <span>{total} USDT</span>
       </div>
       <div className="flex justify-between w-full text-[12px] text-[#f0f0f0]/[0.6] font-semibold">
         <span>Available Collateral</span>

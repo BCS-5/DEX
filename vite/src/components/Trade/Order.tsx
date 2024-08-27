@@ -116,11 +116,11 @@ const Order: FC = () => {
   const preOrder = (value: string, isExact: boolean) => {
     if (isExact) {
       _setBaseValue(
-        String((Number(value) * leverageValue) / Number(limitPrice))
+        ((Number(value) * leverageValue) / Number(limitPrice)).toFixed(8)
       );
     } else {
       _setQuoteValue(
-        String((Number(value) * Number(limitPrice)) / leverageValue)
+        ((Number(value) * Number(limitPrice)) / leverageValue).toFixed(6)
       );
     }
   };

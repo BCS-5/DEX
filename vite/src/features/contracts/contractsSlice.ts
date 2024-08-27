@@ -18,7 +18,7 @@ export interface ContractState {
   virtualTokenContracts: Contracts;
   usdtContract: Contract | null;
   vaultContract: Contract | null;
-  marketRegistryContracat: Contract | null;
+  marketRegistryContract: Contract | null;
   clearingHouseContract: Contract | null;
   routerContract: Contract | null;
   accountBalanceContract: Contract | null;
@@ -33,12 +33,12 @@ export const contractsSlice = createSlice({
     pairContracts: {} as Contracts,
     usdtContract: null,
     vaultContract: null,
-    marketRegistryContracat: null,
+    marketRegistryContract: null,
     clearingHouseContract: null,
     routerContract: null,
     accountBalanceContract: null,
     faucetContract: null,
-    orderContract: null
+    orderContract: null,
   } as ContractState,
   reducers: {
     setContract: (
@@ -52,12 +52,12 @@ export const contractsSlice = createSlice({
           pairContracts: {} as Contracts,
           usdtContract: null,
           vaultContract: null,
-          marketRegistryContracat: null,
+          marketRegistryContract: null,
           clearingHouseContract: null,
           routerContract: null,
           accountBalanceContract: null,
           faucetContract: null,
-          orderContract: null
+          orderContract: null,
         };
       }
 
@@ -73,7 +73,7 @@ export const contractsSlice = createSlice({
         provider
       );
 
-      const marketRegistryContracat = new Contract(
+      const marketRegistryContract = new Contract(
         contracts.marketRegistry.address,
         contracts.marketRegistry.abi,
         provider
@@ -114,12 +114,12 @@ export const contractsSlice = createSlice({
         pairContracts: state.pairContracts as any,
         usdtContract,
         vaultContract,
-        marketRegistryContracat,
+        marketRegistryContract,
         clearingHouseContract,
         routerContract,
         accountBalanceContract,
         faucetContract,
-        orderContract
+        orderContract,
       };
     },
 

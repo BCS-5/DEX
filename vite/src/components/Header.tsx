@@ -43,8 +43,9 @@ const Header: FC = () => {
   const { provider, signer, chainId } = useSelector(
     (state: RootState) => state.providers
   );
-  const { marketRegistryContracat } =
-    useSelector((state: RootState) => state.contracts);
+  const { marketRegistryContract } = useSelector(
+    (state: RootState) => state.contracts
+  );
   // const { liquiditys } =
   //   useSelector((state: RootState) => state.history);
   const dispatch = useDispatch();
@@ -52,7 +53,6 @@ const Header: FC = () => {
   const subscribeNewblockHeads = (blockNumber: number) => {
     dispatch(newBlockHeads(blockNumber));
   };
-
 
   // useEffect(() => console.log("ff", liquiditys[0].unClaimedFees), [liquiditys])
 
@@ -101,8 +101,8 @@ const Header: FC = () => {
 
   useEffect(() => {
     if (provider) {
-      console.log(marketRegistryContracat?.target);
-      marketRegistryContracat?.getAllBaseTokens().then((data) => {
+      console.log(marketRegistryContract?.target);
+      marketRegistryContract?.getAllBaseTokens().then((data) => {
         data.forEach((address: string) => {
           const tokenContract = new Contract(
             address,
@@ -111,7 +111,7 @@ const Header: FC = () => {
           );
           tokenContract.symbol().then((name: string) => {
             dispatch(setVirtualTokens({ name, address, provider }));
-            marketRegistryContracat
+            marketRegistryContract
               .getPool(address)
               .then((address: string) =>
                 dispatch(setPairs({ name, address, provider }))
@@ -119,7 +119,7 @@ const Header: FC = () => {
           });
         });
       });
-      marketRegistryContracat?.getQuoteToken().then((address) => {
+      marketRegistryContract?.getQuoteToken().then((address) => {
         const tokenContract = new Contract(
           address,
           contracts.virtualToken.abi,
@@ -132,7 +132,7 @@ const Header: FC = () => {
           );
       });
     }
-  }, [marketRegistryContracat]);
+  }, [marketRegistryContract]);
 
   const onClickConnectWallet = () => {
     localStorage.setItem("login", "true");

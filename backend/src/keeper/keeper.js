@@ -13,6 +13,11 @@ const clearingHouseContract = new web3.eth.Contract(
   contracts.clearingHouse.address
 );
 
+const orderContract = new web3.eth.Contract(
+  contracts.order.abi,
+  contracts.order.address
+);
+
 const accountBalanceContract = new web3.eth.Contract(
   contracts.accountBalance.abi,
   contracts.accountBalance.address
@@ -33,9 +38,12 @@ marketRegistryContract.methods
 const positionMap = new Map();
 const closedPosition = {};
 
+const orderMap = new Map();
+const closedOrder = {};
+
 const liquidate = () => {
   const asyncReqs = [];
-  positionArray = [];
+  const positionArray = [];
   positionMap.forEach((v, k) => {
     if (closedPosition[k]) return;
     asyncReqs.push(
@@ -66,6 +74,7 @@ const liquidate = () => {
     });
 
     if (traders.length) {
+      console.log(`execute liquidation traders: ${traders}`);
       clearingHouseContract.methods
         .liquidateBatch(traders, baseTokens, positionHashs)
         .send({
@@ -74,6 +83,33 @@ const liquidate = () => {
           nonce: nonce++,
         });
     }
+  });
+};
+
+const executeOrder = () => {
+  const asyncReqs = [];
+  const orderArray = [];
+  orderMap.forEach((v, k) => {
+    if (closedOrder[k]) return;
+    asyncReqs.push(orderContract.methods.checkExecutionCondition(v).call());
+    orderArray.push(k);
+  });
+
+  Promise.all(asyncReqs).then((res) => {
+    res.forEach((v, idx) => {
+      if (v) {
+        const orderId = orderArray[idx];
+        console.log(
+          `execute order trader: ${orderMap[orderId].trader}, orderId: ${orderId}`
+        );
+        orderContract.methods.executeOrder(orderId).send({
+          from: account.address,
+          gas: "1000000",
+          nonce: nonce++,
+        });
+        return;
+      }
+    });
   });
 };
 
@@ -88,7 +124,11 @@ const updatePosition = (position) => {
     isLong,
   } = position;
 
-  //   if (trader === "0x000000c2028C057617891ECB15B8159F4249F0E3") return;
+  if (
+    trader.toLowerCase() ===
+    "0x000000c2028C057617891ECB15B8159F4249F0E3".toLowerCase()
+  )
+    return;
 
   clearingHouseContract.methods
     .getPosition(trader, baseToken, positionHash)
@@ -119,6 +159,28 @@ const closePosition = (position) => {
   closedPosition[positionHash] = true;
 };
 
+const openOrder = (order) => {
+  const { trader, baseToken, orderId, margin, amountIn, amountOut, isLong } =
+    order;
+
+  orderMap.set(orderId, {
+    trader,
+    baseToken,
+    orderId,
+    margin,
+    amountIn,
+    amountOut,
+    isLong,
+    status: 0,
+  });
+};
+
+const closeOrder = (order) => {
+  const { orderId } = order;
+  orderMap.delete(orderId);
+  closedOrder[orderId] = true;
+};
+
 const getIndexPrice = async () => {
   fetch(
     "https://min-api.cryptocompare.com/data/pricemultifull?fsyms=BTC&tsyms=USD"
@@ -143,6 +205,7 @@ const subscribe = async () => {
       nonce = await web3.eth.getTransactionCount(account.address);
 
       liquidate();
+      executeOrder();
 
       if (parseInt(newBlock.number) % 2 == 0) {
         getIndexPrice();
@@ -163,6 +226,30 @@ const subscribe = async () => {
       })
       .on("data", (event) => {
         closePosition(event.returnValues);
+      });
+
+    orderContract.events
+      .OrderCreated({
+        fromBlock: 0,
+      })
+      .on("data", (event) => {
+        openOrder(event.returnValues);
+      });
+
+    orderContract.events
+      .OrderExecuted({
+        fromBlock: 0,
+      })
+      .on("data", (event) => {
+        closeOrder(event.returnValues);
+      });
+
+    orderContract.events
+      .OrderCancelled({
+        fromBlock: 0,
+      })
+      .on("data", (event) => {
+        closeOrder(event.returnValues);
       });
   };
 

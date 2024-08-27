@@ -28,8 +28,12 @@ const OrderButton: FC<OrderButtonParams> = ({
   const { provider, signer } = useSelector(
     (state: RootState) => state.providers
   );
-  const { clearingHouseContract, virtualTokenContracts, routerContract, orderContract } =
-    useSelector((state: RootState) => state.contracts);
+  const {
+    clearingHouseContract,
+    virtualTokenContracts,
+    routerContract,
+    orderContract,
+  } = useSelector((state: RootState) => state.contracts);
 
   const { slippage, deadline } = useSelector(
     (state: RootState) => state.events
@@ -46,33 +50,63 @@ const OrderButton: FC<OrderButtonParams> = ({
 
   const onClickOpenOrder = async () => {
     if (!quoteValue || !baseValue) return;
-    console.log("dd")
-    // function createOrder(address baseToken, uint256 margin, uint256 amountIn, uint256 amountOut, bool isLong) external 
-    if(isLong) {
-      const margin = parseUnits(quoteValue, 18) / 10n ** 12n;
-      let amountIn = margin * BigInt(leverageValue);
-      let amountOut = parseUnits(baseValue, 18) / 10n ** 10n;
-      orderContract?.createOrder(virtualTokenContracts?.BTC?.target, margin, amountIn, amountOut, true).then((tx) => {
-        notify("Pending Transaction ...", true);
-        tx.wait().then(() =>
-          notify("Transaction confirmed successfully !", true)
-        );
-      })
-    } else {
-      const margin = parseUnits(quoteValue, 18) / 10n ** 12n;
-      let amountIn = parseUnits(baseValue, 18) / 10n ** 10n;
-      let amountOut = margin * BigInt(leverageValue);
-      orderContract?.createOrder(virtualTokenContracts?.BTC?.target, margin, amountIn, amountOut, false).then((tx) => {
-        notify("Pending Transaction ...", true);
-        tx.wait().then(() =>
-          notify("Transaction confirmed successfully !", true)
-        );
-      })  
+    const margin = parseUnits(quoteValue, 18) / 10n ** 12n;
+    const openNotional = margin * BigInt(leverageValue);
+    const positionSize = parseUnits(baseValue, 18) / 10n ** 10n;
+
+    if (margin < parseUnits("1", 6)) {
+      notify("Please enter an amount of at least $1.", false);
+      return;
+    } else if (openNotional < parseUnits("50", 6)) {
+      notify("Trade size including leverage must be at least $50.", false);
+      return;
     }
-  }
+
+    if (isLong) {
+      orderContract
+        ?.createOrder(
+          virtualTokenContracts?.BTC?.target,
+          margin,
+          openNotional,
+          positionSize,
+          true
+        )
+        .then((tx) => {
+          notify("Pending Transaction ...", true);
+          tx.wait().then(() =>
+            notify("Transaction confirmed successfully !", true)
+          );
+        });
+    } else {
+      orderContract
+        ?.createOrder(
+          virtualTokenContracts?.BTC?.target,
+          margin,
+          positionSize,
+          openNotional,
+          false
+        )
+        .then((tx) => {
+          notify("Pending Transaction ...", true);
+          tx.wait().then(() =>
+            notify("Transaction confirmed successfully !", true)
+          );
+        });
+    }
+  };
 
   const onClickOpenPosition = async () => {
     if (!quoteValue || !baseValue) return;
+
+    const margin = parseUnits(quoteValue, 18) / 10n ** 12n;
+
+    let openNotional = margin * BigInt(leverageValue);
+    let positionSize = parseUnits(baseValue, 18) / 10n ** 10n;
+
+    if (margin < parseUnits("1", 6)) {
+      notify("Please enter an amount of at least $1.", false);
+      return;
+    }
 
     if (isLong) {
       const path = [
@@ -80,23 +114,19 @@ const OrderButton: FC<OrderButtonParams> = ({
         virtualTokenContracts?.BTC?.target,
       ];
 
-      const margin = parseUnits(quoteValue, 18) / 10n ** 12n;
-      let amountIn = margin * BigInt(leverageValue);
-      let amountOut = parseUnits(baseValue, 18) / 10n ** 10n;
-
       const slippageAdjustedAmount = await getSlippageAdjustedAmount(
         routerContract as Contract,
-        amountIn,
-        amountOut,
+        openNotional,
+        positionSize,
         path as string[],
         isExactInput,
         slippage
       );
 
       if (isExactInput) {
-        amountOut = slippageAdjustedAmount;
+        positionSize = slippageAdjustedAmount;
       } else {
-        amountIn = slippageAdjustedAmount;
+        openNotional = slippageAdjustedAmount;
       }
 
       // function openPosition(address baseToken, bool isExactInput, bool isLong, uint margin, uint amountIn, uint amountOut, uint deadline) public hasPool(baseToken) {
@@ -106,8 +136,8 @@ const OrderButton: FC<OrderButtonParams> = ({
           isExactInput,
           isLong,
           margin,
-          amountIn,
-          amountOut,
+          openNotional,
+          positionSize,
           Math.floor(Date.now() / 1000) + parseInt(deadline) * 60
         )
         .then((tx) => {
@@ -123,23 +153,22 @@ const OrderButton: FC<OrderButtonParams> = ({
         virtualTokenContracts?.USDT?.target,
       ];
 
-      const margin = parseUnits(quoteValue, 18) / 10n ** 12n;
-      let amountIn = parseUnits(baseValue, 18) / 10n ** 10n;
-      let amountOut = margin * BigInt(leverageValue);
+      let openNotional = margin * BigInt(leverageValue);
+      let positionSize = parseUnits(baseValue, 18) / 10n ** 10n;
 
       const slippageAdjustedAmount = await getSlippageAdjustedAmount(
         routerContract as Contract,
-        amountIn,
-        amountOut,
+        positionSize,
+        openNotional,
         path as string[],
         !isExactInput,
         slippage
       );
 
       if (isExactInput) {
-        amountIn = slippageAdjustedAmount;
+        positionSize = slippageAdjustedAmount;
       } else {
-        amountOut = slippageAdjustedAmount;
+        openNotional = slippageAdjustedAmount;
       }
 
       clearingHouseContract
@@ -148,8 +177,8 @@ const OrderButton: FC<OrderButtonParams> = ({
           !isExactInput,
           isLong,
           margin,
-          amountIn,
-          amountOut,
+          positionSize,
+          openNotional,
           Math.floor(Date.now() / 1000) + parseInt(deadline) * 60
         )
         .then((tx) => {
@@ -168,10 +197,18 @@ const OrderButton: FC<OrderButtonParams> = ({
           className={`flex justify-center items-center rounded-[4px]  w-full  h-12 text-white mt-4 ${
             isLong ? "bg-[#1db1a8]" : "bg-[#ef3e9e]"
           }`}
-          onClick={() => isMarket ? onClickOpenPosition() : onClickOpenOrder()}
+          onClick={() =>
+            isMarket ? onClickOpenPosition() : onClickOpenOrder()
+          }
           disabled={!quoteValue || !baseValue}
         >
-          {isMarket ? (isLong ? "Open Long" : "Open Short") : (isLong ? "Order Long" : "Order Short") }
+          {isMarket
+            ? isLong
+              ? "Open Long"
+              : "Open Short"
+            : isLong
+            ? "Order Long"
+            : "Order Short"}
         </button>
       ) : (
         <button
