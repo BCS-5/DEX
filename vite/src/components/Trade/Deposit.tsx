@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from "react";
+import { FC, useEffect, useMemo, useState } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "../../app/store";
 import { formatUnits } from "ethers";
@@ -14,14 +14,13 @@ const Deposit: FC = () => {
   const { signer } = useSelector((state: RootState) => state.providers);
   const { positions } = useSelector((state: RootState) => state.history);
 
-  const [total, setTotal] = useState<string>("0.00");
   const [used, setUsed] = useState<string>("0.00");
   const [available, setAvailable] = useState<string>("0.00");
 
   const navigate = useNavigate();
 
-  useEffect(() => {
-    setTotal((Number(used) + Number(available)).toFixed(2));
+  const total = useMemo(() => {
+    return (Number(used) + Number(available)).toFixed(2);
   }, [used, available]);
 
   const onClickFaucet = () => {
@@ -45,14 +44,16 @@ const Deposit: FC = () => {
   }, [vaultContract, signer, blockNumber]);
 
   useEffect(() => {
-    if (!positions.length) return;
-
+    if (!positions.length) {
+      setUsed("0.00");
+      return;
+    }
     const sumMargin = positions.reduce((accumulator, currentValue) => {
       return { margin: accumulator.margin + currentValue.margin } as Position;
     });
 
     setUsed(Number(formatUnits(sumMargin.margin, 6)).toFixed(2));
-  }, [positions]);
+  }, [positions, blockNumber]);
 
   return (
     <div className="flex flex-col w-full  self-end bg-[#1E1F31] rounded-[4px]  p-4">

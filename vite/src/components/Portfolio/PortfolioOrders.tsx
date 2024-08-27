@@ -7,11 +7,7 @@ import { RootState } from "../../app/store";
 import { contracts } from "../../contracts/addresses";
 import OrderHistoryCard from "../Trade/OrderHistoryCard";
 
-interface PortfolioOrdersProps {
-  onDataUpdate: () => void;
-}
-
-const PortfolioOrders: React.FC<PortfolioOrdersProps> = ({ onDataUpdate }) => {
+const PortfolioOrders: React.FC = () => {
   const orders = useSelector((state: RootState) => state.history.orders);
   const { signer } = useSelector((state: RootState) => state.providers);
 
@@ -26,7 +22,6 @@ const PortfolioOrders: React.FC<PortfolioOrdersProps> = ({ onDataUpdate }) => {
       const tx = await clearingHouseContract.cancelOrder(orderId);
       await tx.wait();
       toast.success("Order cancelled successfully.");
-      onDataUpdate();
     } catch (error) {
       console.error("Error cancelling order:", error);
       toast.error("Error cancelling order.");

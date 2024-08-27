@@ -19,6 +19,7 @@ const Order: FC = () => {
   const { blockNumber } = useSelector((state: RootState) => state.events);
 
   const { signer } = useSelector((state: RootState) => state.providers);
+  const { orders } = useSelector((state: RootState) => state.history);
 
   const [isLong, setIsLong] = useState<boolean>(true);
   const [isMarket, setIsMarket] = useState<boolean>(true);
@@ -56,9 +57,12 @@ const Order: FC = () => {
   }, [accountBalanceContract, virtualTokenContracts]);
 
   useEffect(() => {
-    vaultContract
-      ?.getTotalCollateral(signer?.address)
-      .then((data) => setCollateral(Number(formatUnits(data, 6)).toFixed(2)));
+    vaultContract?.getTotalCollateral(signer?.address).then((data) => {
+      orders.forEach((v) => {
+        data -= v.margin;
+      });
+      setCollateral(Number(formatUnits(data, 6)).toFixed(2));
+    });
   }, [vaultContract, signer, blockNumber]);
 
   useEffect(() => {

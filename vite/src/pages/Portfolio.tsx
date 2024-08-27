@@ -1,15 +1,8 @@
-import React, { useState, useEffect, useCallback } from "react";
-import { useSelector, useDispatch } from "react-redux";
-import { ethers } from "ethers";
+import React, { useState, useEffect } from "react";
+import { useSelector } from "react-redux";
+import { ethers, formatUnits, parseUnits } from "ethers";
 import { toast } from "react-toastify";
-import { RootState, AppDispatch } from "../app/store";
-import {
-  fetchMarketData,
-  fetchUserPositions,
-  fetchUserOrders,
-  fetchUserLiquidityPositions,
-  fetchTradeHistory,
-} from "../features/portfolio/portfolioSlice";
+import { RootState } from "../app/store";
 import PortfolioOverview from "../components/Portfolio/PortfolioOverview";
 import PortfolioPositions from "../components/Portfolio/PortfolioPositions";
 import PortfolioOrders from "../components/Portfolio/PortfolioOrders";
@@ -26,27 +19,41 @@ const Portfolio: React.FC = () => {
   const [withdrawAmount, setWithdrawAmount] = useState<string>("");
   const [isDepositing, setIsDepositing] = useState(false);
   const [isWithdrawing, setIsWithdrawing] = useState(false);
-  const dispatch = useDispatch<AppDispatch>();
+  const { vaultContract } = useSelector((state: RootState) => state.contracts);
+  const { blockNumber } = useSelector((state: RootState) => state.events);
+
+  const { orders } = useSelector((state: RootState) => state.history);
   const { provider, signer } = useSelector(
     (state: RootState) => state.providers
   );
 
-  const fetchData = useCallback(async () => {
-    dispatch(fetchMarketData());
-    if (signer) {
-      const address = await signer.getAddress();
-      dispatch(fetchUserPositions(address));
-      dispatch(fetchUserOrders(address));
-      dispatch(fetchUserLiquidityPositions(address));
-      dispatch(fetchTradeHistory(address));
-    }
-  }, [dispatch, signer]);
+  const [collateral, setCollateral] = useState<string>("0.0");
+
+  // const fetchData = useCallback(async () => {
+  //   dispatch(fetchMarketData());
+  //   if (signer) {
+  //     const address = await signer.getAddress();
+  //     dispatch(fetchUserPositions(address));
+  //     dispatch(fetchUserOrders(address));
+  //     dispatch(fetchUserLiquidityPositions(address));
+  //     dispatch(fetchTradeHistory(address));
+  //   }
+  // }, [dispatch, signer]);
+
+  // useEffect(() => {
+  //   fetchData();
+  //   const intervalId = setInterval(fetchData, 30000);
+  //   return () => clearInterval(intervalId);
+  // }, [fetchData]);
 
   useEffect(() => {
-    fetchData();
-    const intervalId = setInterval(fetchData, 30000);
-    return () => clearInterval(intervalId);
-  }, [fetchData]);
+    vaultContract?.getTotalCollateral(signer?.address).then((data) => {
+      orders.forEach((v) => {
+        data -= v.margin;
+      });
+      setCollateral(Number(formatUnits(data, 6)).toFixed(2));
+    });
+  }, [vaultContract, signer, blockNumber, orders]);
 
   const handleDeposit = async () => {
     if (!signer || !provider) {
@@ -106,7 +113,7 @@ const Portfolio: React.FC = () => {
       await depositTx.wait();
 
       toast.success("Deposit successful!");
-      fetchData();
+      // fetchData();
       setDepositAmount("");
     } catch (error) {
       console.error("Deposit failed:", error);
@@ -123,6 +130,16 @@ const Portfolio: React.FC = () => {
     }
     if (!withdrawAmount || parseFloat(withdrawAmount) <= 0) {
       toast.error("Please enter a valid withdraw amount.");
+      return;
+    }
+    console.log(
+      parseUnits(withdrawAmount, 6),
+      parseUnits(collateral, 6),
+      parseUnits(withdrawAmount, 6) > parseUnits(collateral, 6)
+    );
+
+    if (parseUnits(withdrawAmount, 6) > parseUnits(collateral, 6)) {
+      toast.error("Insufficient Balance.");
       return;
     }
 
@@ -219,7 +236,7 @@ const Portfolio: React.FC = () => {
       }
 
       toast.success("Withdraw successful!");
-      fetchData();
+      // fetchData();
       setWithdrawAmount("");
     } catch (error: unknown) {
       console.error("Withdraw failed:", error);
@@ -327,19 +344,19 @@ const Portfolio: React.FC = () => {
                   Positions
                 </h2>
                 <div className="bg-[#1E222D] p-4 rounded-lg">
-                  <PortfolioPositions onDataUpdate={fetchData} />
+                  <PortfolioPositions />
                 </div>
                 <h2 className="text-lg font-semibold text-[#f0f0f0] mb-4 mt-8">
                   Open Orders
                 </h2>
                 <div className="bg-[#1E222D] p-4 rounded-lg">
-                  <PortfolioOrders onDataUpdate={fetchData} />
+                  <PortfolioOrders />
                 </div>
                 <h2 className="text-lg font-semibold text-[#f0f0f0] mb-4 mt-8">
                   Liquiditys
                 </h2>
                 <div className="bg-[#1E222D] p-4 rounded-lg">
-                  <PortfolioLiquidity onDataUpdate={fetchData} />
+                  <PortfolioLiquidity />
                 </div>
               </>
             ) : (

@@ -46,20 +46,14 @@ const Header: FC = () => {
   const { marketRegistryContract } = useSelector(
     (state: RootState) => state.contracts
   );
-  // const { liquiditys } =
-  //   useSelector((state: RootState) => state.history);
   const dispatch = useDispatch();
 
   const subscribeNewblockHeads = (blockNumber: number) => {
     dispatch(newBlockHeads(blockNumber));
   };
 
-  // useEffect(() => console.log("ff", liquiditys[0].unClaimedFees), [liquiditys])
-
   useEffect(() => {
-    // console.log(provider?._network?.chainId, !provider);
     if (!provider || chainId !== 11155111) return;
-    console.log("hi");
     provider.on("block", subscribeNewblockHeads);
     return () => {
       provider.removeListener("block", subscribeNewblockHeads);
@@ -101,7 +95,6 @@ const Header: FC = () => {
 
   useEffect(() => {
     if (provider) {
-      console.log(marketRegistryContract?.target);
       marketRegistryContract?.getAllBaseTokens().then((data) => {
         data.forEach((address: string) => {
           const tokenContract = new Contract(
@@ -145,8 +138,9 @@ const Header: FC = () => {
         <div className="flex items-center pl-4">
           <img
             src="/tmp.png"
-            className="w-[150px] h-[24px] object-contain
+            className="w-[150px] h-[24px] object-contain cursor-pointer
            "
+            onClick={() => navigate("/")}
           />
         </div>
         <div className="flex gap-8">

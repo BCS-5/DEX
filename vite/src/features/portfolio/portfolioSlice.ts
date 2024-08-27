@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import axios from "axios";
-import { contracts } from "../../contracts/addresses"; // 경로를 확인하고 필요하다면 수정하세요
+// import { contracts } from "../../contracts/addresses"; // 경로를 확인하고 필요하다면 수정하세요
 
 // 새로운 fetchPortfolioData 함수 추가
 export const fetchPortfolioData = createAsyncThunk(

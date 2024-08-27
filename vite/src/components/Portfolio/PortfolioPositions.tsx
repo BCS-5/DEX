@@ -7,13 +7,7 @@ import { RootState } from "../../app/store";
 import { contracts } from "../../contracts/addresses";
 import OrderHistoryCard from "../Trade/OrderHistoryCard";
 
-interface PortfolioPositionsProps {
-  onDataUpdate: () => void;
-}
-
-const PortfolioPositions: React.FC<PortfolioPositionsProps> = ({
-  onDataUpdate,
-}) => {
+const PortfolioPositions: React.FC = () => {
   const positions = useSelector((state: RootState) => state.history.positions);
   const { signer } = useSelector((state: RootState) => state.providers);
 
@@ -28,7 +22,6 @@ const PortfolioPositions: React.FC<PortfolioPositionsProps> = ({
       const tx = await clearingHouseContract.closePosition(positionId);
       await tx.wait();
       toast.success("Position closed successfully.");
-      onDataUpdate();
     } catch (error) {
       console.error("Error closing position:", error);
       toast.error("Error closing position.");

@@ -1,22 +1,26 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from "recharts";
-import { RootState, AppDispatch } from "../../app/store";
-import {
-  fetchPortfolioData,
-  fetchTradeHistory,
-} from "../../features/portfolio/portfolioSlice";
+import { RootState } from "../../app/store";
+import { formatUnits } from "ethers";
 
 const COLORS = ["#0088FE", "#00C49F"];
 
 const PortfolioOverview: React.FC = () => {
-  const dispatch = useDispatch<AppDispatch>();
-  const { freeCollateral, tradeHistory, isLoading } = useSelector(
-    (state: RootState) => state.portfolio
+  const { positions, liquiditys, history } = useSelector(
+    (state: RootState) => state.history
   );
-  const { positions } = useSelector((state: RootState) => state.history);
 
   const { signer } = useSelector((state: RootState) => state.providers);
+  const {
+    vaultContract,
+    clearingHouseContract,
+    virtualTokenContracts,
+    accountBalanceContract,
+    pairContracts,
+    routerContract,
+  } = useSelector((state: RootState) => state.contracts);
+
   const [address, setAddress] = useState<string | null>(null);
 
   useEffect(() => {
@@ -36,53 +40,123 @@ const PortfolioOverview: React.FC = () => {
     getAddress();
   }, [signer]);
 
-  useEffect(() => {
-    if (address) {
-      dispatch(fetchPortfolioData(address));
-      dispatch(fetchTradeHistory(address));
-    }
-  }, [dispatch, address]);
-  //useMemo 대신 useState로 value값 저장 후 useEffect 사용.
-  const [totalValue, setTotalValue] = useState<string>("0.0");
+  const [usdValue, setUsdValue] = useState<bigint>(0n);
+  const [baseValue, setbaseValue] = useState<bigint>(0n);
 
-  useEffect(() => {
-    if (!positions.length) return;
-    const _totalValue = positions.reduce((sum, position) => {
-      return (
-        sum + Number(position.margin)
+  const totalValue = useMemo(
+    () => Number(formatUnits(usdValue + baseValue, 6)).toFixed(2),
+    [usdValue, baseValue]
+  );
 
-        // parseFloat(position.pnl)
+  const getFundingPayment = async (_position: Position) => {
+    const positionInfo = await clearingHouseContract?.getPosition(
+      _position.trader,
+      _position.baseToken,
+      _position.positionHash
+    );
+
+    return await accountBalanceContract?.calculateFundingPayment(
+      [...positionInfo],
+      virtualTokenContracts?.BTC?.target,
+      pairContracts?.BTC?.target
+    );
+  };
+
+  const getUnrealizedPnl = async (_position: Position) => {
+    let pnl = 0n;
+    const fundingPayment = await getFundingPayment(_position);
+
+    if (_position.isLong) {
+      const path = [
+        virtualTokenContracts?.BTC?.target,
+        virtualTokenContracts?.USDT?.target,
+      ];
+
+      const amounts = await routerContract?.getAmountsOut(
+        _position.positionSize,
+        path
       );
-    }, parseFloat(freeCollateral));
-    setTotalValue((_totalValue / 10 ** 6).toFixed(2));
-  }, [positions, freeCollateral]);
 
-  //볼륨 보류
+      pnl =
+        _position.margin +
+        amounts[1] -
+        BigInt(_position.openNotional) +
+        fundingPayment;
+    } else {
+      const path = [
+        virtualTokenContracts?.USDT?.target,
+        virtualTokenContracts?.BTC?.target,
+      ];
+
+      const amounts = await routerContract?.getAmountsIn(
+        _position.positionSize,
+        path
+      );
+
+      pnl =
+        _position.margin +
+        BigInt(_position.openNotional) -
+        amounts[0] +
+        fundingPayment;
+    }
+
+    return pnl;
+  };
+
+  const getTotalValue = () => {
+    vaultContract?.getTotalCollateral(signer?.address).then((collateral) => {
+      let total = collateral;
+      console.log(total);
+      liquiditys.forEach((v) => {
+        total += v.locked + v.unClaimedFees;
+      });
+      setUsdValue(total);
+    });
+  };
+
+  const getBaseValue = () => {
+    const asyncReqs = positions.map((v) => getUnrealizedPnl(v));
+    Promise.all(asyncReqs).then((res) => {
+      let base = 0n;
+      res.forEach((v) => {
+        base += v;
+      });
+      setbaseValue(base);
+    });
+  };
+
+  useEffect(() => {
+    if (
+      !virtualTokenContracts?.BTC?.target ||
+      !pairContracts?.BTC?.target ||
+      !signer?.address ||
+      !vaultContract
+    )
+      return;
+    getTotalValue();
+    getBaseValue();
+  }, [positions, vaultContract, signer, virtualTokenContracts, pairContracts]);
+
+  const portfolioComposition = useMemo<any[]>(() => {
+    return [
+      { name: "BTC", value: Number(formatUnits(baseValue, 6)) },
+      {
+        name: "Collateral",
+        value: Number(formatUnits(usdValue, 6)),
+      },
+    ];
+  }, [baseValue, usdValue]);
+
   const totalVolume = useMemo(() => {
-    if (!tradeHistory.length) return 0;
-    const twentyFourHoursAgo = Date.now() - 24 * 60 * 60 * 1000;
-    return tradeHistory
-      .filter(
-        (trade) => new Date(trade.timestamp).getTime() > twentyFourHoursAgo
-      )
-      .reduce((sum, trade) => sum + parseFloat(trade.amount), 0);
-  }, [tradeHistory]);
+    if (!history) return "0.00";
+    let total = 0n;
+    console.log(history);
+    history.forEach((v) => {
+      total += v.openNotional;
+    });
 
-  // const btcValue = btcPosition
-  //   ? parseFloat(btcPosition.positionSize) +
-  //     parseFloat(btcPosition.margin) +
-  //     parseFloat(btcPosition.pnl)
-  //   : 0;
-  const btcValue = 1.1;
-
-  const portfolioComposition = [
-    { name: "BTC", value: btcValue },
-    { name: "Collateral", value: parseFloat(freeCollateral) },
-  ];
-
-  if (isLoading) {
-    return <div className="text-white">Loading...</div>;
-  }
+    return Number(formatUnits(total, 6)).toFixed(2);
+  }, [history]);
 
   if (!address) {
     return (
@@ -105,11 +179,9 @@ const PortfolioOverview: React.FC = () => {
           </div>
           <div>
             <h3 className="text-sm font-medium text-[#72768f] mb-2">
-              Total Volume (24h)
+              Total Volume
             </h3>
-            <p className="text-2xl font-bold text-[#f0f0f0]">
-              ${totalVolume.toFixed(2)}
-            </p>
+            <p className="text-2xl font-bold text-[#f0f0f0]">${totalVolume}</p>
           </div>
         </div>
         <div className="w-1/2">

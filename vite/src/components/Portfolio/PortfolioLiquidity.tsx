@@ -6,20 +6,14 @@ import { Link } from "react-router-dom";
 import { RootState } from "../../app/store";
 import { contracts } from "../../contracts/addresses";
 
-interface PortfolioLiquidityProps {
-  onDataUpdate: () => void;
-}
-
-const PortfolioLiquidity: React.FC<PortfolioLiquidityProps> = ({
-  onDataUpdate,
-}) => {
+const PortfolioLiquidity: React.FC = () => {
   const liquidityPositions = useSelector(
     (state: RootState) => state.history.liquiditys
   );
   const { signer } = useSelector((state: RootState) => state.providers);
   const { pairContracts } = useSelector((state: RootState) => state.contracts);
 
-  const removeLiquidity = async (poolName: string, amount: bigint) => {
+  async (poolName: string, amount: bigint) => {
     if (!signer) return;
     try {
       const clearingHouseContract = new ethers.Contract(
@@ -33,7 +27,6 @@ const PortfolioLiquidity: React.FC<PortfolioLiquidityProps> = ({
       );
       await tx.wait();
       toast.success("유동성이 성공적으로 제거되었습니다.");
-      onDataUpdate();
     } catch (error) {
       console.error("Error removing liquidity:", error);
       toast.error("유동성 제거 중 오류가 발생했습니다.");

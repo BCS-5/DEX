@@ -25,7 +25,7 @@ const TradingViewChart: React.FC = () => {
           container_id: chartContainerRef.current,
           library_path: "/charting_library/",
           datafeed: datafeed,
-
+          interval: "5",
           symbol: "BTC", // 심볼 값이 올바르게 설정되어 있는지 확인
           // timezone: "Asia/Seoul",
           timezone: "Asia/Seoul",

@@ -9,6 +9,9 @@ const AccountSection: React.FC = () => {
   const { signer } = useSelector((state: RootState) => state.providers);
   const { vaultContract } = useSelector((state: RootState) => state.contracts);
   const { blockNumber } = useSelector((state: RootState) => state.events);
+  const { positions, orders } = useSelector(
+    (state: RootState) => state.history
+  );
 
   useEffect(() => {
     const fetchAccountData = async () => {
@@ -16,15 +19,19 @@ const AccountSection: React.FC = () => {
 
       try {
         const address = await signer.getAddress();
-        const totalCollateral = await vaultContract.getTotalCollateral(address);
-        const useCollateral = await vaultContract.getUseCollateral(address);
+        let freeCollateral = await vaultContract.getTotalCollateral(address);
+        let totalCollateral = freeCollateral;
 
-        const totalValueBigInt = BigInt(totalCollateral);
-        const useCollateralBigInt = BigInt(useCollateral);
-        const freeCollateralBigInt = totalValueBigInt - useCollateralBigInt;
+        positions.forEach((v) => {
+          totalCollateral += v.margin;
+        });
 
-        setTotalValue(formatUnits(totalValueBigInt, 6));
-        setFreeCollateral(formatUnits(freeCollateralBigInt, 6));
+        orders.forEach((v) => {
+          freeCollateral -= v.margin;
+        });
+
+        setTotalValue(formatUnits(totalCollateral, 6));
+        setFreeCollateral(formatUnits(freeCollateral, 6));
       } catch (error) {
         console.error("Error fetching account data:", error);
         setTotalValue("Error");
@@ -33,7 +40,7 @@ const AccountSection: React.FC = () => {
     };
 
     fetchAccountData();
-  }, [signer, vaultContract, blockNumber]);
+  }, [positions, orders, blockNumber]);
 
   return (
     <div className="bg-[#131722] p-4 rounded-lg">
