@@ -1,32 +1,12 @@
 [
   {
     "name": "Virtual Token",
-    "description": "가상 토큰을 통해 디지털 자산에 안전하고 빠르게 접근하세요.",
+    "description": "Access digital assets securely and quickly through virtual tokens",
     "image": "1"
   },
   {
     "name": "AMM",
-    "description": "AMM(자동화된 마켓 메이커) 기술로 빠르고 효율적인 거래를 경험할 수 있습니다.",
+    "description": "Experience fast and efficient trading with AMM technology",
     "image": "2"
-  },
-  {
-    "name": "무신뢰",
-    "description": "제3자 중개인이 없습니다. 가입이 필요하지 않습니다. 간편하게 지갑을 연결하고 거래를 시작하세요.",
-    "image": "3"
-  },
-  {
-    "name": "비보호",
-    "description": "사용자는 당신의 키, 당신의 암호화폐, 언제나. 거래 과정 전반에 걸쳐 자금을 통제합니다.",
-    "image": "4"
-  },
-  {
-    "name": "낮은 수수료",
-    "description": "낮은 수수료로 더 많은 거래를 더 효율적으로 처리하세요.",
-    "image": "5"
-  },
-  {
-    "name": "사용자 친화적 UI/UX",
-    "description": "직관적이고 간편한 인터페이스로 누구나 쉽게 거래를 시작할 수 있습니다.",
-    "image": "6"
   }
 ]

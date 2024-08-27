@@ -9,23 +9,20 @@ import Top from "../components/Home/Top";
 
 const App: FC = () => {
   const fadeInFromUp = useScrollFadeIn("up", 2, 0);
-  const fadeInFromLeft = useScrollFadeIn("left", 2, 0);
 
   return (
-    <>
+    <div className="bg-[#1b1636]">
       <Header2 />
       <Top />
       <div className=" justify-center px-80 pt-14">
         <div {...fadeInFromUp}>
           <Explain />
         </div>
-        <div {...fadeInFromLeft}>
-          <CardSection />
-        </div>
+        <CardSection />
         <FAQList />
       </div>
       <Footer />
-    </>
+    </div>
   );
 };
 
