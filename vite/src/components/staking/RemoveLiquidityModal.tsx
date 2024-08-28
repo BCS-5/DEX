@@ -2,7 +2,6 @@ import { FC, useEffect, useRef, useState } from "react";
 import logo_LP from "../../images/staking/logo_LP.png";
 import { useSelector } from "react-redux";
 import { RootState } from "../../app/store";
-import Tooltip from "./Tooltip";
 import { BigNumber } from "@ethersproject/bignumber";
 import { notify } from "../../lib";
 
@@ -18,7 +17,8 @@ const RemoveLiquidityModal: FC<ModalProps> = ({ isOpen, onClose, userLP }) => {
     (state: RootState) => state.contracts
   );
   
-  // const [deadline, setDeadline] = useState<string>("10");
+  const { signer } = useSelector((state: RootState) => state.providers);
+  const [deadline, setDeadline] = useState<number>(10);
   const [canRemoveLiquidity, setCanRemoveLiquidity] = useState<boolean>(false);
   const [removeLiquidityLoading, setRemoveLiquidityLoading] =
     useState<boolean>(false);
@@ -82,7 +82,7 @@ const RemoveLiquidityModal: FC<ModalProps> = ({ isOpen, onClose, userLP }) => {
       // const calculateBaseTokenMinimum =
       //   Number(inputBtcValue) * (1 - slippageTolerance / 100);
       // const maxUint256 = (BigInt(1) << BigInt(256)) - BigInt(1);
-      const deadline = Math.floor(Date.now() / 1000) + 5 * 60;
+      const dl = Math.floor(Date.now() / 1000) + deadline * 60;
 
       clearingHouseContract
         .removeLiquidity(
@@ -90,16 +90,21 @@ const RemoveLiquidityModal: FC<ModalProps> = ({ isOpen, onClose, userLP }) => {
           BigNumber.from(Number(inputLP)).toString(),
           0n,
           0n,
-          deadline
+          dl
         )
         .then((tx) => {
           notify("Pending Transaction ...", true);
           tx.wait().then(() => {
             notify("Transaction confirmed successfully !", true);
             onClose();
+            setRemoveLiquidityLoading(false);
+            // window.location.reload();
           });
         })
-        .catch((error) => notify(error.shortMessage, false));
+        .catch((error) => {
+          notify(error.shortMessage, false);
+          setRemoveLiquidityLoading(false);
+        });
 
       // console.log(BigNumber.from(inputLP).toString());
       // console.log(calculateQuoteMinimum);
@@ -117,8 +122,6 @@ const RemoveLiquidityModal: FC<ModalProps> = ({ isOpen, onClose, userLP }) => {
       // console.log("Liquidity removed successfully");
     } catch (error) {
       console.error("Error removing liquidity: ", error);
-    } finally {
-      setRemoveLiquidityLoading(false);
     }
   };
 
@@ -188,7 +191,7 @@ const RemoveLiquidityModal: FC<ModalProps> = ({ isOpen, onClose, userLP }) => {
                     <div className="text-[#F8FAFC] font-semibold mb-2">
                       Slippage tolerance
                     </div>
-                    <div className="flex gap-2 h-9 content-center font-normal">
+                    <div className="flex gap-2 h-9 content-center font-normal mb-4">
                       <button
                         className={`px-3 rounded-xl border ${
                           slippageTolerance === 0.5
@@ -218,6 +221,42 @@ const RemoveLiquidityModal: FC<ModalProps> = ({ isOpen, onClose, userLP }) => {
                         onClick={() => setSlippageTolerance(2.0)}
                       >
                         2.0%
+                      </button>
+                    </div>
+                    <div className="text-[#F8FAFC] font-semibold mb-2">
+                      Deadline&nbsp;
+                      <span className="font-normal text-xs">(Minutes)</span>
+                    </div>
+                    <div className="flex gap-2 h-9 content-center font-normal">
+                      <button
+                        className={`px-3 rounded-xl border ${
+                          deadline === 10
+                            ? "text-blue-400 border-blue-700 hover:border-blue-600"
+                            : "text-gray-400 border-gray-500 hover:text-gray-200"
+                        }`}
+                        onClick={() => setDeadline(10)}
+                      >
+                        10M
+                      </button>
+                      <button
+                        className={`px-3 rounded-xl border ${
+                          deadline === 20
+                            ? "text-blue-400 border-blue-700 hover:border-blue-600"
+                            : "text-gray-400 border-gray-500 hover:text-gray-200"
+                        }`}
+                        onClick={() => setDeadline(20)}
+                      >
+                        20M
+                      </button>
+                      <button
+                        className={`px-3 rounded-xl border ${
+                          deadline === 30
+                            ? "text-blue-400 border-blue-700 hover:border-blue-600"
+                            : "text-gray-400 border-gray-500 hover:text-gray-200"
+                        }`}
+                        onClick={() => setDeadline(30)}
+                      >
+                        30M
                       </button>
                     </div>
                   </div>
@@ -270,58 +309,6 @@ const RemoveLiquidityModal: FC<ModalProps> = ({ isOpen, onClose, userLP }) => {
                       : "$0.00"}
                   </td>
                 </tr>
-                <tr className="h-9 bg-[#162031]">
-                  <td className="p-2 border border-[#0F172A]">LP tokens</td>
-                  <td className="p-2 border border-[#0F172A]">
-                    <div className="flex">
-                      0
-                      <Tooltip text="LP tokens you are expected to receive, not including possible slippage.">
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="12"
-                          height="12"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          className="feather feather-info cursor-pointer ml-2"
-                        >
-                          <circle cx="12" cy="12" r="10"></circle>
-                          <line x1="12" y1="16" x2="12" y2="12"></line>
-                          <line x1="12" y1="8" x2="12.01" y2="8"></line>
-                        </svg>
-                      </Tooltip>
-                    </div>
-                  </td>
-                </tr>
-                <tr className="h-9 bg-[#1E293B]">
-                  <td className="p-2 border border-[#0F172A]">Price impact</td>
-                  <td className="p-2 border border-[#0F172A]">
-                    <div className="flex">
-                      0.00%
-                      <Tooltip text="Adding custom amounts causes the internal prices of the pool to change, as if you were swapping tokens. The higher the price impact the more you'll spend in swap fees.">
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="12"
-                          height="12"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          className="feather feather-info cursor-pointer ml-2"
-                        >
-                          <circle cx="12" cy="12" r="10"></circle>
-                          <line x1="12" y1="16" x2="12" y2="12"></line>
-                          <line x1="12" y1="8" x2="12.01" y2="8"></line>
-                        </svg>
-                      </Tooltip>
-                    </div>
-                  </td>
-                </tr>
               </tbody>
             </table>
           </div>
@@ -334,7 +321,7 @@ const RemoveLiquidityModal: FC<ModalProps> = ({ isOpen, onClose, userLP }) => {
             onClick={onClickRemoveLiquidity}
             // disabled={addLiquidityLoading}
           >
-            {removeLiquidityLoading ? "Loading" : "Remove Liquidity"}
+            {removeLiquidityLoading ? "Loading..." : "Remove Liquidity"}
           </div>
         </div>
       </div>

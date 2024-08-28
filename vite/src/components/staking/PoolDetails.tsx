@@ -54,7 +54,7 @@ const PoolDetails: FC<PoolDetailsProps> = ({
             <td className="border border-[#334155] px-4 py-3">
               <div className="flex">
                 Delegate owner
-                <Tooltip text="Permissioned functions validated by the FutuRX Vault Authorizer.">
+                <Tooltip text="Permissioned functions validated by the fiX Vault Authorizer.">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     width="16"
@@ -106,7 +106,7 @@ const PoolDetails: FC<PoolDetailsProps> = ({
           <tr>
             <td className="border border-[#334155] px-4 py-3">Creation date</td>
             <td className="border border-[#334155] px-4 py-3">
-              22 August 2024
+              25 August 2024
             </td>
           </tr>
         </tbody>
