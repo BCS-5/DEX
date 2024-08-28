@@ -141,9 +141,9 @@ const Claim: FC = () => {
                     Claim liquidity incentives
                   </div>
                   <div>
-                    FutuRX Protocol liquidity incentives are directed to pools
-                    by veBAL voters. Stake in these pools to earn incentives.
-                    Boost with veBAL for up to 2.5x extra.
+                    fiX Protocol liquidity incentives are directed to pools by
+                    veBAL voters. Stake in these pools to earn incentives. Boost
+                    with veBAL for up to 2.5x extra.
                   </div>
                 </div>
                 <div className=""></div>

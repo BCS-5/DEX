@@ -13,7 +13,7 @@ const Staking: FC = () => {
           <img src={stakingBanner} className="w-full" />
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[#F8FAFC] text-center">
             <div className="font-bold text-5xl pb-2">DeFi liquidity pools</div>
-            <div className="text-2xl mt-2">Built on FutuRX protocol</div>
+            <div className="text-2xl mt-2">Built on fiX protocol</div>
           </div>
         </div>
       </div>

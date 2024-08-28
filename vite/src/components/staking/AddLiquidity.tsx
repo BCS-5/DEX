@@ -136,8 +136,7 @@ const AddLiquidity: FC<AddLiquidityProps> = ({
               </button>
             </div>
             <div className="pt-4 text-[#94A3B8] text-xs">
-              Liquidity Providers encounter risks when using DeFi and FutuRX
-              pools.
+              Liquidity Providers encounter risks when using DeFi and fiX pools.
             </div>
           </div>
           <AddLiquidityModal
