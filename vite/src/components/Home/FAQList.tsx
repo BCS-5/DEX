@@ -32,7 +32,7 @@ const FAQList: React.FC = () => {
         "Funding rate is a fee paid periodically in futures trading to balance long and short positions, and it fluctuates based on market supply and demand.",
     },
     {
-      question: "How to trade (market price)",
+      question: "How to trade? (Market price)",
       answer:
         "Click the Launch App or Go to Trade button at the top to navigate to the trading page. Click Connect Wallet to connect your wallet, then click the Deposit button at the bottom right. In the Deposit amount field, enter the amount of USDT you wish to deposit, and click Deposit Once the transaction is complete, click the Trade tab at the top to proceed, where you can view your deposited USDT Available. In the Collateral field, enter the amount of USDT you want to use from your deposited amount. Set the leverage below, then click the Open Long/Short button to complete the trade.",
     },

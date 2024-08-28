@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { PiArrowUpRight } from "react-icons/pi";
-import Logo from "./img/logo/t_logo16.png";
+import title from "./img/logo/logo9.png";
 
 const Header2 = () => {
   const navigate = useNavigate();
@@ -8,17 +8,7 @@ const Header2 = () => {
   return (
     <div className="top-0 left-8 bg-[#0b0916] flex justify-between sticky z-50 border-b-2">
       <div className="flex">
-        <img src={Logo} alt="Logo" className="pl-11  w-[120px] h-[75px] " />
-        <div
-          className="pt-4   text-white text-[25px] font-semibold "
-          style={{
-            background: "linear-gradient(to right, #FFB2D9, #A566FF)",
-            WebkitBackgroundClip: "text",
-            WebkitTextFillColor: "transparent",
-          }}
-        >
-          fiX
-        </div>
+        <img src={title} alt="Logo" className="w-[120px] pl-11" />
       </div>
       <div className="pt-2 pb-2 pr-[60px] mt-1 transition-transform duration-300 ease-in-out hover:-translate-x-1">
         <button
