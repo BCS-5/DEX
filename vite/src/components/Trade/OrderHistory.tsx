@@ -164,7 +164,7 @@ const OrderHistory: FC = () => {
 
         {selectedMenu == 2 &&
           (history.length ? (
-            history.map((v, i) => (
+            history?.slice(0,100).map((v, i) => (
               <OrderHistoryCard key={i} type={selectedMenu} position={v} />
             ))
           ) : (

@@ -444,12 +444,12 @@ const OrderHistoryCard: FC<OrderHistoryCardParams> = ({ type, position }) => {
                 <div className="text-sm text-[#7e9aff]">
                   <a
                     href={`https://sepolia.etherscan.io/tx/${
-                      (position as History).transactionHash
+                      (position as History)?.transactionHash
                     }`}
                     target="_blank"
                   >
                     {/* {0xa9764bbf4}... */}
-                    {(position as History).transactionHash.slice(0, 11)}...
+                    {(position as History)?.transactionHash?.slice(0, 11)}...
                   </a>
                 </div>
                 <div className="text-xs text-[#72768f] font-normal">

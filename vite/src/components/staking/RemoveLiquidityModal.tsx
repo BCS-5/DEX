@@ -13,11 +13,10 @@ interface ModalProps {
 
 const RemoveLiquidityModal: FC<ModalProps> = ({ isOpen, onClose, userLP }) => {
   if (!isOpen) return null;
-  const { clearingHouseContract, virtualTokenContracts } = useSelector(
+  const { clearingHouseContract, virtualTokenContracts,routerContract, pairContracts } = useSelector(
     (state: RootState) => state.contracts
   );
   
-  const { signer } = useSelector((state: RootState) => state.providers);
   const [deadline, setDeadline] = useState<number>(10);
   const [canRemoveLiquidity, setCanRemoveLiquidity] = useState<boolean>(false);
   const [removeLiquidityLoading, setRemoveLiquidityLoading] =
@@ -76,7 +75,11 @@ const RemoveLiquidityModal: FC<ModalProps> = ({ isOpen, onClose, userLP }) => {
 
     try {
       setRemoveLiquidityLoading(true);
+      // const totalSupply = await pairContracts?.BTC?.totalSupply();
+      // const [reserve0, reserve1, ] =await pairContracts?.BTC?.getReserves()
 
+
+      // routerContract.getQuote
       // const calculateQuoteMinimum =
       //   Number(inputLP) * (1 - slippageTolerance / 100);
       // const calculateBaseTokenMinimum =

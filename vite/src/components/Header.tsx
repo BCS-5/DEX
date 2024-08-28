@@ -137,14 +137,18 @@ const Header: FC = () => {
       className="flex w-auto h-[64px] justify-between bg-[#131722] text-white border-b-[0.6px] border-[#363A45] tracking-tight"
       style={{ fontFamily: "Roboto-Medium" }}
     >
-      <div className="flex gap-8">
-        <div className="flex items-center pl-4">
+      <div className="relative flex gap-8">
+        <div className="flex items-center pl-2 w-[100px]">
           <img
-            src="/tmp.png"
-            className="w-[150px] h-[24px] object-contain cursor-pointer
-           "
+            src="/logo4.png"
+            className="absolute left-[20px] h-[70px] -bottom-[4px] cursor-pointer object-contain"
             onClick={() => navigate("/")}
           />
+          {/* <img
+            src="/fix.png"
+            className="absolute left-[70px]  h-[68px] cursor-pointer object-contain"
+            onClick={() => navigate("/")}
+          /> */}
         </div>
         <div className="flex gap-8">
           {navLinks.map((v, i) => (

@@ -103,7 +103,7 @@ const Pool: FC = () => {
   }, [btcValue, usdtValue]);
 
   return (
-    <div className="min-h-screen bg-[#0F172A] text-[#F8FAFC] px-4 pt-8">
+    <div className="min-h-screen bg-[#131722] text-[#F8FAFC] px-4 pt-8">
       <div className="grid grid-cols-3 gap-4">
         <PoolIntro pairAddr={pairAddr} />
         <div className="hidden"></div>

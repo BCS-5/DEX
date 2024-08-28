@@ -258,7 +258,7 @@ const Portfolio: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col min-h-screen w-full bg-[#0D111C] text-[#72768f]">
+    <div className="flex flex-col min-h-screen w-full bg-[#131722] text-[#72768f]">
       <div className="flex-grow p-6">
         <div className="max-w-7xl mx-auto w-full">
           <h1 className="text-3xl font-bold mb-8 text-[#f0f0f0]">Portfolio</h1>
@@ -280,13 +280,13 @@ const Portfolio: React.FC = () => {
                     type="number"
                     value={depositAmount}
                     onChange={(e) => setDepositAmount(e.target.value)}
-                    placeholder="Deposit amount"
+                    placeholder="amount"
                     className="w-full p-2 bg-[#131722] text-[#f0f0f0] rounded"
                   />
                   <button
                     onClick={handleDeposit}
                     disabled={isDepositing}
-                    className="mt-2 w-full bg-[#1DB1A8] text-white p-2 rounded hover:bg-[#19998F] transition-colors disabled:bg-gray-500"
+                    className="mt-2 w-full bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white p-2 rounded transition-colors disabled:bg-gray-500"
                   >
                     {isDepositing ? "Depositing..." : "Deposit"}
                   </button>
@@ -299,13 +299,13 @@ const Portfolio: React.FC = () => {
                     type="number"
                     value={withdrawAmount}
                     onChange={(e) => setWithdrawAmount(e.target.value)}
-                    placeholder="Withdraw amount"
+                    placeholder="amount"
                     className="w-full p-2 bg-[#131722] text-[#f0f0f0] rounded"
                   />
                   <button
                     onClick={handleWithdraw}
                     disabled={isWithdrawing}
-                    className="mt-2 w-full bg-[#1DB1A8] text-white p-2 rounded hover:bg-[#19998F] transition-colors disabled:bg-gray-500"
+                    className="mt-2 w-full text-white p-2 rounded bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 transition-colors disabled:bg-gray-500"
                   >
                     {isWithdrawing ? "Withdrawing..." : "Withdraw"}
                   </button>
@@ -318,7 +318,7 @@ const Portfolio: React.FC = () => {
             <button
               className={`mr-8 pb-3 text-lg font-medium ${
                 activeTab === "portfolio"
-                  ? "border-b-2 border-[#1DB1A8] text-[#1DB1A8]"
+                  ? "border-b-2 border-[#1DB1A8] text-[#AB71E2] text-xl"
                   : "text-[#f0f0f0]"
               }`}
               onClick={() => setActiveTab("portfolio")}
@@ -328,7 +328,7 @@ const Portfolio: React.FC = () => {
             <button
               className={`pb-3 text-lg font-medium ${
                 activeTab === "history"
-                  ? "border-b-2 border-[#1DB1A8] text-[#1DB1A8]"
+                  ? "border-b-2 border-[#1DB1A8] text-[#AB71E2] text-xl"
                   : "text-[#f0f0f0]"
               }`}
               onClick={() => setActiveTab("history")}

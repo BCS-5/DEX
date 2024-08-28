@@ -7,7 +7,7 @@ const Staking: FC = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="flex flex-col min-h-screen bg-[#0F172A]">
+    <div className="flex flex-col min-h-screen bg-[#131722]">
       <div className="mb-10">
         <div className="relative justify-center h-[280px] overflow-hidden">
           <img src={stakingBanner} className="w-full" />

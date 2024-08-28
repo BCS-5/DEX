@@ -129,7 +129,7 @@ const Claim: FC = () => {
     fetchUserBalance();
   }, [vaultContract, signer]);
   return (
-    <div className="flex flex-col min-h-screen bg-[#0F172A]">
+    <div className="flex flex-col min-h-screen bg-[#131722]">
       <div className="mb-10">
         <div className="relative justify-center h-[280px] overflow-hidden">
           <img src={claimBanner} className="w-full" />
