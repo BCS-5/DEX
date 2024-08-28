@@ -7,6 +7,7 @@ import Tooltip from "../components/staking/Tooltip";
 import claimBanner from "../images/staking/staking_4.png";
 import logo_USDT from "../images/staking/logo_USDT.png";
 import logo_WBTC from "../images/staking/logo_WBTC.png";
+import { notify } from "../lib";
 
 const Claim: FC = () => {
   const navigate = useNavigate();
@@ -16,8 +17,6 @@ const Claim: FC = () => {
   const { signer } = useSelector((state: RootState) => state.providers);
   const [pairAddr, setPairAddr] = useState<string>("");
   const [UserLP, setUserLP] = useState<string>("");
-  const [_, setLPValue] = useState<string>("");
-  const [__, setMyPoolBalance] = useState<string>("");
   const { liquiditys } = useSelector((state: RootState) => state.history);
   const [lockedLiquidity, setLockedLiquidity] = useState<string>("");
   const [unclaimedLiquidity, setUnclaimedLiquidity] = useState<string>("");
@@ -45,16 +44,8 @@ const Claim: FC = () => {
       if (vaultContract) {
         try {
           const myLP = await vaultContract.getUserLP(signer?.address, pairAddr);
-          const LPValue = await vaultContract.getCumulativeTransactionFee(
-            pairAddr
-          );
           setUserLP(myLP);
-          setLPValue((Number(LPValue) / 2 ** 128).toString());
-          setMyPoolBalance(
-            ((Number(myLP) * Number(LPValue)) / 2 ** 128).toFixed(2).toString()
-          );
           console.log("user LP:  ", myLP);
-          console.log("LP value:  ", Number(LPValue) / 2 ** 128);
         } catch (error) {
           console.error("Error fetching user LP:", error);
         }
@@ -83,8 +74,16 @@ const Claim: FC = () => {
     if (!signer) return;
     if (vaultContract) {
       try {
-        const tx = await vaultContract.claimRewards(signer?.address, pairAddr);
-        await tx.wait();
+        vaultContract
+          .claimRewards(signer?.address, pairAddr)
+          .then((tx) => {
+            notify("Pending Transaction ...", true);
+            tx.wait().then(() => {
+              notify("Transaction confirmed successfully !", true);
+            });
+          })
+          .catch((error) => notify(error.shortMessage, false));
+
         console.log("Claim successfully");
       } catch (error) {
         console.error("Error fetching claim LP:", error);
@@ -117,16 +116,8 @@ const Claim: FC = () => {
       if (vaultContract) {
         try {
           const myLP = await vaultContract.getUserLP(signer?.address, pairAddr);
-          const LPValue = await vaultContract.getCumulativeTransactionFee(
-            pairAddr
-          );
           setUserLP(myLP);
-          setLPValue((Number(LPValue) / 2 ** 128).toString());
-          setMyPoolBalance(
-            ((Number(myLP) * Number(LPValue)) / 2 ** 128).toFixed(2).toString()
-          );
           console.log("user LP:  ", myLP);
-          console.log("LP value:  ", Number(LPValue) / 2 ** 128);
         } catch (error) {
           console.error("Error fetching user LP:", error);
         }

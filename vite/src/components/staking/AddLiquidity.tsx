@@ -90,9 +90,13 @@ const AddLiquidity: FC<AddLiquidityProps> = ({
   useEffect(() => {
     console.log("liquiditys.locked: ", liquiditys[0]?.locked);
     console.log("liquiditys.unClaimedFees: ", liquiditys[0]?.unClaimedFees);
-    setLockedLiquidity(
-      (Number(liquiditys[0]?.locked) / 10 ** 6).toLocaleString()
-    );
+    if (Number.isNaN(Number(liquiditys[0]?.locked))) {
+      setLockedLiquidity(" Loading...");
+    } else {
+      setLockedLiquidity(
+        (Number(liquiditys[0]?.locked) / 10 ** 6).toLocaleString()
+      );
+    }
   }, [liquiditys]);
 
   return (

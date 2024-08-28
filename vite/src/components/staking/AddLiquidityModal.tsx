@@ -7,7 +7,6 @@ import Tooltip from "./Tooltip";
 import { ethers } from "ethers";
 import { BigNumber } from "@ethersproject/bignumber";
 import { notify } from "../../lib";
-import { Contract } from "ethers";
 
 interface ModalProps {
   isOpen: boolean;
@@ -81,8 +80,6 @@ const AddLiquidityModal: FC<ModalProps> = ({
     if (!clearingHouseContract) return;
 
     try {
-      const contractWithSigner = clearingHouseContract.connect(signer);
-
       setAddLiquidityLoading(true);
 
       // const calculateQuoteMinimum =
@@ -92,15 +89,24 @@ const AddLiquidityModal: FC<ModalProps> = ({
 
       const deadline = Math.floor(Date.now() / 1000) + 5 * 60;
 
-      const tx = await (contractWithSigner as Contract).addLiquidity(
-        virtualTokenContracts.BTC.target,
-        BigNumber.from(
-          ethers.parseUnits(Number(inputUsdt).toString(), 6)
-        ).toString(),
-        0n,
-        0n,
-        deadline
-      );
+      clearingHouseContract.addLiquidity(
+          virtualTokenContracts.BTC.target,
+          BigNumber.from(
+            ethers.parseUnits(Number(inputUsdt).toString(), 6)
+          ).toString(),
+          0n,
+          0n,
+          deadline
+        )
+        .then((tx) => {
+          notify("Pending Transaction ...", true);
+          tx.wait().then(() => {
+            notify("Transaction confirmed successfully !", true);
+            onClose();
+          });
+        })
+        .catch((error) => notify(error.shortMessage, false));
+
       // console.log(BigNumber.from(inputUsdt).toString());
       // console.log(calculateQuoteMinimum);
       // console.log(calculateBaseTokenMinimum);
@@ -114,15 +120,12 @@ const AddLiquidityModal: FC<ModalProps> = ({
       //   deadline
       // );
 
-      await tx
-        .wait()
-        .then(() => notify("Transaction confirmed successfully !", true));
       console.log("Liquidity added successfully");
     } catch (error) {
       console.error("Error adding liquidity: ", error);
     } finally {
       setAddLiquidityLoading(false);
-      onClose;
+      // onClose();
     }
   };
 
