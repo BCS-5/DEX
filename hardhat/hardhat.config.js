@@ -134,18 +134,35 @@ module.exports = {
     apiKey: process.env.API_ETHERSCAN, // Etherscan API 키를 입력하세요
   },
 };
-// usdt: 0x046A8BB2C22Be6c749EeA89dd38da33565f3Aea4
-// factory: 0x994c9936a10f2dd4bb8569a4d6c2d06f3d3f749d;
-// router: 0x7a0b710ed5d0d2f708af491f6d3dcff5d872edef;
-// vault: 0xdd5f1b42a9caa4883d685bd218cf3a9c08622feb;
-// clearingHouse: 0x7bd2692018e58e80e0cf517194ce7caf852b3d48;
-// marketRegistry: 0x621fbbff937f6f1d2e26e5a42aa4ae812cfd1942;
-// accountBalance: 0xf58b3a6ecc08a9094517f0dee9384e01a75bfbb4;
+ // const usdt = USDT.attach("0xD7DBa4C3296477E3a97cEeE7D937D95f8aDD458E");
+  // const factory = UniswapV2Factory.attach(
+  //   "0x246EC513dFB505977161eBE4e81b025aF47A96DE"
+  // );
+  // const router = UniswapV2Router.attach(
+  //   "0x921C79fa5E725a8851501540fD0F73FD303173b3"
+  // );
+  // const vault = Vault.attach("0xbb6e5C64473ff98D7f2F98AA5E482D7c90E25c80");
 
-// npx hardhat verify --network sepolia 0x046A8BB2C22Be6c749EeA89dd38da33565f3Aea4 115792089237316195423570985008687907853269984665640564039457584007913129639935 "Tether USD" "USDT" 6
-// npx hardhat verify --network sepolia 0x994c9936a10f2dd4bb8569a4d6c2d06f3d3f749d 0x77777777C54FD7A001F50fa752e524ec9B08A487
-// npx hardhat verify --network sepolia 0x7a0b710ed5d0d2f708af491f6d3dcff5d872edef 0x994c9936a10f2dd4bb8569a4d6c2d06f3d3f749d 0x7b79995e5f793a07bc00c21412e50ecae098e7f9
-// npx hardhat verify --network sepolia 0xdd5f1b42a9caa4883d685bd218cf3a9c08622feb
-// npx hardhat verify --network sepolia 0x7bd2692018e58e80e0cf517194ce7caf852b3d48
-// npx hardhat verify --network sepolia 0x621fbbff937f6f1d2e26e5a42aa4ae812cfd1942 0x994c9936a10f2dd4bb8569a4d6c2d06f3d3f749d
-// npx hardhat verify --network sepolia 0xf58b3a6ecc08a9094517f0dee9384e01a75bfbb4 0x7bd2692018e58e80e0cf517194ce7caf852b3d48 0x621fbbff937f6f1d2e26e5a42aa4ae812cfd1942 0xdd5f1b42a9caa4883d685bd218cf3a9c08622feb
+  // const clearingHouse = ClearingHouse.attach(
+  //   "0xB184ddE3e21a3c7e7e142264a7E558836CeaCdD2"
+  // );
+  // const marketRegistry = MarketRegistry.attach(
+  //   "0x9a37A60c1CaA20081E5543dF598Ac5a3CcA815C9"
+  // );
+  // const accountBalance = AccountBalance.attach(
+  //   "0x1dDCac4613623824b1fbc944217bC5764bdD74e8"
+  // );
+  // const faucet = Faucet.attach("0xCD298eb44046e3007DE3F6851F2e2a4cfDcc2942");
+  // const openOrder = OpenOrder.attach(
+  //   "0xAC13Ede9977D7FCEe289cD013Ee399d90Fa7Ef0f"
+  // );
+
+// npx hardhat verify --network sepolia 0xD7DBa4C3296477E3a97cEeE7D937D95f8aDD458E 115792089237316195423570985008687907853269984665640564039457584007913129639935 "Tether USD" "USDT" 6
+// npx hardhat verify --network sepolia 0x246EC513dFB505977161eBE4e81b025aF47A96DE 0x77777777C54FD7A001F50fa752e524ec9B08A487
+// npx hardhat verify --network sepolia 0x921C79fa5E725a8851501540fD0F73FD303173b3 0x246EC513dFB505977161eBE4e81b025aF47A96DE 0xbb6e5C64473ff98D7f2F98AA5E482D7c90E25c80
+// npx hardhat verify --network sepolia 0xbb6e5C64473ff98D7f2F98AA5E482D7c90E25c80
+// npx hardhat verify --network sepolia 0xB184ddE3e21a3c7e7e142264a7E558836CeaCdD2
+// npx hardhat verify --network sepolia 0x9a37A60c1CaA20081E5543dF598Ac5a3CcA815C9 0x246EC513dFB505977161eBE4e81b025aF47A96DE
+// npx hardhat verify --network sepolia 0x1dDCac4613623824b1fbc944217bC5764bdD74e8 0xB184ddE3e21a3c7e7e142264a7E558836CeaCdD2 0x9a37A60c1CaA20081E5543dF598Ac5a3CcA815C9 0xdd5f1b42a9caa4883d685bd218cf3a9c08622feb
+// npx hardhat verify --network sepolia 0xCD298eb44046e3007DE3F6851F2e2a4cfDcc2942
+// npx hardhat verify --network sepolia 0xAC13Ede9977D7FCEe289cD013Ee399d90Fa7Ef0f
