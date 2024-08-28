@@ -29,7 +29,7 @@ const Pool: FC = () => {
         const contract: Contract = pairContracts[pair];
 
         if (contract) {
-          const [reserve0, reserve1, blockTimestampLast] =
+          const [reserve0, reserve1, ] =
             await contract.getReserves();
           setUsdtBalance((Number(reserve1) / 10 ** 6).toFixed(3).toString());
           setBtcBalance((Number(reserve0) / 10 ** 8).toFixed(3).toString());
