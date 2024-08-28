@@ -331,16 +331,6 @@ const Chart: FC = () => {
               </div>
               <div
                 className={`h-full content-center ${
-                  graphTab === "TVL"
-                    ? "text-[#AB71E2] border-b-2 border-b-[#AB71E2]"
-                    : "hover:text-[#FFFC7D]"
-                }`}
-                onClick={() => setGraphTab("TVL")}
-              >
-                TVL
-              </div>
-              <div
-                className={`h-full content-center ${
                   graphTab === "Fees"
                     ? "text-[#AB71E2] border-b-2 border-b-[#AB71E2]"
                     : "hover:text-[#FFFC7D]"
