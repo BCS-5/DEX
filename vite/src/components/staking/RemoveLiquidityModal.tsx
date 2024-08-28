@@ -17,7 +17,7 @@ const RemoveLiquidityModal: FC<ModalProps> = ({ isOpen, onClose, userLP }) => {
   const { clearingHouseContract, virtualTokenContracts } = useSelector(
     (state: RootState) => state.contracts
   );
-  const { signer } = useSelector((state: RootState) => state.providers);
+  
   // const [deadline, setDeadline] = useState<string>("10");
   const [canRemoveLiquidity, setCanRemoveLiquidity] = useState<boolean>(false);
   const [removeLiquidityLoading, setRemoveLiquidityLoading] =
