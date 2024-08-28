@@ -116,9 +116,6 @@ const Claim: FC = () => {
       if (vaultContract) {
         try {
           const myLP = await vaultContract.getUserLP(signer?.address, pairAddr);
-          const LPValue = await vaultContract.getCumulativeTransactionFee(
-            pairAddr
-          );
           setUserLP(myLP);
           console.log("user LP:  ", myLP);
         } catch (error) {

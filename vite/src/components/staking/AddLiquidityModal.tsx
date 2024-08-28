@@ -25,7 +25,7 @@ const AddLiquidityModal: FC<ModalProps> = ({
   const { vaultContract, clearingHouseContract, virtualTokenContracts } =
     useSelector((state: RootState) => state.contracts);
   const { signer } = useSelector((state: RootState) => state.providers);
-  // const [deadline, setDeadline] = useState<string>("10");
+  const [deadline, setDeadline] = useState<number>(10);
   const [canAddLiquidity, setCanAddLiquidity] = useState<boolean>(false);
   const [addLiquidityLoading, setAddLiquidityLoading] =
     useState<boolean>(false);
@@ -88,8 +88,7 @@ const AddLiquidityModal: FC<ModalProps> = ({
       //   Number(inputUsdt) * (1 - slippageTolerance / 100);
       // const calculateBaseTokenMinimum =
       //   Number(inputBtcValue) * (1 - slippageTolerance / 100);
-
-      const deadline = Math.floor(Date.now() / 1000) + 5 * 60;
+      const dl = Math.floor(Date.now() / 1000) + deadline * 60;
 
       contractWithSigner
         .addLiquidity(
@@ -99,16 +98,21 @@ const AddLiquidityModal: FC<ModalProps> = ({
           ).toString(),
           0n,
           0n,
-          deadline
+          dl
         )
         .then((tx) => {
           notify("Pending Transaction ...", true);
           tx.wait().then(() => {
             notify("Transaction confirmed successfully !", true);
             onClose();
+            setAddLiquidityLoading(false);
+            window.location.reload();
           });
         })
-        .catch((error) => notify(error.shortMessage, false));
+        .catch((error) => {
+          notify(error.shortMessage, false);
+          setAddLiquidityLoading(false);
+        });
 
       // console.log(BigNumber.from(inputUsdt).toString());
       // console.log(calculateQuoteMinimum);
@@ -126,9 +130,6 @@ const AddLiquidityModal: FC<ModalProps> = ({
       console.log("Liquidity added successfully");
     } catch (error) {
       console.error("Error adding liquidity: ", error);
-    } finally {
-      setAddLiquidityLoading(false);
-      // onClose();
     }
   };
 
@@ -229,7 +230,7 @@ const AddLiquidityModal: FC<ModalProps> = ({
                     <div className="text-[#F8FAFC] font-semibold mb-2">
                       Slippage tolerance
                     </div>
-                    <div className="flex gap-2 h-9 content-center font-normal">
+                    <div className="flex gap-2 h-9 content-center font-normal mb-4">
                       <button
                         className={`px-3 rounded-xl border ${
                           slippageTolerance === 0.5
@@ -259,6 +260,41 @@ const AddLiquidityModal: FC<ModalProps> = ({
                         onClick={() => setSlippageTolerance(2.0)}
                       >
                         2.0%
+                      </button>
+                    </div>
+                    <div className="text-[#F8FAFC] font-semibold mb-2">
+                      Deadline
+                    </div>
+                    <div className="flex gap-2 h-9 content-center font-normal">
+                      <button
+                        className={`px-3 rounded-xl border ${
+                          deadline === 10
+                            ? "text-blue-400 border-blue-700 hover:border-blue-600"
+                            : "text-gray-400 border-gray-500 hover:text-gray-200"
+                        }`}
+                        onClick={() => setDeadline(10)}
+                      >
+                        10M
+                      </button>
+                      <button
+                        className={`px-3 rounded-xl border ${
+                          deadline === 20
+                            ? "text-blue-400 border-blue-700 hover:border-blue-600"
+                            : "text-gray-400 border-gray-500 hover:text-gray-200"
+                        }`}
+                        onClick={() => setDeadline(20)}
+                      >
+                        20M
+                      </button>
+                      <button
+                        className={`px-3 rounded-xl border ${
+                          deadline === 30
+                            ? "text-blue-400 border-blue-700 hover:border-blue-600"
+                            : "text-gray-400 border-gray-500 hover:text-gray-200"
+                        }`}
+                        onClick={() => setDeadline(30)}
+                      >
+                        30M
                       </button>
                     </div>
                   </div>
@@ -398,9 +434,8 @@ const AddLiquidityModal: FC<ModalProps> = ({
                 : "bg-gray-700 text-[#94A3B8] cursor-not-allowed"
             } ${addLiquidityLoading && "animate-pulse cursor-not-allowed"}`}
             onClick={onClickAddLiquidity}
-            // disabled={addLiquidityLoading}
           >
-            {addLiquidityLoading ? "Loading" : "Add Liquidity"}
+            {addLiquidityLoading ? "Loading..." : "Add Liquidity"}
           </div>
         </div>
       </div>

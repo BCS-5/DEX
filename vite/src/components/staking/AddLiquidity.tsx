@@ -5,6 +5,7 @@ import AddLiquidityModal from "./AddLiquidityModal";
 import { JsonRpcSigner } from "ethers";
 import { setSigner } from "../../features/providers/providersSlice";
 import RemoveLiquidityModal from "./RemoveLiquidityModal";
+import { notify } from "../../lib";
 
 interface AddLiquidityProps {
   btcBalance: string;
@@ -34,13 +35,21 @@ const AddLiquidity: FC<AddLiquidityProps> = ({
   const [myPoolBalance, setMyPoolBalance] = useState<string>("");
   const [lockedLiquidity, setLockedLiquidity] = useState<string>("");
   const dispatch = useDispatch();
+  const { blockNumber } = useSelector((state: RootState) => state.events);
 
   const openAddLiquidityModal = () => {
     setIsAddLiquidityModalOpen(true);
   };
 
   const openRemoveLiquidityModal = () => {
-    setIsRemoveLiquidityModalOpen(true);
+    if (Number(myPoolBalance) > 0) {
+      setIsRemoveLiquidityModalOpen(true);
+    } else {
+      notify(
+        "You can not remove liquidity. (You don't have pool balance.)",
+        false
+      );
+    }
   };
 
   const closeModal = () => {
@@ -85,7 +94,7 @@ const AddLiquidity: FC<AddLiquidityProps> = ({
     if (pairAddr) {
       fetchUserBalance();
     }
-  }, [vaultContract, signer, pairAddr]);
+  }, [vaultContract, signer, pairAddr, blockNumber]);
 
   useEffect(() => {
     console.log("liquiditys.locked: ", liquiditys[0]?.locked);
@@ -123,7 +132,7 @@ const AddLiquidity: FC<AddLiquidityProps> = ({
                 }`}
                 onClick={openRemoveLiquidityModal}
               >
-                Withdraw
+                Remove liquidity
               </button>
             </div>
             <div className="pt-4 text-[#94A3B8] text-xs">
