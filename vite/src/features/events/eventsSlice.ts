@@ -34,7 +34,7 @@ export const eventsSlice = createSlice({
       state.markPrice = action.payload;
     },
     setSlippage: (state, action: PayloadAction<string>) => {
-      console.log(action.payload);
+      // console.log(action.payload);
       state.slippage = action.payload;
     },
     setDeadline: (state, action: PayloadAction<string>) => {

@@ -65,7 +65,7 @@ const RemoveLiquidityModal: FC<ModalProps> = ({ isOpen, onClose, userLP }) => {
   };
 
   useEffect(() => {
-    console.log("liquiditys.locked: ", liquiditys[0]?.locked);
+    // console.log("liquiditys.locked: ", liquiditys[0]?.locked);
     setLockedLiquidity(
       (Number(liquiditys[0]?.locked) / 10 ** 6).toFixed(6).toLocaleString()
     );
@@ -114,7 +114,7 @@ const RemoveLiquidityModal: FC<ModalProps> = ({ isOpen, onClose, userLP }) => {
       //   deadline
       // );
 
-      console.log("Liquidity removed successfully");
+      // console.log("Liquidity removed successfully");
     } catch (error) {
       console.error("Error removing liquidity: ", error);
     } finally {
@@ -131,7 +131,7 @@ const RemoveLiquidityModal: FC<ModalProps> = ({ isOpen, onClose, userLP }) => {
   }, [inputLP, userLP, lockedLiquidity]);
 
   useEffect(() => {
-    console.log(userLP);
+    // console.log(userLP);
     if (Number(inputLP) > 0 && Number(inputLP) <= Number(userLP)) {
       setCanRemoveLiquidity(true);
     } else {

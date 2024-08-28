@@ -106,7 +106,6 @@ const PortfolioOverview: React.FC = () => {
   const getTotalValue = () => {
     vaultContract?.getTotalCollateral(signer?.address).then((collateral) => {
       let total = collateral;
-      console.log(total);
       liquiditys.forEach((v) => {
         total += v.locked + v.unClaimedFees;
       });
@@ -150,7 +149,6 @@ const PortfolioOverview: React.FC = () => {
   const totalVolume = useMemo(() => {
     if (!history) return "0.00";
     let total = 0n;
-    console.log(history);
     history.forEach((v) => {
       total += v.openNotional;
     });

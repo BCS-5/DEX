@@ -168,9 +168,9 @@ const Chart: FC = () => {
     setVolumeData(updatedVolumeData);
     setFeesData(updatedFeesData);
 
-    console.log(updatedDateArray);
-    console.log(updatedVolumeData);
-    console.log(updatedFeesData);
+    // console.log(updatedDateArray);
+    // console.log(updatedVolumeData);
+    // console.log(updatedFeesData);
   }, [timeVolumeFeeData, timePeriod]);
 
   // 필터링된 데이터 계산

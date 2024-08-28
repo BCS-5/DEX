@@ -26,7 +26,7 @@ const AddMarginModal: FC<AddMarginModalProps> = ({
   const { signer } = useSelector((state: RootState) => state.providers);
 
   const handleChange = (e: any) => {
-    console.log(e);
+    // console.log(e);
     setValue(e.target.value);
   };
 

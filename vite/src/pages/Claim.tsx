@@ -45,7 +45,7 @@ const Claim: FC = () => {
         try {
           const myLP = await vaultContract.getUserLP(signer?.address, pairAddr);
           setUserLP(myLP);
-          console.log("user LP:  ", myLP);
+          // console.log("user LP:  ", myLP);
         } catch (error) {
           console.error("Error fetching user LP:", error);
         }
@@ -58,8 +58,8 @@ const Claim: FC = () => {
   }, [vaultContract, signer, pairAddr]);
 
   useEffect(() => {
-    console.log("liquiditys.locked: ", liquiditys[0]?.locked);
-    console.log("liquiditys.unClaimedFees: ", liquiditys[0]?.unClaimedFees);
+    // console.log("liquiditys.locked: ", liquiditys[0]?.locked);
+    // console.log("liquiditys.unClaimedFees: ", liquiditys[0]?.unClaimedFees);
     setLockedLiquidity(
       (Number(liquiditys[0]?.locked) / 10 ** 6).toFixed(6).toLocaleString()
     );
@@ -84,7 +84,7 @@ const Claim: FC = () => {
           })
           .catch((error) => notify(error.shortMessage, false));
 
-        console.log("Claim successfully");
+        // console.log("Claim successfully");
       } catch (error) {
         console.error("Error fetching claim LP:", error);
       }
@@ -117,7 +117,7 @@ const Claim: FC = () => {
         try {
           const myLP = await vaultContract.getUserLP(signer?.address, pairAddr);
           setUserLP(myLP);
-          console.log("user LP:  ", myLP);
+          // console.log("user LP:  ", myLP);
         } catch (error) {
           console.error("Error fetching user LP:", error);
         }

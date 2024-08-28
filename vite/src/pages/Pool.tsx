@@ -33,19 +33,19 @@ const Pool: FC = () => {
             await contract.getReserves();
           setUsdtBalance((Number(reserve1) / 10 ** 6).toFixed(3).toString());
           setBtcBalance((Number(reserve0) / 10 ** 8).toFixed(3).toString());
-          console.log(
-            `Reserve 0: ${(Number(reserve0) / 10 ** 6)
-              .toFixed(3)
-              .toString()
-              .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`
-          );
-          console.log(
-            `Reserve 1: ${(Number(reserve1) / 10 ** 8)
-              .toFixed(3)
-              .toString()
-              .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`
-          );
-          console.log(`Block Timestamp Last: ${blockTimestampLast.toString()}`);
+          // console.log(
+          //   `Reserve 0: ${(Number(reserve0) / 10 ** 6)
+          //     .toFixed(3)
+          //     .toString()
+          //     .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`
+          // );
+          // console.log(
+          //   `Reserve 1: ${(Number(reserve1) / 10 ** 8)
+          //     .toFixed(3)
+          //     .toString()
+          //     .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`
+          // );
+          // console.log(`Block Timestamp Last: ${blockTimestampLast.toString()}`);
         } else {
           console.error(`Contract for ${pair} not found.`);
         }
@@ -81,7 +81,7 @@ const Pool: FC = () => {
             virtualTokenContracts.BTC.target
           );
           setMarkPrice((Number(mark) / 10 ** 16).toFixed(2).toString());
-          console.log("mark:  ", mark);
+          // console.log("mark:  ", mark);
         } catch (error) {
           console.error("Error fetching Index price:", error);
         }

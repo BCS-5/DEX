@@ -132,11 +132,11 @@ const Portfolio: React.FC = () => {
       toast.error("Please enter a valid withdraw amount.");
       return;
     }
-    console.log(
-      parseUnits(withdrawAmount, 6),
-      parseUnits(collateral, 6),
-      parseUnits(withdrawAmount, 6) > parseUnits(collateral, 6)
-    );
+    // console.log(
+    //   parseUnits(withdrawAmount, 6),
+    //   parseUnits(collateral, 6),
+    //   parseUnits(withdrawAmount, 6) > parseUnits(collateral, 6)
+    // );
 
     if (parseUnits(withdrawAmount, 6) > parseUnits(collateral, 6)) {
       toast.error("Insufficient Balance.");
@@ -152,11 +152,11 @@ const Portfolio: React.FC = () => {
       );
       const amount = ethers.parseUnits(withdrawAmount, 6);
 
-      console.log(
-        "Attempting to withdraw:",
-        ethers.formatUnits(amount, 6),
-        "USDT"
-      );
+      // console.log(
+      //   "Attempting to withdraw:",
+      //   ethers.formatUnits(amount, 6),
+      //   "USDT"
+      // );
 
       const userAddress = await signer.getAddress();
       const totalCollateral = await vaultContract.getTotalCollateral(
@@ -165,21 +165,21 @@ const Portfolio: React.FC = () => {
       const useCollateral = await vaultContract.getUseCollateral(userAddress);
       const freeCollateral = totalCollateral - useCollateral;
 
-      console.log(
-        "Total Collateral:",
-        ethers.formatUnits(totalCollateral, 6),
-        "USDT"
-      );
-      console.log(
-        "Used Collateral:",
-        ethers.formatUnits(useCollateral, 6),
-        "USDT"
-      );
-      console.log(
-        "Free Collateral:",
-        ethers.formatUnits(freeCollateral, 6),
-        "USDT"
-      );
+      // console.log(
+      //   "Total Collateral:",
+      //   ethers.formatUnits(totalCollateral, 6),
+      //   "USDT"
+      // );
+      // console.log(
+      //   "Used Collateral:",
+      //   ethers.formatUnits(useCollateral, 6),
+      //   "USDT"
+      // );
+      // console.log(
+      //   "Free Collateral:",
+      //   ethers.formatUnits(freeCollateral, 6),
+      //   "USDT"
+      // );
 
       if (amount > freeCollateral) {
         throw new Error("Insufficient free collateral");
@@ -193,11 +193,11 @@ const Portfolio: React.FC = () => {
       const vaultUsdtBalance = await usdtContract.balanceOf(
         contracts.vault.address
       );
-      console.log(
-        "Vault USDT Balance:",
-        ethers.formatUnits(vaultUsdtBalance, 6),
-        "USDT"
-      );
+      // console.log(
+      //   "Vault USDT Balance:",
+      //   ethers.formatUnits(vaultUsdtBalance, 6),
+      //   "USDT"
+      // );
 
       if (vaultUsdtBalance < amount) {
         throw new Error("Insufficient USDT balance in Vault");
@@ -208,14 +208,14 @@ const Portfolio: React.FC = () => {
       const gasLimit = 500000n; // 가스 한도 증가
 
       // 트랜잭션 추정
-      const estimatedGas = await vaultContract.withdraw.estimateGas(amount);
-      console.log("Estimated gas:", estimatedGas.toString());
+      // const estimatedGas = await vaultContract.withdraw.estimateGas(amount);
+      // console.log("Estimated gas:", estimatedGas.toString());
 
       const withdrawTx = await vaultContract.withdraw(amount, { gasLimit });
-      console.log("Transaction sent:", withdrawTx.hash);
+      // console.log("Transaction sent:", withdrawTx.hash);
 
       const receipt = await withdrawTx.wait();
-      console.log("Transaction receipt:", receipt);
+      // console.log("Transaction receipt:", receipt);
 
       if (receipt.status === 0) {
         throw new Error("Transaction failed");
@@ -225,11 +225,11 @@ const Portfolio: React.FC = () => {
       const newTotalCollateral = await vaultContract.getTotalCollateral(
         userAddress
       );
-      console.log(
-        "New Total Collateral:",
-        ethers.formatUnits(newTotalCollateral, 6),
-        "USDT"
-      );
+      // console.log(
+      //   "New Total Collateral:",
+      //   ethers.formatUnits(newTotalCollateral, 6),
+      //   "USDT"
+      // );
 
       if (newTotalCollateral === totalCollateral) {
         throw new Error("Balance was not updated");

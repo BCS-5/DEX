@@ -8,10 +8,10 @@ const PoolInfo: FC<PoolInfoProps> = ({ totalPoolValue }) => {
   const [poolData, setPoolData] = useState<PoolData | null>(null);
 
   useEffect(() => {
-    console.log("total pool value: ", totalPoolValue);
+    // console.log("total pool value: ", totalPoolValue);
     if (!poolData || poolData.apr !== undefined) return;
     const apr = (poolData.volume * 0.0003 * 365 * 100) / Number(totalPoolValue);
-    console.log(apr);
+    // console.log(apr);
     setPoolData({ ...poolData, apr: Number(apr.toFixed(2)) });
   }, [poolData, totalPoolValue]);
 

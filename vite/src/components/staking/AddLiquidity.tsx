@@ -72,8 +72,6 @@ const AddLiquidity: FC<AddLiquidityProps> = ({
           setMyPoolBalance(
             (Number(myLP) * (Number(LPValue) / 2 ** 128)).toFixed(2).toString()
           );
-          console.log("user LP:  ", myLP);
-          console.log("LP value:  ", Number(LPValue) / 2 ** 128);
         } catch (error) {
           console.error("Error fetching user LP:", error);
         }
@@ -88,8 +86,6 @@ const AddLiquidity: FC<AddLiquidityProps> = ({
   }, [vaultContract, signer, pairAddr]);
 
   useEffect(() => {
-    console.log("liquiditys.locked: ", liquiditys[0]?.locked);
-    console.log("liquiditys.unClaimedFees: ", liquiditys[0]?.unClaimedFees);
     if (Number.isNaN(Number(liquiditys[0]?.locked))) {
       setLockedLiquidity(" Loading...");
     } else {

@@ -45,19 +45,19 @@ const PoolTable: FC = () => {
             await contract.getReserves();
           setUsdtBalance((Number(reserve1) / 10 ** 6).toFixed(3).toString());
           setBtcBalance((Number(reserve0) / 10 ** 8).toFixed(3).toString());
-          console.log(
-            `Reserve 0: ${(Number(reserve0) / 10 ** 6)
-              .toFixed(3)
-              .toString()
-              .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`
-          );
-          console.log(
-            `Reserve 1: ${(Number(reserve1) / 10 ** 8)
-              .toFixed(3)
-              .toString()
-              .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`
-          );
-          console.log(`Block Timestamp Last: ${blockTimestampLast.toString()}`);
+          // console.log(
+          //   `Reserve 0: ${(Number(reserve0) / 10 ** 6)
+          //     .toFixed(3)
+          //     .toString()
+          //     .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`
+          // );
+          // console.log(
+          //   `Reserve 1: ${(Number(reserve1) / 10 ** 8)
+          //     .toFixed(3)
+          //     .toString()
+          //     .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`
+          // );
+          // console.log(`Block Timestamp Last: ${blockTimestampLast.toString()}`);
         } else {
           console.error(`Contract for ${pair} not found.`);
         }

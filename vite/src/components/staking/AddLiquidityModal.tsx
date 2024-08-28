@@ -120,7 +120,7 @@ const AddLiquidityModal: FC<ModalProps> = ({
       //   deadline
       // );
 
-      console.log("Liquidity added successfully");
+      // console.log("Liquidity added successfully");
     } catch (error) {
       console.error("Error adding liquidity: ", error);
     } finally {

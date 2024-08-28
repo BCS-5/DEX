@@ -104,8 +104,9 @@ const UpdateOrderHistory: FC = () => {
     if (!vaultContract) return;
     // event Claimed(address indexed trader, address indexed poolAddress, uint256 amount);
     const claimedEventFilter = vaultContract.filters.Claimed(signer?.address);
+  
 
-    const events = await clearingHouseContract?.queryFilter(
+    const events = await vaultContract?.queryFilter(
       claimedEventFilter,
       0,
       "latest"
