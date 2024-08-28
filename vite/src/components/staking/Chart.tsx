@@ -110,32 +110,6 @@ const Chart: FC = () => {
     fetchData();
   }, []);
 
-  // useEffect(() => {
-  //   console.log(timeVolumeFeeData.length);
-
-  //   for (let i = 0; i < timeVolumeFeeData.length; i++) {
-  //     const dateString = new Date(timeVolumeFeeData[i].time).toLocaleDateString(
-  //       "en-GB",
-  //       {
-  //         day: "numeric",
-  //         month: "short",
-  //         year: "numeric",
-  //       }
-  //     );
-  //     setDateArrayData({...dateArray, dateString})
-  //     dateArray.push(dateString);
-  //     volumeData.push(timeVolumeFeeData[i].volume);
-  //     feesData.push(timeVolumeFeeData[i].fee);
-  //   }
-
-  //   console.log(dateArray);
-  //   console.log(volumeData);
-  //   console.log(feesData);
-  //   // console.log(timeVolumeFeeData[0].fee);
-  //   // console.log(timeVolumeFeeData[0].time);
-  //   // console.log(timeVolumeFeeData[0].volume);
-  // }, [timeVolumeFeeData]);
-
   useEffect(() => {
     // 초기 데이터 세팅
     const initialData = generateData({ timePeriod });

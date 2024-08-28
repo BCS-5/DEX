@@ -136,7 +136,10 @@ const Header: FC = () => {
   };
 
   return (
-    <div className="flex w-auto h-[64px] justify-between bg-[#131722] text-white border-b-[0.6px] border-[#363A45] tracking-tight">
+    <div
+      className="flex w-auto h-[64px] justify-between bg-[#131722] text-white border-b-[0.6px] border-[#363A45] tracking-tight"
+      style={{ fontFamily: "Roboto-Medium" }}
+    >
       <div className="flex gap-8">
         <div className="flex items-center pl-4">
           <img

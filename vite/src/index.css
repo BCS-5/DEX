@@ -29,3 +29,22 @@ input[type="number"]::-webkit-inner-spin-button {
 input[type="number"] {
   -moz-appearance: textfield; /* Firefox */
 }
+
+/* src/index.css 또는 src/globals.css */
+@font-face {
+  font-family: "Roboto-Medium";
+  src: url("../public/Roboto/Roboto-Medium.ttf") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "OpenSans-Medium";
+  src: url("../public/Open_Sans/static/OpenSans-Medium.ttf") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+}
+
+body {
+  font-family: "OpenSans-Medium";
+}

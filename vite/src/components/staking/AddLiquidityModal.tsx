@@ -84,10 +84,15 @@ const AddLiquidityModal: FC<ModalProps> = ({
 
       setAddLiquidityLoading(true);
 
-      // const calculateQuoteMinimum =
-      //   Number(inputUsdt) * (1 - slippageTolerance / 100);
-      // const calculateBaseTokenMinimum =
-      //   Number(inputBtcValue) * (1 - slippageTolerance / 100);
+      const calculateQuoteMinimum =
+        Number(inputUsdt) * (1 - slippageTolerance / 100);
+      const calculateBaseTokenMinimum =
+        Number(inputBtc) * (1 - slippageTolerance / 100);
+      console.log(
+        calculateQuoteMinimum,
+        "//",
+        Number(calculateBaseTokenMinimum).toFixed(8).toString()
+      );
       const dl = Math.floor(Date.now() / 1000) + deadline * 60;
 
       contractWithSigner
@@ -96,8 +101,18 @@ const AddLiquidityModal: FC<ModalProps> = ({
           BigNumber.from(
             ethers.parseUnits(Number(inputUsdt).toString(), 6)
           ).toString(),
-          0n,
-          0n,
+          BigNumber.from(
+            ethers.parseUnits(
+              Number(calculateQuoteMinimum).toFixed(6).toString(),
+              6
+            )
+          ).toString(),
+          BigNumber.from(
+            ethers.parseUnits(
+              Number(calculateBaseTokenMinimum).toFixed(6).toString(),
+              6
+            )
+          ).toString(),
           dl
         )
         .then((tx) => {
@@ -113,19 +128,6 @@ const AddLiquidityModal: FC<ModalProps> = ({
           notify(error.shortMessage, false);
           setAddLiquidityLoading(false);
         });
-
-      // console.log(BigNumber.from(inputUsdt).toString());
-      // console.log(calculateQuoteMinimum);
-      // console.log(calculateBaseTokenMinimum);
-      // console.log(BigNumber.from(calculateQuoteMinimum).toString());
-      // console.log(BigNumber.from(calculateBaseTokenMinimum).toString());
-      // const tx = await contractWithSigner.addLiquidity(
-      //   virtualTokenContracts.BTC.target,
-      //   BigNumber.from(inputUsdt).toString(),
-      //   BigNumber.from(calculateQuoteMinimum).toString(),
-      //   BigNumber.from(calculateBaseTokenMinimum).toString(),
-      //   deadline
-      // );
 
       console.log("Liquidity added successfully");
     } catch (error) {
@@ -263,7 +265,8 @@ const AddLiquidityModal: FC<ModalProps> = ({
                       </button>
                     </div>
                     <div className="text-[#F8FAFC] font-semibold mb-2">
-                      Deadline
+                      Deadline&nbsp;
+                      <span className="font-normal text-xs">(Minutes)</span>
                     </div>
                     <div className="flex gap-2 h-9 content-center font-normal">
                       <button

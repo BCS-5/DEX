@@ -7,6 +7,9 @@ export default {
         "error-color": "#FF453A",
         "success-color": "#22C55E",
       },
+      fontFamily: {
+        roboto: ["Roboto", "sans-serif"],
+      },
     },
   },
   plugins: [require("tailwind-scrollbar")],

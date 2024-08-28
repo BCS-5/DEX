@@ -2,7 +2,6 @@ import { FC, useEffect, useRef, useState } from "react";
 import logo_LP from "../../images/staking/logo_LP.png";
 import { useSelector } from "react-redux";
 import { RootState } from "../../app/store";
-import Tooltip from "./Tooltip";
 import { BigNumber } from "@ethersproject/bignumber";
 import { notify } from "../../lib";
 
@@ -226,7 +225,8 @@ const RemoveLiquidityModal: FC<ModalProps> = ({ isOpen, onClose, userLP }) => {
                       </button>
                     </div>
                     <div className="text-[#F8FAFC] font-semibold mb-2">
-                      Deadline
+                      Deadline&nbsp;
+                      <span className="font-normal text-xs">(Minutes)</span>
                     </div>
                     <div className="flex gap-2 h-9 content-center font-normal">
                       <button
