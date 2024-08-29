@@ -92,8 +92,9 @@ const AddLiquidityModal: FC<ModalProps> = ({
         Number(calculateBaseTokenMinimum).toFixed(8).toString()
       );
       const dl = Math.floor(Date.now() / 1000) + deadline * 60;
-
-      clearingHouseContract.addLiquidity(
+      const gasLimit = 500000n;
+      clearingHouseContract
+        .addLiquidity(
           virtualTokenContracts.BTC.target,
           BigNumber.from(
             ethers.parseUnits(Number(inputUsdt).toString(), 6)
@@ -110,7 +111,8 @@ const AddLiquidityModal: FC<ModalProps> = ({
               6
             )
           ).toString(),
-          dl
+          dl,
+          { gasLimit }
         )
         .then((tx) => {
           notify("Pending Transaction ...", true);

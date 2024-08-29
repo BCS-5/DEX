@@ -31,11 +31,13 @@ const AddMarginModal: FC<AddMarginModalProps> = ({
   };
 
   const onClickAddMargin = () => {
+    const gasLimit = 500000n;
     clearingHouseContract
       ?.addMargin(
         virtualTokenContracts?.BTC?.target,
         positionHash,
-        parseUnits(value, 6)
+        parseUnits(value, 6),
+        { gasLimit }
       )
       .then((tx) => {
         notify("Pending Transaction ...", true);

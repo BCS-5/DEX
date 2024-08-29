@@ -42,7 +42,7 @@ const OrderHistoryCard: FC<OrderHistoryCardParams> = ({ type, position }) => {
     accountBalanceContract,
     pairContracts,
     clearingHouseContract,
-    orderContract
+    orderContract,
   } = useSelector((state: RootState) => state.contracts);
   const { slippage, deadline } = useSelector(
     (state: RootState) => state.events
@@ -109,28 +109,23 @@ const OrderHistoryCard: FC<OrderHistoryCardParams> = ({ type, position }) => {
   };
 
   const getRealizedPnl = () => {
-    const history = (position as History);
-    
-    if(history.type != "CLOSE") return;
+    const history = position as History;
+
+    if (history.type != "CLOSE") return;
 
     const pnl = history.pnl - history.margin;
-    
+
     setPnl((Number(pnl) / 10 ** 6).toFixed(2));
     setPnlPercent(((Number(pnl) / Number(history.margin)) * 100).toFixed(2));
-  }
+  };
 
   const getLeverageRatio = () => {
-
-    if(type == 1) {
+    if (type == 1) {
       const order = position as Order;
-      const size = order.isLong ? order.amountIn : order.amountOut; 
-      
-      setLeverage(
-        (Number(size) / Number(order.margin)).toFixed(1)
-      );
-      
-    }
-    else {
+      const size = order.isLong ? order.amountIn : order.amountOut;
+
+      setLeverage((Number(size) / Number(order.margin)).toFixed(1));
+    } else {
       const _position = position as Position;
       setLeverage(
         (Number(_position.openNotional) / Number(_position.margin)).toFixed(1)
@@ -187,8 +182,8 @@ const OrderHistoryCard: FC<OrderHistoryCardParams> = ({ type, position }) => {
   };
 
   const getOpenNotional = () => {
-    if(type == 1) {
-      if(position.isLong) {
+    if (type == 1) {
+      if (position.isLong) {
         return (position as Order).amountIn;
       } else {
         return (position as Order).amountOut;
@@ -196,32 +191,35 @@ const OrderHistoryCard: FC<OrderHistoryCardParams> = ({ type, position }) => {
     } else {
       return (position as Position).openNotional;
     }
-  }
+  };
 
   const getTriggerPrice = () => {
-    const order = (position as Order);
+    const order = position as Order;
     let price = 0;
-    if(order.isLong) {
-      price = Number(order.amountIn) / Number(order.amountOut) * 10**2
+    if (order.isLong) {
+      price = (Number(order.amountIn) / Number(order.amountOut)) * 10 ** 2;
     } else {
-      price = Number(order.amountOut) / Number(order.amountIn) * 10**2
+      price = (Number(order.amountOut) / Number(order.amountIn)) * 10 ** 2;
     }
-    
-    return formatPrice(price)
-  }
+
+    return formatPrice(price);
+  };
 
   const onClickCancelOrder = () => {
-    if(!orderContract) return;
+    if (!orderContract) return;
 
-    const order = (position as Order);
-    orderContract.cancelOrder(order.orderId).then((tx) => {
-      notify("Pending Transaction ...", true);
-      tx.wait().then(() =>
-        notify("Transaction confirmed successfully !", true)
-      );
-    })
-    .catch((error) => notify(error.shortMessage, false));
-  }
+    const order = position as Order;
+    const gasLimit = 500000n;
+    orderContract
+      .cancelOrder(order.orderId, { gasLimit })
+      .then((tx) => {
+        notify("Pending Transaction ...", true);
+        tx.wait().then(() =>
+          notify("Transaction confirmed successfully !", true)
+        );
+      })
+      .catch((error) => notify(error.shortMessage, false));
+  };
 
   const onClickClose = async (closePercent: string) => {
     const _position = position as Position;
@@ -259,13 +257,15 @@ const OrderHistoryCard: FC<OrderHistoryCardParams> = ({ type, position }) => {
         BigInt(Math.floor((Number(amounts[0]) * Number(slippage)) / 100));
     }
 
+    const gasLimit = 500000n;
     clearingHouseContract
       ?.closePosition(
         _position.baseToken,
         _position.positionHash,
         parseInt(closePercent),
         slippageAdjustedAmount,
-        Math.floor(Date.now() / 1000) + Number(deadline) * 60
+        Math.floor(Date.now() / 1000) + Number(deadline) * 60,
+        { gasLimit }
       )
       .then((tx) => {
         notify("Pending Transaction ...", true);
@@ -277,10 +277,9 @@ const OrderHistoryCard: FC<OrderHistoryCardParams> = ({ type, position }) => {
   };
 
   useEffect(() => {
-    if(type == 0){
+    if (type == 0) {
       getUnrealizedPnl();
-    }
-    else if(type == 2) {
+    } else if (type == 2) {
       getRealizedPnl();
     }
     getLeverageRatio();
@@ -323,7 +322,11 @@ const OrderHistoryCard: FC<OrderHistoryCardParams> = ({ type, position }) => {
             <div className="flex flex-col w-[120px] flex-1">
               <div
                 className={`text-sm ${
-                  Number(pnl) > 0 ? "text-[#2BBDB5]" : Number(pnl) == 0 ? "text-[#f0f0f0]": "text-[#FF5AB5]"
+                  Number(pnl) > 0
+                    ? "text-[#2BBDB5]"
+                    : Number(pnl) == 0
+                    ? "text-[#f0f0f0]"
+                    : "text-[#FF5AB5]"
                 }`}
               >
                 {Number(pnl) > 0 && "+"}
@@ -333,10 +336,17 @@ const OrderHistoryCard: FC<OrderHistoryCardParams> = ({ type, position }) => {
                 PNL
                 <span
                   className={`${
-                    Number(pnlPercent) > 0 ? "text-[#2BBDB5]" : Number(pnlPercent) == 0 ? "text-[#f0f0f0]" : "text-[#FF5AB5]"
+                    Number(pnlPercent) > 0
+                      ? "text-[#2BBDB5]"
+                      : Number(pnlPercent) == 0
+                      ? "text-[#f0f0f0]"
+                      : "text-[#FF5AB5]"
                   }`}
                 >
-                  {Number(pnlPercent) > 0 ? ` +${pnlPercent}` : ` ${pnlPercent}`}%
+                  {Number(pnlPercent) > 0
+                    ? ` +${pnlPercent}`
+                    : ` ${pnlPercent}`}
+                  %
                 </span>
               </div>
             </div>
@@ -374,10 +384,7 @@ const OrderHistoryCard: FC<OrderHistoryCardParams> = ({ type, position }) => {
           {checkType(3) && (
             <div className="flex flex-col w-[100px] flex-1">
               <div className="text-sm">
-                {
-                  (Number(getOpenNotional()) / 10 ** 6).toFixed(1)
-                } 
-              
+                {(Number(getOpenNotional()) / 10 ** 6).toFixed(1)}
               </div>
               <div className="text-xs text-[#72768f] font-normal">
                 Size (USD)
@@ -463,7 +470,9 @@ const OrderHistoryCard: FC<OrderHistoryCardParams> = ({ type, position }) => {
           <div className="flex min-w-[147px] items-center justify-end flex-grow">
             <button
               className="w-[55px] h-[28px] rounded-[4px]  text-xs bg-[#2C2D43] py-[6px] px-3"
-              onClick={() => type == 0 ? openCloseModal() : onClickCancelOrder()}
+              onClick={() =>
+                type == 0 ? openCloseModal() : onClickCancelOrder()
+              }
             >
               Close
             </button>

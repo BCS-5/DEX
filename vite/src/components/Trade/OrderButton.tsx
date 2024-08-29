@@ -65,13 +65,15 @@ const OrderButton: FC<OrderButtonParams> = ({
     }
 
     if (isLong) {
+      const gasLimit = 500000n;
       orderContract
         ?.createOrder(
           virtualTokenContracts?.BTC?.target,
           margin,
           openNotional,
           positionSize,
-          true
+          true,
+          { gasLimit }
         )
         .then((tx) => {
           notify("Pending Transaction ...", true);
@@ -80,13 +82,15 @@ const OrderButton: FC<OrderButtonParams> = ({
           );
         });
     } else {
+      const gasLimit = 500000n;
       orderContract
         ?.createOrder(
           virtualTokenContracts?.BTC?.target,
           margin,
           positionSize,
           openNotional,
-          false
+          false,
+          { gasLimit }
         )
         .then((tx) => {
           notify("Pending Transaction ...", true);
@@ -132,6 +136,7 @@ const OrderButton: FC<OrderButtonParams> = ({
       }
 
       // function openPosition(address baseToken, bool isExactInput, bool isLong, uint margin, uint amountIn, uint amountOut, uint deadline) public hasPool(baseToken) {
+      const gasLimit = 500000n;
       clearingHouseContract
         ?.openPosition(
           virtualTokenContracts?.BTC?.target,
@@ -140,7 +145,8 @@ const OrderButton: FC<OrderButtonParams> = ({
           margin,
           openNotional,
           positionSize,
-          Math.floor(Date.now() / 1000) + parseInt(deadline) * 60
+          Math.floor(Date.now() / 1000) + parseInt(deadline) * 60,
+          { gasLimit }
         )
         .then((tx) => {
           notify("Pending Transaction ...", true);
@@ -172,7 +178,7 @@ const OrderButton: FC<OrderButtonParams> = ({
       } else {
         openNotional = slippageAdjustedAmount;
       }
-
+      const gasLimit = 500000n;
       clearingHouseContract
         ?.openPosition(
           virtualTokenContracts?.BTC?.target,
@@ -181,7 +187,8 @@ const OrderButton: FC<OrderButtonParams> = ({
           margin,
           positionSize,
           openNotional,
-          Math.floor(Date.now() / 1000) + parseInt(deadline) * 60
+          Math.floor(Date.now() / 1000) + parseInt(deadline) * 60,
+          { gasLimit }
         )
         .then((tx) => {
           notify("Pending Transaction ...", true);

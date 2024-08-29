@@ -74,8 +74,9 @@ const Claim: FC = () => {
     if (!signer) return;
     if (vaultContract) {
       try {
+        const gasLimit = 500000n;
         vaultContract
-          .claimRewards(signer?.address, pairAddr)
+          .claimRewards(signer?.address, pairAddr, { gasLimit })
           .then((tx) => {
             notify("Pending Transaction ...", true);
             tx.wait().then(() => {

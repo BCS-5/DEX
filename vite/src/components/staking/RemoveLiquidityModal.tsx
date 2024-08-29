@@ -2,7 +2,6 @@ import { FC, useEffect, useRef, useState } from "react";
 import logo_LP from "../../images/staking/logo_LP.png";
 import { useSelector } from "react-redux";
 import { RootState } from "../../app/store";
-import { BigNumber } from "@ethersproject/bignumber";
 import { notify } from "../../lib";
 
 interface ModalProps {
@@ -13,10 +12,9 @@ interface ModalProps {
 
 const RemoveLiquidityModal: FC<ModalProps> = ({ isOpen, onClose, userLP }) => {
   if (!isOpen) return null;
-  const { clearingHouseContract, virtualTokenContracts,routerContract, pairContracts } = useSelector(
-    (state: RootState) => state.contracts
-  );
-  
+  const { clearingHouseContract, virtualTokenContracts, pairContracts } =
+    useSelector((state: RootState) => state.contracts);
+
   const [deadline, setDeadline] = useState<number>(10);
   const [canRemoveLiquidity, setCanRemoveLiquidity] = useState<boolean>(false);
   const [removeLiquidityLoading, setRemoveLiquidityLoading] =
@@ -64,36 +62,61 @@ const RemoveLiquidityModal: FC<ModalProps> = ({ isOpen, onClose, userLP }) => {
   };
 
   useEffect(() => {
-    // console.log("liquiditys.locked: ", liquiditys[0]?.locked);
     setLockedLiquidity(
       (Number(liquiditys[0]?.locked) / 10 ** 6).toFixed(6).toLocaleString()
     );
   }, [liquiditys]);
 
   const onClickRemoveLiquidity = async () => {
-    if (!clearingHouseContract) return;
+    if (!clearingHouseContract || inputLP == null) return;
 
     try {
       setRemoveLiquidityLoading(true);
-      // const totalSupply = await pairContracts?.BTC?.totalSupply();
-      // const [reserve0, reserve1, ] =await pairContracts?.BTC?.getReserves()
+      const totalSupply = await pairContracts?.BTC?.totalSupply();
+      const [reserve0, reserve1] = await pairContracts?.BTC?.getReserves();
+      const token0 = await pairContracts?.BTC?.token0();
+      const isBase = token0 === virtualTokenContracts?.BTC?.target;
 
+      const [quoteMinimum, baseMinimum] = isBase
+        ? [
+            (reserve1 *
+              BigInt(inputLP) *
+              (1000n - BigInt(slippageTolerance * 10))) /
+              (totalSupply * 1000n),
+            (reserve0 *
+              BigInt(inputLP) *
+              (1000n - BigInt(slippageTolerance * 10))) /
+              (totalSupply * 1000n),
+          ]
+        : [
+            (reserve0 *
+              BigInt(inputLP) *
+              (1000n - BigInt(slippageTolerance * 10))) /
+              (totalSupply * 1000n),
+            (reserve1 *
+              BigInt(inputLP) *
+              (1000n - BigInt(slippageTolerance * 10))) /
+              (totalSupply * 1000n),
+          ];
 
-      // routerContract.getQuote
-      // const calculateQuoteMinimum =
-      //   Number(inputLP) * (1 - slippageTolerance / 100);
-      // const calculateBaseTokenMinimum =
-      //   Number(inputBtcValue) * (1 - slippageTolerance / 100);
-      // const maxUint256 = (BigInt(1) << BigInt(256)) - BigInt(1);
       const dl = Math.floor(Date.now() / 1000) + deadline * 60;
+      console.log(
+        virtualTokenContracts.BTC.target,
+        BigInt(inputLP),
+        quoteMinimum,
+        baseMinimum,
+        dl
+      );
 
+      const gasLimit = 500000n;
       clearingHouseContract
         .removeLiquidity(
           virtualTokenContracts.BTC.target,
-          BigNumber.from(Number(inputLP)).toString(),
-          0n,
-          0n,
-          dl
+          BigInt(inputLP),
+          quoteMinimum,
+          baseMinimum,
+          dl,
+          { gasLimit }
         )
         .then((tx) => {
           notify("Pending Transaction ...", true);
@@ -101,26 +124,12 @@ const RemoveLiquidityModal: FC<ModalProps> = ({ isOpen, onClose, userLP }) => {
             notify("Transaction confirmed successfully !", true);
             onClose();
             setRemoveLiquidityLoading(false);
-            // window.location.reload();
           });
         })
         .catch((error) => {
           notify(error.shortMessage, false);
           setRemoveLiquidityLoading(false);
         });
-
-      // console.log(BigNumber.from(inputLP).toString());
-      // console.log(calculateQuoteMinimum);
-      // console.log(calculateBaseTokenMinimum);
-      // console.log(BigNumber.from(calculateQuoteMinimum).toString());
-      // console.log(BigNumber.from(calculateBaseTokenMinimum).toString());
-      // const tx = await contractWithSigner.addLiquidity(
-      //   virtualTokenContracts.BTC.target,
-      //   BigNumber.from(inputLP).toString(),
-      //   BigNumber.from(calculateQuoteMinimum).toString(),
-      //   BigNumber.from(calculateBaseTokenMinimum).toString(),
-      //   deadline
-      // );
 
       // console.log("Liquidity removed successfully");
     } catch (error) {
