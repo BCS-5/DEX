@@ -128,7 +128,7 @@ const Header: FC = () => {
   }, [marketRegistryContract]);
 
   const onClickConnectWallet = () => {
-    localStorage.setItem("login", "true");
+    // localStorage.setItem("login", "true");
     provider?.getSigner().then((signer) => dispatch(setSigner(signer)));
   };
 

@@ -20,6 +20,11 @@ export const providersSlice = createSlice({
       state.provider = new ethers.BrowserProvider(action.payload);
     },
     setSigner: (state, action: PayloadAction<JsonRpcSigner | null>) => {
+      if (action.payload) {
+        localStorage.setItem("login", "true");
+      } else {
+        localStorage.removeItem("login");
+      }
       state.signer = action.payload;
     },
     setChainId: (state, action: PayloadAction<number>) => {

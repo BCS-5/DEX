@@ -95,11 +95,11 @@ const AddLiquidity: FC<AddLiquidityProps> = ({
   }, [vaultContract, signer, pairAddr, blockNumber]);
 
   useEffect(() => {
-    if (Number.isNaN(Number(liquiditys[0]?.locked))) {
+    if (Number.isNaN(Number(liquiditys?.[0]?.locked))) {
       setLockedLiquidity(" Loading...");
     } else {
       setLockedLiquidity(
-        (Number(liquiditys[0]?.locked) / 10 ** 6).toLocaleString()
+        (Number(liquiditys?.[0]?.locked) / 10 ** 6).toLocaleString()
       );
     }
   }, [liquiditys]);

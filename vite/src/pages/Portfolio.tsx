@@ -318,7 +318,7 @@ const Portfolio: React.FC = () => {
             <button
               className={`mr-8 pb-3 text-lg font-medium ${
                 activeTab === "portfolio"
-                  ? "border-b-2 border-[#1DB1A8] text-[#AB71E2] text-xl"
+                  ? "border-b-2 border-[#AB71E2] text-[#AB71E2] text-xl"
                   : "text-[#f0f0f0]"
               }`}
               onClick={() => setActiveTab("portfolio")}
@@ -328,7 +328,7 @@ const Portfolio: React.FC = () => {
             <button
               className={`pb-3 text-lg font-medium ${
                 activeTab === "history"
-                  ? "border-b-2 border-[#1DB1A8] text-[#AB71E2] text-xl"
+                  ? "border-b-2 border-[#AB71E2] text-[#AB71E2] text-xl"
                   : "text-[#f0f0f0]"
               }`}
               onClick={() => setActiveTab("history")}

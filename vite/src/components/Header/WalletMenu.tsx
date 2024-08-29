@@ -16,7 +16,7 @@ const WalletMenu: FC = () => {
   const navigate = useNavigate();
 
   const onClickDisConnect = () => {
-    localStorage.removeItem("login");
+    // localStorage.removeItem("login");
     dispatch(setSigner(null));
   };
 

@@ -101,10 +101,9 @@ const UpdateOrderHistory: FC = () => {
   };
 
   const getLiquidityPositions = async () => {
-    if (!vaultContract) return;
-    // event Claimed(address indexed trader, address indexed poolAddress, uint256 amount);
+    if (!vaultContract || !pairContracts?.BTC?.target) return;
+
     const claimedEventFilter = vaultContract.filters.Claimed(signer?.address);
-  
 
     const events = await vaultContract?.queryFilter(
       claimedEventFilter,
@@ -142,7 +141,6 @@ const UpdateOrderHistory: FC = () => {
     );
 
     liqudity.locked = (2n * (liqudity.amount * usdtBalance)) / totalSupply;
-
     dispatch(setLiquiditys([liqudity]));
   };
 
@@ -262,9 +260,12 @@ const UpdateOrderHistory: FC = () => {
   };
 
   useEffect(() => {
+    getLiquidityPositions();
+  }, [signer, vaultContract, pairContracts]);
+
+  useEffect(() => {
     if (signer) {
       getHistory();
-      getLiquidityPositions();
       getOrders();
     } else {
       dispatch(setHistory([]));
